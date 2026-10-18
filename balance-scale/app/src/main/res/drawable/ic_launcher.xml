@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Balance Scale's icon: a level balance with an apple on each pan, on peach. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp" android:height="48dp"
+    android:viewportWidth="100" android:viewportHeight="100">
+    <path android:fillColor="#FFFFAD7A" android:pathData="M26,4 L74,4 A22,22 0 0 1 96,26 L96,74 A22,22 0 0 1 74,96 L26,96 A22,22 0 0 1 4,74 L4,26 A22,22 0 0 1 26,4 Z"/>
+    <path android:fillColor="#FFB98A5E" android:pathData="M46,30 L54,30 L54,80 L46,80 Z"/>
+    <path android:fillColor="#FF9A6D44" android:pathData="M32,78 L68,78 A4,4 0 0 1 72,82 L72,84 A4,4 0 0 1 68,88 L32,88 A4,4 0 0 1 28,84 L28,82 A4,4 0 0 1 32,78 Z"/>
+    <path android:strokeColor="#FF7A6A8A" android:strokeWidth="1.8" android:pathData="M20,30 L10,56 M20,30 L30,56 M80,30 L70,56 M80,30 L90,56"/>
+    <path android:fillColor="#FF5B3E8C" android:pathData="M16,26 L84,26 A4,4 0 0 1 88,30 A4,4 0 0 1 84,34 L16,34 A4,4 0 0 1 12,30 A4,4 0 0 1 16,26 Z"/>
+    <path android:fillColor="#FFF0A830" android:pathData="M45,30 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0 Z"/>
+    <path android:fillColor="#FF8466E0" android:pathData="M8,56 L32,56 Q20,66 8,56 Z"/>
+    <path android:fillColor="#FFEE7F45" android:pathData="M68,56 L92,56 Q80,66 68,56 Z"/>
+    <path android:fillColor="#FFF0566A" android:pathData="M14,49 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0 Z M74,49 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0 Z"/>
+    <path android:fillColor="#FF4CC47F" android:pathData="M20,43 Q24,39 27,42 Q23,45 20,43 Z M80,43 Q84,39 87,42 Q83,45 80,43 Z"/>
+</vector>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Robot Path</string>
+    <string name="level">Level %1$d</string>
+    <string name="go">Go</string>
+    <string name="sticker_title">A sticker for you!</string>
+    <string name="more">More!</string>
+    <string name="done">Done</string>
+    <!-- Content descriptions: read by TalkBack, and by tools/verify.py. -->
+    <string name="cd_left">left</string>
+    <string name="cd_up">up</string>
+    <string name="cd_down">down</string>
+    <string name="cd_right">right</string>
+    <string name="cd_undo">undo</string>
+    <string name="cd_home">home</string>
+</resources>

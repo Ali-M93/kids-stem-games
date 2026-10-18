@@ -1,0 +1,8 @@
+<p>A kangaroo stands on numbered stepping stones. A card says +3 or −2; the child picks where it will land; then the kangaroo hops one stone at a time and every landing is counted aloud, so the answer is checked by counting.</p>
+<ul>
+<li>Counting from zero, adding, taking away, "which is more?", then 0-20 including crossing ten</li>
+<li>Count aloud in Farsi, Dutch or English (Persian digits in Farsi), using recordings you make yourself or the phone's speech engine</li>
+<li>A wrong pick greys out and the kangaroo hops back; after two, every hop is drawn on the line</li>
+<li>A sticker every five puzzles; moves up a stage when the child is ready</li>
+</ul>
+<p><b>No permissions at all: no network, no ads, no tracking.</b> To use your own voice, put files like fa/7.m4a in the app's folder; see the project page.</p>

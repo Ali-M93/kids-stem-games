@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kangoeroesprongen</string>
+    <string name="which_more">Wat is meer?</string>
+    <string name="sticker_title">Een sticker voor jou!</string>
+    <string name="more">Meer!</string>
+    <string name="done">Klaar</string>
+    <string name="cd_home">thuis</string>
+</resources>

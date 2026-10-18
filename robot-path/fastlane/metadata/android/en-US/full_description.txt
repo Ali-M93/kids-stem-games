@@ -1,0 +1,9 @@
+<p>A first coding game for children of about 4 to 7. Tap arrows to build a program, press Go, and a little robot follows it, one step at a time, to the star.</p>
+<ul>
+<li>Trains sequencing, planning and debugging: when the robot bumps into a rock, the step that did it turns red, and the child fixes that step instead of starting over</li>
+<li>Gentle start (two moves straight, then a first turn, then a first rock), growing to 6×6 boards and nine-move programs</li>
+<li>Hints after two misses: footprints show part of the way</li>
+<li>Every three stars earn a sticker, then a clear choice: More, or Done. No timers, no endless play</li>
+<li>English, Dutch and Farsi; works on phones and tablets from Android 4.4</li>
+</ul>
+<p><b>No permissions at all: no network, no ads, no tracking.</b></p>

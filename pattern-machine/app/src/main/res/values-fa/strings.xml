@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ماشین الگو</string>
+    <string name="make_title">یک الگو بساز</string>
+    <string name="play">پخش</string>
+    <string name="sticker_title">یک برچسب برای تو!</string>
+    <string name="more">باز هم!</string>
+    <string name="done">تمام</string>
+    <string name="cd_home">خانه</string>
+    <string name="cd_make">خودت بساز</string>
+    <string name="cd_undo">برگرد</string>
+</resources>

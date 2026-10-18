@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Patroonmachine</string>
+    <string name="make_title">Maak een patroon</string>
+    <string name="play">Speel</string>
+    <string name="sticker_title">Een sticker voor jou!</string>
+    <string name="more">Meer!</string>
+    <string name="done">Klaar</string>
+    <string name="cd_home">thuis</string>
+    <string name="cd_make">zelf maken</string>
+    <string name="cd_undo">terug</string>
+</resources>

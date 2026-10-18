@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Weegschaal</string>
+    <string name="sticker_title">Een sticker voor jou!</string>
+    <string name="more">Meer!</string>
+    <string name="weigh">Weeg</string>
+    <string name="done">Klaar</string>
+    <string name="cd_home">thuis</string>
+    <string name="cd_undo">haal er een af</string>
+</resources>

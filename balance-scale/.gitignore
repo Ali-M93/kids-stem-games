@@ -1,0 +1,10 @@
+.gradle/
+.kotlin/
+build/
+local.properties
+*.iml
+.idea/
+
+# Signing keys never go in a public repo (see "Build" in each game's README).
+*.keystore
+*.jks

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">مسیر ربات</string>
+    <string name="level">مرحله %1$d</string>
+    <string name="go">برو</string>
+    <string name="sticker_title">یک برچسب برای تو!</string>
+    <string name="more">باز هم!</string>
+    <string name="done">تمام</string>
+    <string name="cd_left">چپ</string>
+    <string name="cd_up">بالا</string>
+    <string name="cd_down">پایین</string>
+    <string name="cd_right">راست</string>
+    <string name="cd_undo">برگرد</string>
+    <string name="cd_home">خانه</string>
+</resources>

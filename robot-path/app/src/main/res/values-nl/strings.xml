@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Robotpad</string>
+    <string name="level">Level %1$d</string>
+    <string name="go">Start</string>
+    <string name="sticker_title">Een sticker voor jou!</string>
+    <string name="more">Meer!</string>
+    <string name="done">Klaar</string>
+    <string name="cd_left">links</string>
+    <string name="cd_up">omhoog</string>
+    <string name="cd_down">omlaag</string>
+    <string name="cd_right">rechts</string>
+    <string name="cd_undo">terug</string>
+    <string name="cd_home">thuis</string>
+</resources>

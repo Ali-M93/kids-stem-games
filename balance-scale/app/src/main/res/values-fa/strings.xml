@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ترازو</string>
+    <string name="sticker_title">یک برچسب برای تو!</string>
+    <string name="more">باز هم!</string>
+    <string name="weigh">بسنج</string>
+    <string name="done">تمام</string>
+    <string name="cd_home">خانه</string>
+    <string name="cd_undo">یکی بردار</string>
+</resources>

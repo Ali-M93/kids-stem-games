@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pattern Machine's icon: circle, triangle, circle and a "?" on a lilac machine. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp" android:height="48dp"
+    android:viewportWidth="100" android:viewportHeight="100">
+    <path android:fillColor="#FF8466E0" android:pathData="M26,8 L74,8 A22,22 0 0 1 96,30 L96,74 A22,22 0 0 1 74,96 L26,96 A22,22 0 0 1 4,74 L4,30 A22,22 0 0 1 26,8 Z"/>
+    <path android:fillColor="#FFB79CFF" android:pathData="M26,4 L74,4 A22,22 0 0 1 96,26 L96,70 A22,22 0 0 1 74,92 L26,92 A22,22 0 0 1 4,70 L4,26 A22,22 0 0 1 26,4 Z"/>
+    <path android:fillColor="#FFFF8FA3" android:pathData="M74,16 a6,6 0 1,0 0.1,0 Z"/>
+    <path android:fillColor="#FFFFD166" android:pathData="M86,16 a5,5 0 1,0 0.1,0 Z"/>
+    <path android:fillColor="#FF4A4370" android:pathData="M14,38 L86,38 A8,8 0 0 1 94,46 L94,70 A8,8 0 0 1 86,78 L14,78 A8,8 0 0 1 6,70 L6,46 A8,8 0 0 1 14,38 Z"/>
+    <path android:fillColor="#FFFF8FA3" android:strokeColor="#FFE8607E" android:strokeWidth="2" android:pathData="M12,58 a8,8 0 1,0 16,0 a8,8 0 1,0 -16,0 Z"/>
+    <path android:fillColor="#FF7CC8FF" android:strokeColor="#FF3F95E0" android:strokeWidth="2" android:strokeLineJoin="round" android:pathData="M42,49 L51,66 L33,66 Z"/>
+    <path android:fillColor="#FFFF8FA3" android:strokeColor="#FFE8607E" android:strokeWidth="2" android:pathData="M56,58 a8,8 0 1,0 16,0 a8,8 0 1,0 -16,0 Z"/>
+    <path android:strokeColor="#FFFFFFFF" android:strokeWidth="3.5" android:strokeLineCap="round" android:pathData="M79,54 Q79,49 84,49 Q89,49 89,54 Q89,57 84,59 L84,62"/>
+    <path android:fillColor="#FFFFFFFF" android:pathData="M82,67 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0 Z"/>
+</vector>

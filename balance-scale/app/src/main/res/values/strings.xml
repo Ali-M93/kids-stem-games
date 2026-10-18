@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Balance Scale</string>
+    <string name="sticker_title">A sticker for you!</string>
+    <string name="more">More!</string>
+    <string name="weigh">Weigh</string>
+    <string name="done">Done</string>
+    <string name="cd_home">home</string>
+    <string name="cd_undo">take one off</string>
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pattern Machine</string>
+    <string name="make_title">Make a pattern</string>
+    <string name="play">Play</string>
+    <string name="sticker_title">A sticker for you!</string>
+    <string name="more">More!</string>
+    <string name="done">Done</string>
+    <string name="cd_home">home</string>
+    <string name="cd_make">make your own</string>
+    <string name="cd_undo">undo</string>
+</resources>

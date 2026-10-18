@@ -1,0 +1,9 @@
+<p>A friendly machine shows a row of shapes, such as circle, triangle, circle, triangle, ?, and the child taps the one that comes next. Spotting patterns is the root of algebra.</p>
+<ul>
+<li>Every shape sings its own note, so each pattern is also a little tune that the machine plays back when solved</li>
+<li>Stages from AB to AAB, ABB, ABC, colour-only patterns, gaps in the middle, AABB and two missing shapes</li>
+<li>A wrong pick wobbles and greys out; after two, the repeats are underlined</li>
+<li>Make mode: build your own pattern, and the machine finds your rule and carries on with it</li>
+<li>A sticker every five puzzles; moves up a stage when the child is ready</li>
+</ul>
+<p><b>No permissions at all: no network, no ads, no tracking.</b></p>
