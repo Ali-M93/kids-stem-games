@@ -26,6 +26,8 @@ public class GameActivity extends Activity implements BoardView.Listener {
     private static final String PREFS = "progress", KEY_LEVEL = "level", KEY_STARS = "stars",
             KEY_STICKERS = "stickers";
     private static final int STARS_PER_STICKER = 3;
+    /** Intent extras: the progress file to use, and the level to start on (at most the furthest). */
+    public static final String EXTRA_PREFS = "prefs", EXTRA_LEVEL = "level";
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private SharedPreferences prefs;
@@ -45,7 +47,10 @@ public class GameActivity extends Activity implements BoardView.Listener {
     @Override
     protected void onCreate(Bundle saved) {
         super.onCreate(saved);
-        prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        // In the Lili & Friends app each child has their own progress file, and the journey map
+        // passes the level to play; on its own the game keeps one file and resumes.
+        String file = getIntent().getStringExtra(EXTRA_PREFS);
+        prefs = getSharedPreferences(file != null ? file : PREFS, MODE_PRIVATE);
         sounds = new Sounds();
         Art.load(getResources());
         face = Typeface.createFromAsset(getAssets(), "fonts/fredoka_semibold.ttf");
@@ -122,7 +127,7 @@ public class GameActivity extends Activity implements BoardView.Listener {
         more.setContentDescription(res.getString(R.string.more));
         more.setOnClickListener(v -> {
             hideSticker();
-            loadLevel(prefs.getInt(KEY_LEVEL, 1));
+            loadLevel(level.number + 1);
         });
         CandyButton done = new CandyButton(this, CandyButton.ICON_NONE, 0, Art.PEACH, Art.PEACH_D,
                 res.getString(R.string.done), face);
@@ -143,7 +148,9 @@ public class GameActivity extends Activity implements BoardView.Listener {
         root.addView(stickerButtons, flp);
         setContentView(root);
 
-        loadLevel(prefs.getInt(KEY_LEVEL, 1));
+        int furthest = prefs.getInt(KEY_LEVEL, 1);
+        int start = getIntent().getIntExtra(EXTRA_LEVEL, furthest);
+        loadLevel(Math.max(1, Math.min(start, furthest)));
     }
 
     private void loadLevel(int n) {
@@ -211,7 +218,8 @@ public class GameActivity extends Activity implements BoardView.Listener {
         int stars = prefs.getInt(KEY_STARS, 0) + 1;
         final boolean earned = stars % STARS_PER_STICKER == 0;
         final int stickers = prefs.getInt(KEY_STICKERS, 0) + (earned ? 1 : 0);
-        prefs.edit().putInt(KEY_LEVEL, next).putInt(KEY_STARS, stars)
+        // Replaying an old level never moves the furthest level back.
+        prefs.edit().putInt(KEY_LEVEL, Math.max(next, prefs.getInt(KEY_LEVEL, 1))).putInt(KEY_STARS, stars)
                 .putInt(KEY_STICKERS, stickers).apply();
         refreshButtons();
         handler.postDelayed(() -> {

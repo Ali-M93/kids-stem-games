@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Manifest used when this game is built as a library inside the Lili & Friends app:
+     no launcher entry of its own; the app's journey map starts it. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity
+            android:name=".GameActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout"
+            android:exported="false"
+            android:theme="@style/ScaleTheme" />
+    </application>
+</manifest>

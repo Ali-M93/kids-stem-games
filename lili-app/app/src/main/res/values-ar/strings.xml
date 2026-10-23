@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ليلي وأصدقاؤها</string>
+    <string name="who_plays">من سيلعب؟</string>
+    <string name="add_player">إضافة</string>
+    <string name="grown_ups_hint">للكبار: اضغط مطوّلًا على اللاعب لحذفه.</string>
+    <string name="remove_q">حذف هذا اللاعب وكل تقدّمه؟</string>
+    <string name="remove">حذف</string>
+    <string name="cancel">إلغاء</string>
+    <string name="game_path">طريق ليلي</string>
+    <string name="game_hops">قفزات ليلي</string>
+    <string name="game_pattern">آلة الأنماط</string>
+    <string name="game_scale">الميزان</string>
+    <string name="cd_back">رجوع</string>
+    <string name="cd_player">اللاعب %1$d</string>
+    <string name="cd_level">المرحلة %1$d</string>
+    <string name="cd_locked">مقفلة</string>
+</resources>

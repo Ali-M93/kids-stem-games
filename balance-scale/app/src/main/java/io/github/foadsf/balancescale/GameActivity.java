@@ -66,7 +66,12 @@ public class GameActivity extends Activity {
     @Override
     protected void onCreate(Bundle saved) {
         super.onCreate(saved);
-        prefs = getSharedPreferences("progress", MODE_PRIVATE);
+        // In the Lili & Friends app each child has their own progress file, and the journey map
+        // passes the stage to play; on its own the game keeps one file and resumes.
+        String file = getIntent().getStringExtra(EXTRA_PREFS);
+        prefs = getSharedPreferences(file != null ? file : "progress", MODE_PRIVATE);
+        playStage = Math.max(0, Math.min(getIntent().getIntExtra(EXTRA_STAGE, prefs.getInt("stage", 0)),
+                prefs.getInt("stage", 0)));
         sounds = new Sounds();
         face = Typeface.createFromAsset(getAssets(), "fonts/fredoka_semibold.ttf");
         Resources res = getResources();
@@ -142,8 +147,19 @@ public class GameActivity extends Activity {
 
     // ---- puzzles ------------------------------------------------------------------------
 
+    /** Intent extras: the progress file to use, and the stage to play (at most the furthest). */
+    public static final String EXTRA_PREFS = "prefs", EXTRA_STAGE = "stage";
+    /** The stage being played now; prefs "stage" is the furthest one reached. */
+    private int playStage;
+
     private int stage() {
-        return prefs.getInt("stage", 0);
+        return playStage;
+    }
+
+    /** Moves on to {@code stage} and remembers it if it is further than before. */
+    private void reachStage(int stage) {
+        playStage = stage;
+        if (stage > prefs.getInt("stage", 0)) prefs.edit().putInt("stage", stage).apply();
     }
 
     private String where() {
@@ -283,7 +299,8 @@ public class GameActivity extends Activity {
         }
         int stage = stage() + (roundSlips <= MAX_SLIPS_TO_ADVANCE ? 1 : 0);
         int stickers = prefs.getInt("stickers", 0) + 1;
-        prefs.edit().putInt("stage", stage).putInt("stickers", stickers).apply();
+        reachStage(stage);
+        prefs.edit().putInt("stickers", stickers).apply();
         roundDone = 0;
         roundSlips = 0;
         sticker.show(stickers);

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lili &amp; Friends</string>
+    <string name="who_plays">Who is playing?</string>
+    <string name="add_player">Add</string>
+    <string name="grown_ups_hint">Grown-ups: press and hold a player to remove them.</string>
+    <string name="remove_q">Remove this player and all their progress?</string>
+    <string name="remove">Remove</string>
+    <string name="cancel">Cancel</string>
+    <string name="game_path">Lili\'s Path</string>
+    <string name="game_hops">Lili Hops</string>
+    <string name="game_pattern">Pattern Machine</string>
+    <string name="game_scale">Balance Scale</string>
+    <string name="cd_back">back</string>
+    <string name="cd_player">player %1$d</string>
+    <string name="cd_level">level %1$d</string>
+    <string name="cd_locked">locked</string>
+</resources>
