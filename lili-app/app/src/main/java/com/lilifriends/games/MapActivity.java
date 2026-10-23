@@ -43,11 +43,12 @@ public class MapActivity extends Activity {
 
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
+        // Keep everything inside the status and navigation bars on every Android version,
+        // including Android 15+, which draws apps edge to edge.
+        root.setFitsSystemWindows(true);
         root.setBackgroundColor(Draw.SKY_TOP);
         TopBar bar = new TopBar(this, face, getString(game.title), store.avatar(player));
         bar.setOnBack(this::finish);
-        int sb = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        bar.setPadding(0, sb > 0 ? getResources().getDimensionPixelSize(sb) : 0, 0, 0);
         root.addView(bar, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT));
         scroll = new ScrollView(this);

@@ -36,9 +36,12 @@ public class ProfilesActivity extends Activity {
         store = new Store(this);
         face = Typeface.createFromAsset(getAssets(), "fonts/fredoka_semibold.ttf");
         view = new PlayersView(this);
-        int sb = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        view.setPadding(0, sb > 0 ? getResources().getDimensionPixelSize(sb) : 0, 0, 0);
-        setContentView(view);
+        // Keep everything inside the status and navigation bars on every Android version.
+        android.widget.FrameLayout root = new android.widget.FrameLayout(this);
+        root.setBackgroundColor(Draw.SKY_TOP);
+        root.setFitsSystemWindows(true);
+        root.addView(view);
+        setContentView(root);
     }
 
     @Override
