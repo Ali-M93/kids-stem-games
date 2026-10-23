@@ -4,14 +4,14 @@ plugins {
 
 android {
     namespace = "com.lilifriends.games"
-    compileSdk = 35
+    compileSdk = 36
     buildToolsVersion = "37.0.0"
 
     defaultConfig {
         applicationId = "com.lilifriends.games"
         // Same floor as the games: a 2014 phone on KitKat 4.4 must run it. Do not raise.
         minSdk = 19
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"
     }

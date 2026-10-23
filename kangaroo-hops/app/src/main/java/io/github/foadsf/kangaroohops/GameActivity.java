@@ -116,7 +116,7 @@ public class GameActivity extends Activity {
                 FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.BOTTOM);
         lp.bottomMargin = Math.round(40 * res.getDisplayMetrics().density);
         root.addView(stickerButtons, lp);
-        setContentView(root);
+        setContentView(frame(root));
         newPuzzle();
     }
 
@@ -380,7 +380,7 @@ public class GameActivity extends Activity {
             int w = MeasureSpec.getSize(ws), h = MeasureSpec.getSize(hs);
             setMeasuredDimension(w, h);
             Resources res = getResources();
-            int sb = res.getIdentifier("status_bar_height", "dimen", "android");
+            int sb = 0 /* the frame from frame() already sits below the status bar */;
             int top = (sb > 0 ? res.getDimensionPixelSize(sb) : 0) + px(4);
             int pad = px(12), gap = px(10), head = px(56);
             at(getChildAt(0), 0, 0, w, h);
@@ -417,5 +417,20 @@ public class GameActivity extends Activity {
                 if (f != null) v.layout(f[0], f[1], f[0] + f[2], f[1] + f[3]);
             }
         }
+    }
+
+    /**
+     * Wraps the screen in a frame that keeps it inside the status and navigation bars on every
+     * Android version, including Android 15+ which always draws apps edge to edge. The bars sit
+     * over the same soft gradient as the backdrop.
+     */
+    private android.view.View frame(android.view.View content) {
+        android.widget.FrameLayout f = new android.widget.FrameLayout(this);
+        f.setBackground(new android.graphics.drawable.GradientDrawable(
+                android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{0xFFFFDCEB, 0xFFEBDFFF, 0xFFD2EEFF}));
+        f.setFitsSystemWindows(true);
+        f.addView(content);
+        return f;
     }
 }

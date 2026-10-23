@@ -9,7 +9,10 @@ The code stays under GPL-3.0. Changes in this fork:
   oops and thinking, and cheers on the sticker screen.
 - **Lili** replaces the kangaroo in Kangaroo Hops ("Lili Hops"): she stands facing the child,
   jumps side-on from stone to stone, and throws her arms up when she gets it right.
-- **Lili** runs the Pattern Machine and watches the Balance Scale, reacting to every answer.
+- **Lili** runs the Pattern Machine (and claps when a row is right) and watches the Balance
+  Scale holding an apple, reacting to every weighing.
+- Targets Android 16 (API 36, required by Google Play since 31 Aug 2026); every screen lays itself
+  out inside the status and navigation bars, since Android 15+ draws apps edge to edge.
 - New app ids and icons for Robot Path and Lili Hops.
 - **lili-app/**: all four games in one app, "Lili & Friends": a "Who is playing?" screen with a
   badge per child, separate progress for each child, and a journey map per game where reached

@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "io.github.foadsf.balancescale"
-    compileSdk = 35
+    compileSdk = 36
     buildToolsVersion = "37.0.0"
 
     defaultConfig {

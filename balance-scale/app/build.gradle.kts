@@ -4,14 +4,14 @@ plugins {
 
 android {
     namespace = "io.github.foadsf.balancescale"
-    compileSdk = 35
+    compileSdk = 36
     buildToolsVersion = "37.0.0"
 
     defaultConfig {
         applicationId = "io.github.foadsf.balancescale"
         // Must run on a 2014 phone with stock KitKat 4.4 as well as a newer tablet. Do not raise.
         minSdk = 19
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"
 
