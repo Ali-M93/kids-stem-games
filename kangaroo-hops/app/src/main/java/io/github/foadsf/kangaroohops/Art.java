@@ -1,5 +1,8 @@
 package io.github.foadsf.kangaroohops;
 
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -25,6 +28,52 @@ final class Art {
     private static final Paint P = new Paint(Paint.ANTI_ALIAS_FLAG);
     private static final RectF R = new RectF();
     private static final Path PATH = new Path();
+    private static final Paint BMP = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
+
+    /** Lili's poses. Art © Lili &amp; Friends, not GPL (see LILI-ART-NOTICE.md). */
+    private static Bitmap liliStand, liliJump, liliYay, liliCheer;
+
+    /** Loads Lili's pictures once; call before anything is drawn. */
+    static void load(Resources res) {
+        if (liliStand != null) return;
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inScaled = false;
+        liliStand = BitmapFactory.decodeResource(res, io.github.foadsf.kangaroohops.R.drawable.lili_stand, o);
+        liliJump = BitmapFactory.decodeResource(res, io.github.foadsf.kangaroohops.R.drawable.lili_jump_side, o);
+        liliYay = BitmapFactory.decodeResource(res, io.github.foadsf.kangaroohops.R.drawable.lili_jump_up, o);
+        liliCheer = BitmapFactory.decodeResource(res, io.github.foadsf.kangaroohops.R.drawable.lili_cheer, o);
+    }
+
+    /** Draws {@code b} with its bottom-centre at (cx, bottom), {@code h} tall, optionally mirrored. */
+    private static void picture(Canvas c, Bitmap b, float cx, float bottom, float h, boolean mirror) {
+        if (b == null) return;
+        float w = h * b.getWidth() / b.getHeight();
+        R.set(cx - w / 2f, bottom - h, cx + w / 2f, bottom);
+        c.save();
+        if (mirror) c.scale(-1, 1, cx, 0);
+        c.drawBitmap(b, null, R, BMP);
+        c.restore();
+    }
+
+    /**
+     * Lili in place of the kangaroo: feet at (cx, feetY), about {@code s} tall. Standing she faces
+     * the child; in the air she is seen from the side, facing the way she hops ({@code dir});
+     * {@code happy} throws her arms up. {@code squash} crouches her before a hop.
+     */
+    static void lili(Canvas c, float cx, float feetY, float s, int dir, float squash,
+                     boolean happy, boolean airborne) {
+        c.save();
+        c.scale(1 + 0.08f * squash, 1 - 0.12f * squash, cx, feetY);
+        if (happy) picture(c, liliYay, cx, feetY, s * 1.05f, false);
+        else if (airborne) picture(c, liliJump, cx, feetY, s * 1.0f, dir > 0);  // the picture faces left
+        else picture(c, liliStand, cx, feetY, s * 1.05f, false);
+        c.restore();
+    }
+
+    /** Lili pointing up with joy, for the sticker screen. */
+    static void liliCheer(Canvas c, float cx, float bottom, float h) {
+        picture(c, liliCheer, cx, bottom, h, false);
+    }
 
     private static Paint fill(int color) {
         P.setStyle(Paint.Style.FILL);

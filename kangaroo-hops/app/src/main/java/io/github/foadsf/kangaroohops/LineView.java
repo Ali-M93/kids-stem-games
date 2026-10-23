@@ -259,7 +259,14 @@ class LineView extends View {
         float lift = jumpT >= 0 ? (float) Math.sin(jumpT * Math.PI) * Math.max(step * 1.2f, ks * 0.4f) : 0;
         float squash = jumpT >= 0 && jumpT < 0.15f ? 1 - jumpT / 0.15f : 0;
         float kx = xOf(pos);
-        if (showRoo) Art.kangaroo(c, kx, ground - sh * 0.15f - lift, ks, dir, squash, happy);
+        if (showRoo) {
+            // A soft shadow on the ground that shrinks as she rises.
+            float sw = ks * 0.32f * (1 - 0.4f * Math.min(1f, lift / Math.max(1f, ks * 0.4f)));
+            paint.setColor(0x26000000);
+            r.set(kx - sw, ground - sh * 0.15f - ks * 0.04f, kx + sw, ground - sh * 0.15f + ks * 0.04f);
+            c.drawOval(r, paint);
+            Art.lili(c, kx, ground - sh * 0.15f - lift, ks, dir, squash, happy, jumpT >= 0);
+        }
 
         // Hint: one dashed arc per hop, drawn over the kangaroo so she never hides it.
         if (hintFrom >= 0 && hintTo != hintFrom) {

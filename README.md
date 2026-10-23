@@ -7,7 +7,9 @@ The code stays under GPL-3.0. Changes in this fork:
 - **Arabic** in all four games (Arabic-Indic digits and Arabic counting in Kangaroo Hops).
 - **Lili** replaces the robot in Robot Path ("Lili's Path"), with her own faces for calm, happy,
   oops and thinking, and cheers on the sticker screen.
-- New app id and icon for Robot Path.
+- **Lili** replaces the kangaroo in Kangaroo Hops ("Lili Hops"): she stands facing the child,
+  jumps side-on from stone to stone, and throws her arms up when she gets it right.
+- New app ids and icons for Robot Path and Lili Hops.
 
 The Lili character art is not GPL; see [LILI-ART-NOTICE.md](LILI-ART-NOTICE.md).
 

@@ -67,6 +67,7 @@ public class GameActivity extends Activity {
         super.onCreate(saved);
         prefs = getSharedPreferences("progress", MODE_PRIVATE);
         sounds = new Sounds();
+        Art.load(getResources());
         voice = new Voice(this);
         voice.setOnReady(() -> {
             if (langChip != null) describeLang();
