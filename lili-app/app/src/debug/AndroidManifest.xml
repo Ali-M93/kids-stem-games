@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Debug builds only: lets tools/screenshots.sh open each screen directly over adb.
+     Release builds keep every screen but the "Who is playing?" one private. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <application>
+        <activity android:name="com.lilifriends.games.HomeActivity" android:exported="true" tools:replace="android:exported" />
+        <activity android:name="com.lilifriends.games.MapActivity" android:exported="true" tools:replace="android:exported" />
+        <activity android:name="io.github.foadsf.robotpath.GameActivity" android:exported="true" tools:replace="android:exported" />
+        <activity android:name="io.github.foadsf.kangaroohops.GameActivity" android:exported="true" tools:replace="android:exported" />
+        <activity android:name="io.github.foadsf.patternmachine.GameActivity" android:exported="true" tools:replace="android:exported" />
+        <activity android:name="io.github.foadsf.balancescale.GameActivity" android:exported="true" tools:replace="android:exported" />
+    </application>
+</manifest>
