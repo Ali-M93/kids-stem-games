@@ -177,7 +177,7 @@ jobs:
           cp app/build/outputs/bundle/release/app-release.aab out/lili-friends.aab
           apk=$(ls app/build/outputs/apk/release/*.apk | head -1)
           cp "$apk" out/lili-friends.apk
-          "$bt/aapt2" dump badging out/lili-friends.apk | grep -E "package:|sdkVersion|targetSdkVersion" | tee sdk.txt
+          "$bt/aapt2" dump badging out/lili-friends.apk | grep -E "package:|minSdkVersion|targetSdkVersion" | tee sdk.txt
           grep -q "targetSdkVersion:'36'" sdk.txt || { echo "::error::targetSdk مو 36"; exit 1; }
           grep -q "minSdkVersion:'19'" sdk.txt || { echo "::error::minSdk مو 19"; exit 1; }
           if [ "${signed:-}" = "yes" ]; then
