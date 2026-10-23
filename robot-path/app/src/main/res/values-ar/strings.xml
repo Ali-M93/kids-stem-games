@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">طريق ليلي</string>
+    <string name="level">المرحلة %1$d</string>
+    <string name="go">انطلق</string>
+    <string name="sticker_title">ملصق لك!</string>
+    <string name="more">المزيد!</string>
+    <string name="done">انتهيت</string>
+    <string name="cd_left">يسار</string>
+    <string name="cd_up">أعلى</string>
+    <string name="cd_down">أسفل</string>
+    <string name="cd_right">يمين</string>
+    <string name="cd_undo">تراجع</string>
+    <string name="cd_home">الرئيسية</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">قفزات الكنغر</string>
+    <string name="which_more">أيّهما أكثر؟</string>
+    <string name="sticker_title">ملصق لك!</string>
+    <string name="more">المزيد!</string>
+    <string name="done">انتهيت</string>
+    <string name="cd_home">الرئيسية</string>
+</resources>

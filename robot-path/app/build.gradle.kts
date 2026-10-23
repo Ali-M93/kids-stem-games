@@ -8,7 +8,7 @@ android {
     buildToolsVersion = "37.0.0"
 
     defaultConfig {
-        applicationId = "io.github.foadsf.robotpath"
+        applicationId = "com.lilifriends.lilipath"
         // Must run on a 2014 phone with stock KitKat 4.4 as well as a newer tablet. Do not raise.
         minSdk = 19
         targetSdk = 35

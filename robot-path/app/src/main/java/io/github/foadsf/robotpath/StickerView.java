@@ -60,6 +60,9 @@ class StickerView extends View {
         c.rotate(-8 + 8 * pop, w / 2f, cy);
         Art.sticker(c, w / 2f, cy, big, count - 1);
         c.restore();
+        // Lili cheers beside the new sticker.
+        float lh = big * 0.95f * pop;
+        Art.liliCheer(c, w / 2f - big * 0.62f, cy + big * 0.5f, lh);
         text.setTextSize(Math.min(w * 0.075f, 34 * dp));
         c.drawText(getResources().getString(R.string.sticker_title), w / 2f, cy + big * 0.62f, text);
 

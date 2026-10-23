@@ -1,16 +1,19 @@
 package io.github.foadsf.kangaroohops;
 
-/** Numbers as she sees them: Persian digits (۰۱۲) in Farsi, Western digits otherwise. Plain Java. */
+/** Numbers as she sees them: Arabic-Indic digits (٠١٢) in Arabic, Persian (۰۱۲) in Farsi, Western otherwise. Plain Java. */
 final class Numbers {
-    static final String[] LANGS = {"fa", "nl", "en"};
-    static final String[] LABEL = {"فا", "NL", "EN"};
+    static final String[] LANGS = {"ar", "en", "fa", "nl"};
+    static final String[] LABEL = {"ع", "EN", "فا", "NL"};
 
     /** The number in the digits of {@code lang}. Persian digits are U+06F0..U+06F9. */
     static String digits(String lang, int n) {
         String s = Integer.toString(n);
-        if (!"fa".equals(lang)) return s;
+        char zero;
+        if ("fa".equals(lang)) zero = '۰';
+        else if ("ar".equals(lang)) zero = '٠';
+        else return s;
         StringBuilder sb = new StringBuilder();
-        for (char ch : s.toCharArray()) sb.append(ch == '-' ? '-' : (char) ('۰' + (ch - '0')));
+        for (char ch : s.toCharArray()) sb.append(ch == '-' ? '-' : (char) (zero + (ch - '0')));
         return sb.toString();
     }
 
@@ -18,6 +21,11 @@ final class Numbers {
     static String word(String lang, int n) {
         String[] w;
         switch (lang) {
+            case "ar":
+                w = new String[]{"صفر", "واحد", "اثنان", "ثلاثة", "أربعة", "خمسة", "ستة", "سبعة", "ثمانية", "تسعة",
+                        "عشرة", "أحد عشر", "اثنا عشر", "ثلاثة عشر", "أربعة عشر", "خمسة عشر", "ستة عشر",
+                        "سبعة عشر", "ثمانية عشر", "تسعة عشر", "عشرون"};
+                break;
             case "fa":
                 w = new String[]{"صفر", "یک", "دو", "سه", "چهار", "پنج", "شش", "هفت", "هشت", "نه", "ده",
                         "یازده", "دوازده", "سیزده", "چهارده", "پانزده", "شانزده", "هفده", "هجده", "نوزده", "بیست"};

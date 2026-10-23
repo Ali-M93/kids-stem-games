@@ -1,3 +1,18 @@
+# Lili & Friends: Kids STEM Games
+
+This is a fork of [Foadsf/kids-stem-games](https://github.com/Foadsf/kids-stem-games) by Foad
+Sojoodi Farimani, adapted for the [Lili & Friends](https://www.youtube.com/@LiliFriendsTV) channel.
+The code stays under GPL-3.0. Changes in this fork:
+
+- **Arabic** in all four games (Arabic-Indic digits and Arabic counting in Kangaroo Hops).
+- **Lili** replaces the robot in Robot Path ("Lili's Path"), with her own faces for calm, happy,
+  oops and thinking, and cheers on the sticker screen.
+- New app id and icon for Robot Path.
+
+The Lili character art is not GPL; see [LILI-ART-NOTICE.md](LILI-ART-NOTICE.md).
+
+---
+
 # Kids STEM Games
 
 Four small, calm learning games for children of about 4 to 7. They were made for one curious

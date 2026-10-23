@@ -31,6 +31,8 @@ public class HopCheck {
         }
         check(Numbers.digits("fa", 17).equals("۱۷"), "persian 17", -1);
         check(Numbers.digits("nl", 17).equals("17"), "nl 17", -1);
+        check(Numbers.digits("ar", 17).equals("١٧"), "arabic 17", -1);
+        check(Numbers.word("ar", 20).equals("عشرون"), "arabic words", -1);
         check(Numbers.word("nl", 20).equals("twintig") && Numbers.word("fa", 0).equals("صفر"), "words", -1);
         System.out.println("digits/words OK: " + Numbers.digits("fa", 20) + " " + Numbers.word("fa", 7));
     }

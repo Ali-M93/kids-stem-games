@@ -47,6 +47,7 @@ public class GameActivity extends Activity implements BoardView.Listener {
         super.onCreate(saved);
         prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
         sounds = new Sounds();
+        Art.load(getResources());
         face = Typeface.createFromAsset(getAssets(), "fonts/fredoka_semibold.ttf");
 
         layout = new GameLayout(this);

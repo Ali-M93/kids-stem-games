@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">آلة الأنماط</string>
+    <string name="make_title">اصنع نمطًا</string>
+    <string name="play">شغّل</string>
+    <string name="sticker_title">ملصق لك!</string>
+    <string name="more">المزيد!</string>
+    <string name="done">انتهيت</string>
+    <string name="cd_home">الرئيسية</string>
+    <string name="cd_make">اصنع نمطك</string>
+    <string name="cd_undo">تراجع</string>
+</resources>

@@ -1,5 +1,8 @@
 package io.github.foadsf.robotpath;
 
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -20,8 +23,64 @@ final class Art {
     static final int FACE_CALM = 0, FACE_HAPPY = 1, FACE_OOPS = 2, FACE_THINK = 3;
 
     private static final Paint P = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private static final Paint BMP = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
     private static final RectF R = new RectF();
     private static final Path PATH = new Path();
+
+    /** Lili's faces, indexed by FACE_*, plus her cheering pose. Art © Lili &amp; Friends, not GPL. */
+    private static final Bitmap[] LILI = new Bitmap[4];
+    private static Bitmap liliCheer;
+
+    /** Loads Lili's pictures once; call before anything is drawn. */
+    static void load(Resources res) {
+        if (liliCheer != null) return;
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inScaled = false;
+        LILI[FACE_CALM] = BitmapFactory.decodeResource(res, R_drawable.CALM, o);
+        LILI[FACE_HAPPY] = BitmapFactory.decodeResource(res, R_drawable.HAPPY, o);
+        LILI[FACE_OOPS] = BitmapFactory.decodeResource(res, R_drawable.OOPS, o);
+        LILI[FACE_THINK] = BitmapFactory.decodeResource(res, R_drawable.THINK, o);
+        liliCheer = BitmapFactory.decodeResource(res, R_drawable.CHEER, o);
+    }
+
+    private static final class R_drawable {
+        static final int CALM = io.github.foadsf.robotpath.R.drawable.lili_calm;
+        static final int HAPPY = io.github.foadsf.robotpath.R.drawable.lili_happy;
+        static final int OOPS = io.github.foadsf.robotpath.R.drawable.lili_oops;
+        static final int THINK = io.github.foadsf.robotpath.R.drawable.lili_think;
+        static final int CHEER = io.github.foadsf.robotpath.R.drawable.lili_cheer;
+    }
+
+    /** Draws {@code b} so its bottom-centre sits at (cx, bottom), {@code h} tall. */
+    private static void picture(Canvas c, Bitmap b, float cx, float bottom, float h, boolean mirror) {
+        if (b == null) return;
+        float w = h * b.getWidth() / b.getHeight();
+        R.set(cx - w / 2f, bottom - h, cx + w / 2f, bottom);
+        if (mirror) {
+            c.save();
+            c.scale(-1, 1, cx, 0);
+            c.drawBitmap(b, null, R, BMP);
+            c.restore();
+        } else {
+            c.drawBitmap(b, null, R, BMP);
+        }
+    }
+
+    /**
+     * Lili, standing in for the robot: a bust centred on (cx, cy), about {@code s} tall, with a
+     * soft shadow. She turns to face left when walking left.
+     */
+    static void lili(Canvas c, float cx, float cy, float s, int face, int look) {
+        R.set(cx - s * 0.36f, cy + s * 0.46f, cx + s * 0.36f, cy + s * 0.60f);
+        c.drawOval(R, fill(0x33000000));
+        Bitmap b = LILI[face >= 0 && face < LILI.length ? face : FACE_CALM];
+        picture(c, b, cx, cy + s * 0.55f, s * 1.18f, look == Level.LEFT);
+    }
+
+    /** Lili pointing up with joy, for the sticker screen. */
+    static void liliCheer(Canvas c, float cx, float bottom, float h) {
+        picture(c, liliCheer, cx, bottom, h, false);
+    }
 
     private static Paint fill(int color) {
         P.setStyle(Paint.Style.FILL);

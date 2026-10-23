@@ -42,6 +42,7 @@ final class Voice implements TextToSpeech.OnInitListener {
                 try (FileOutputStream out = new FileOutputStream(readme)) {
                     out.write(("Kangaroo Hops counts aloud with YOUR voice if you put recordings here.\n"
                             + "One short file per number, named by the number, in the folder for its language:\n"
+                            + "  ar/0.m4a ar/1.m4a ... ar/20.m4a   (Arabic: sifr, wahid, ithnan ...)\n"
                             + "  fa/0.m4a fa/1.m4a ... fa/20.m4a   (Farsi: sefr, yek, do ...)\n"
                             + "  nl/0.m4a ... nl/20.m4a            (Dutch: nul, een, twee ...)\n"
                             + "  en/0.m4a ... en/20.m4a            (English: zero, one, two ...)\n"

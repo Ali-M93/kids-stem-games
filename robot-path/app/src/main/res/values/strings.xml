@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Robot Path</string>
+    <string name="app_name">Lili\'s Path</string>
     <string name="level">Level %1$d</string>
     <string name="go">Go</string>
     <string name="sticker_title">A sticker for you!</string>

@@ -260,7 +260,7 @@ class BoardView extends View {
 
         float rx = ox + (robotX + .5f) * cell, ry = oy + (robotY + .5f) * cell;
         float bob = starEaten ? -Math.abs((float) Math.sin(confetti * Math.PI * 6)) * cell * 0.12f : 0;
-        Art.robot(c, rx, ry + bob, cell * 0.78f, face, look);
+        Art.lili(c, rx, ry + bob, cell * 0.78f, face, look);
         if (starEaten) Art.star(c, rx + cell * 0.32f, ry - cell * 0.38f + bob, cell * 0.16f, Art.YELLOW, Art.YELLOW_D);
 
         if (confetti >= 0 && confetti < 1) {
