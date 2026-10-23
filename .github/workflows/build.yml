@@ -38,6 +38,20 @@ jobs:
       # lintDebug fails the build on any API call newer than minSdk 19.
       - name: Build and lint
         run: ./gradlew assembleDebug lintDebug
+      - name: Show lint errors as annotations
+        if: failure()
+        run: |
+          for f in $(find . -name 'lint-results-*.xml' -path '*build/reports*'); do
+            python3 - "$f" <<'PY'
+          import sys, xml.etree.ElementTree as ET
+          for i in ET.parse(sys.argv[1]).getroot().iter('issue'):
+              if i.get('severity') not in ('Error', 'Fatal'): continue
+              loc = i.find('location')
+              f = loc.get('file', '') if loc is not None else ''
+              line = loc.get('line', '1') if loc is not None else '1'
+              print('::error file=%s,line=%s::%s: %s' % (f, line, i.get('id'), i.get('message')))
+          PY
+          done
 
       - name: minSdk 19, no permissions, v1 signature
         run: |
@@ -79,6 +93,20 @@ jobs:
 
       - name: Build and lint
         run: ./gradlew :app:assembleDebug :app:lintDebug
+      - name: Show lint errors as annotations
+        if: failure()
+        run: |
+          for f in $(find . -name 'lint-results-*.xml' -path '*build/reports*'); do
+            python3 - "$f" <<'PY'
+          import sys, xml.etree.ElementTree as ET
+          for i in ET.parse(sys.argv[1]).getroot().iter('issue'):
+              if i.get('severity') not in ('Error', 'Fatal'): continue
+              loc = i.find('location')
+              f = loc.get('file', '') if loc is not None else ''
+              line = loc.get('line', '1') if loc is not None else '1'
+              print('::error file=%s,line=%s::%s: %s' % (f, line, i.get('id'), i.get('message')))
+          PY
+          done
 
       - name: minSdk 19, no permissions, one launcher
         run: |

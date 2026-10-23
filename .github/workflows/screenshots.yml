@@ -55,7 +55,7 @@ jobs:
           profile: ${{ matrix.profile }}
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
-          script: bash lili-app/tools/screenshots.sh ${{ matrix.name }} ${{ matrix.lang }}
+          script: bash lili-app/tools/screenshots.sh ${{ matrix.name }} ${{ matrix.lang }} > /tmp/shot.log 2>&1 || (tail -8 /tmp/shot.log | sed "s/^/::error::/"; exit 1)
 
       - uses: actions/upload-artifact@v4
         if: always()
