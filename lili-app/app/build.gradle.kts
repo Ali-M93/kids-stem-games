@@ -9,8 +9,9 @@ android {
 
     defaultConfig {
         applicationId = "com.lilifriends.games"
-        // Same floor as the games: a 2014 phone on KitKat 4.4 must run it. Do not raise.
-        minSdk = 19
+        // Android 7.0+: Google Play's automatic protection needs minSdk 24. (The stand-alone games
+        // in this repository still build for Android 4.4.)
+        minSdk = 24
         targetSdk = 36
         // CI passes the run number, so every uploaded build has a higher version code.
         versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()

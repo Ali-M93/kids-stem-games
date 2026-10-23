@@ -20,7 +20,7 @@ Why parents like it:
 • Calm by design: short rounds with a clear end, no timers, no penalties, hints after two tries.
 • Adapts to your child: moves up when they're ready, practises more when they need it.
 • Completely private: no ads, no internet, no data collected, no permissions.
-• Runs on old and new phones and tablets (Android 4.4 and up).
+• Runs on old and new phones and tablets (Android 7.0 and up).
 • In Arabic and English.
 
 Based on the open-source kids-stem-games by Foad Sojoodi Farimani, licensed under GPL-3.0.
