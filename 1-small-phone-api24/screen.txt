@@ -1,0 +1,3 @@
+Physical size: 480x800
+Physical density: 240
+screen 480x800 @240dpi rot 0

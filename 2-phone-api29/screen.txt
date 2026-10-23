@@ -1,0 +1,3 @@
+Physical size: 1080x2280
+Physical density: 440
+screen 1080x2280 @440dpi rot 0
