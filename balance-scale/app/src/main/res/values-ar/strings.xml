@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">الميزان</string>
+    <!-- The in-game title; app_name is the launcher label, which the Lili app overrides. -->
+    <string name="scale_title">الميزان</string>
     <string name="sticker_title">ملصق لك!</string>
     <string name="more">المزيد!</string>
     <string name="weigh">زِن</string>

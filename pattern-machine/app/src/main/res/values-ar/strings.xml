@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">آلة الأنماط</string>
+    <!-- The in-game title; app_name is the launcher label, which the Lili app overrides. -->
+    <string name="pattern_title">آلة الأنماط</string>
     <string name="make_title">اصنع نمطًا</string>
     <string name="play">شغّل</string>
     <string name="sticker_title">ملصق لك!</string>

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Balance Scale</string>
+    <!-- The in-game title; app_name is the launcher label, which the Lili app overrides. -->
+    <string name="scale_title">Balance Scale</string>
     <string name="sticker_title">A sticker for you!</string>
     <string name="more">More!</string>
     <string name="weigh">Weigh</string>

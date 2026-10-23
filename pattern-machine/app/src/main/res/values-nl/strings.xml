@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Patroonmachine</string>
+    <!-- The in-game title; app_name is the launcher label, which the Lili app overrides. -->
+    <string name="pattern_title">Patroonmachine</string>
     <string name="make_title">Maak een patroon</string>
     <string name="play">Speel</string>
     <string name="sticker_title">Een sticker voor jou!</string>

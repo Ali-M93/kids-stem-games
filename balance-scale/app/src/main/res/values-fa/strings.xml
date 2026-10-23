@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ترازو</string>
+    <!-- The in-game title; app_name is the launcher label, which the Lili app overrides. -->
+    <string name="scale_title">ترازو</string>
     <string name="sticker_title">یک برچسب برای تو!</string>
     <string name="more">باز هم!</string>
     <string name="weigh">بسنج</string>

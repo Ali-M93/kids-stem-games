@@ -199,7 +199,8 @@ class ScaleView extends View {
         // Pans hang from the beam ends and must stay on screen even fully tipped.
         float half = Math.min(w * 0.29f, h * 0.85f);
         float string = h * 0.26f;
-        float panW = Math.min(w * 0.40f, 260 * dp), panH = panW * 0.16f;
+        // On a short, wide screen (a phone on its side) the pans follow the height too, or they overlap.
+        float panW = Math.min(Math.min(w * 0.40f, 260 * dp), h * 0.62f), panH = panW * 0.16f;
 
         // Post and base.
         paint.setColor(0xFFB98A5E);

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Lili springt</string>
+    <!-- The in-game title; app_name is the launcher label, which the Lili app overrides. -->
+    <string name="hops_title">Lili springt</string>
     <string name="which_more">Wat is meer?</string>
     <string name="sticker_title">Een sticker voor jou!</string>
     <string name="more">Meer!</string>

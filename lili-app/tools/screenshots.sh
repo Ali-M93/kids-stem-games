@@ -76,13 +76,21 @@ done
 adb shell settings put system accelerometer_rotation 0
 adb shell settings put system user_rotation 1
 sleep 3
+adb shell am start -W -n $pkg/.HomeActivity --ei player 1 >/dev/null
+shot "3-landscape-home"
+adb shell input keyevent KEYCODE_BACK
 adb shell am start -W -n $pkg/.MapActivity --ei player 1 --es game path >/dev/null
 shot "3-landscape-map"
 adb shell input keyevent KEYCODE_BACK
 adb shell am start -W -n $pkg/io.github.foadsf.robotpath.GameActivity --es prefs p1_path >/dev/null
 shot "3-landscape-game-path"
 adb shell input keyevent KEYCODE_BACK
-adb shell am start -W -n $pkg/io.github.foadsf.balancescale.GameActivity --es prefs p1_scale >/dev/null
-shot "3-landscape-game-scale"
+for pair in hops:kangaroohops pattern:patternmachine scale:balancescale; do
+    g=${pair%%:*}; p=${pair##*:}
+    adb shell am start -W -n $pkg/io.github.foadsf.$p.GameActivity --es prefs p1_$g >/dev/null
+    shot "3-landscape-game-$g"
+    adb shell input keyevent KEYCODE_BACK
+    sleep 1
+done
 adb shell settings put system user_rotation 0
 ls -la "$out"

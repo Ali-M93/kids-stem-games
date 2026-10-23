@@ -89,7 +89,7 @@ public class GameActivity extends Activity {
         title.setTextColor(Art.PLUM);
         title.setGravity(Gravity.CENTER);
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
-        title.setText(R.string.app_name);
+        title.setText(R.string.hops_title);
         screen.addView(title);
         home = new CandyButton(this, (c, x, y, s) -> Art.house(c, x, y, s, 0xFFFFFFFF),
                 Art.PINK, Art.PINK_D, null, face);
