@@ -265,6 +265,7 @@ public class GameActivity extends Activity {
     private void enterMake() {
         if (busy) return;
         making = true;
+        holdBack(true);
         made.clear();
         title.setText(R.string.make_title);
         make.setVisibility(View.GONE);
@@ -278,6 +279,7 @@ public class GameActivity extends Activity {
     private void leaveMake() {
         machine.cancel();
         making = false;
+        holdBack(false);
         busy = false;
         title.setText(R.string.pattern_title);
         make.setVisibility(View.VISIBLE);
@@ -328,10 +330,39 @@ public class GameActivity extends Activity {
         });
     }
 
+    /** Back leaves "make your own" before it leaves the game. Android 4.4-12 calls this. */
+    @SuppressWarnings("deprecation")
+    @android.annotation.SuppressLint("GestureBackNavigation")
     @Override
     public void onBackPressed() {
         if (making) leaveMake();
         else super.onBackPressed();
+    }
+
+    /** Android 13+ sends back through a callback instead; hold one only while making. */
+    private Object backCallback;
+
+    private void holdBack(boolean on) {
+        if (android.os.Build.VERSION.SDK_INT < 33) return;
+        if (on && backCallback == null) backCallback = Back33.register(this, this::leaveMake);
+        else if (!on && backCallback != null) {
+            Back33.unregister(this, backCallback);
+            backCallback = null;
+        }
+    }
+
+    @android.annotation.TargetApi(33)
+    private static final class Back33 {
+        static Object register(Activity a, Runnable r) {
+            android.window.OnBackInvokedCallback cb = r::run;
+            a.getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                    android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT, cb);
+            return cb;
+        }
+
+        static void unregister(Activity a, Object cb) {
+            a.getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback((android.window.OnBackInvokedCallback) cb);
+        }
     }
 
     @Override
