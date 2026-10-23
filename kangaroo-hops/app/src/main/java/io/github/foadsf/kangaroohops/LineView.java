@@ -261,9 +261,9 @@ class LineView extends View {
         float kx = xOf(pos);
         if (showRoo) {
             // A soft shadow on the ground that shrinks as she rises.
-            float sw = ks * 0.32f * (1 - 0.4f * Math.min(1f, lift / Math.max(1f, ks * 0.4f)));
+            float shw = ks * 0.32f * (1 - 0.4f * Math.min(1f, lift / Math.max(1f, ks * 0.4f)));
             paint.setColor(0x26000000);
-            r.set(kx - sw, ground - sh * 0.15f - ks * 0.04f, kx + sw, ground - sh * 0.15f + ks * 0.04f);
+            r.set(kx - shw, ground - sh * 0.15f - ks * 0.04f, kx + shw, ground - sh * 0.15f + ks * 0.04f);
             c.drawOval(r, paint);
             Art.lili(c, kx, ground - sh * 0.15f - lift, ks, dir, squash, happy, jumpT >= 0);
         }
