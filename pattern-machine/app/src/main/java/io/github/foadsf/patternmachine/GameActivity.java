@@ -69,6 +69,7 @@ public class GameActivity extends Activity {
         playStage = Math.max(0, Math.min(getIntent().getIntExtra(EXTRA_STAGE, prefs.getInt("stage", 0)),
                 prefs.getInt("stage", 0)));
         sounds = new Sounds();
+        Art.load(getResources());
         face = Typeface.createFromAsset(getAssets(), "fonts/fredoka_semibold.ttf");
         Resources res = getResources();
 

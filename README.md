@@ -9,7 +9,11 @@ The code stays under GPL-3.0. Changes in this fork:
   oops and thinking, and cheers on the sticker screen.
 - **Lili** replaces the kangaroo in Kangaroo Hops ("Lili Hops"): she stands facing the child,
   jumps side-on from stone to stone, and throws her arms up when she gets it right.
+- **Lili** runs the Pattern Machine and watches the Balance Scale, reacting to every answer.
 - New app ids and icons for Robot Path and Lili Hops.
+- **lili-app/**: all four games in one app, "Lili & Friends": a "Who is playing?" screen with a
+  badge per child, separate progress for each child, and a journey map per game where reached
+  stops can be replayed and later ones stay locked.
 
 The Lili character art is not GPL; see [LILI-ART-NOTICE.md](LILI-ART-NOTICE.md).
 

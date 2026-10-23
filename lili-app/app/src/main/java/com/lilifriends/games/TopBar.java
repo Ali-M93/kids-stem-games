@@ -74,11 +74,19 @@ class TopBar extends View {
         Draw.card(c, bx - s / 2, cy - s / 2, bx + s / 2, cy + s / 2, s * 0.32f, Draw.PINK, Draw.PINK_D, 4 * dp);
         Draw.back(c, bx, cy, s * 0.6f, 0xFFFFFFFF, rtl());
         c.restore();
+        float used = 14 * dp + s;  // width taken on the start side
         if (avatar >= 0) {
             float ax = bx + (rtl() ? -1 : 1) * (s / 2 + 34 * dp);
             Draw.avatar(c, ax, cy, 24 * dp, avatar);
+            used += 10 * dp + 48 * dp;
         }
-        text.setTextSize(Math.min(28 * dp, w * 0.065f));
-        c.drawText(title, w / 2f, cy - (text.ascent() + text.descent()) / 2f, text);
+        // The title sits centred in the space left over, shrinking to fit; it never covers the badge.
+        float room = w - used - 2 * 12 * dp - 14 * dp;
+        float size = Math.min(28 * dp, w * 0.065f);
+        text.setTextSize(size);
+        float tw = text.measureText(title);
+        if (tw > room && tw > 0) text.setTextSize(Math.max(14 * dp, size * room / tw));
+        float tx = rtl() ? (w - used - 12 * dp + 14 * dp) / 2f : (used + 12 * dp + w - 14 * dp) / 2f;
+        c.drawText(title, tx, cy - (text.ascent() + text.descent()) / 2f, text);
     }
 }

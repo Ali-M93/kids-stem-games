@@ -182,9 +182,9 @@ class MachineView extends View {
             paint.setColor((lights & (1 << i)) != 0 ? lightOn[i] : 0xFFD9D2F0);
             c.drawCircle(lx, ly, 7 * dp, paint);
         }
-        // The robot operator, peeking over the top edge.
-        float rs = Math.min(h * 0.32f, 84 * dp);
-        Art.robot(c, w * 0.2f, top + rs * 0.05f, rs, face, -1);
+        // Lili runs the machine, peeking over the top edge.
+        float rs = Math.min(h * 0.34f, 92 * dp);
+        Art.lili(c, w * 0.2f, top + rs * 0.5f, rs, face);
 
         // The belt.
         int n = row.length;

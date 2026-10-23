@@ -35,6 +35,8 @@ class ScaleView extends View {
     private float dragX, dragY;
     private Listener listener;
     private String state = "";
+    /** Lili's face in the corner (Art.FACE_*): she reacts to every weighing. */
+    private int liliFace = Art.FACE_CALM;
     private final RectF rightPan = new RectF(), leftPan = new RectF();
 
     ScaleView(Context ctx) {
@@ -78,6 +80,11 @@ class ScaleView extends View {
         }
         lastFrame = 0;
         describe();
+        invalidate();
+    }
+
+    void setLiliFace(int f) {
+        liliFace = f;
         invalidate();
     }
 
@@ -238,6 +245,10 @@ class ScaleView extends View {
         c.drawCircle(cx, pivotY, 11 * dp, paint);
         paint.setColor(Art.YELLOW);
         c.drawCircle(cx, pivotY, 7 * dp, paint);
+
+        // Lili watches from the bottom corner on the child's side of the scale (the right pan).
+        float lh = Math.min(h * 0.30f, w * 0.30f);
+        Art.lili(c, w - lh * 0.42f, h, lh, liliFace);
 
         // Fruit.
         float[] pos = new float[2];

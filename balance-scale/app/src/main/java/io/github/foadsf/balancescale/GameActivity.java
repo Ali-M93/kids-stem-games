@@ -73,6 +73,7 @@ public class GameActivity extends Activity {
         playStage = Math.max(0, Math.min(getIntent().getIntExtra(EXTRA_STAGE, prefs.getInt("stage", 0)),
                 prefs.getInt("stage", 0)));
         sounds = new Sounds();
+        Art.load(getResources());
         face = Typeface.createFromAsset(getAssets(), "fonts/fredoka_semibold.ttf");
         Resources res = getResources();
 
@@ -172,6 +173,7 @@ public class GameActivity extends Activity {
         right.addAll(puzzle.rightGiven);
         slips = 0;
         done = false;
+        scale.setLiliFace(Art.FACE_CALM);
         live = puzzle.kind == 0;
         scale.setLatched(!live);
         scale.setPans(puzzle.left, right, puzzle.rightGiven.size(), false);
@@ -279,12 +281,18 @@ public class GameActivity extends Activity {
             slips++;
             roundSlips++;
             scale.setState(where() + " slips " + slips);
+            scale.setLiliFace(Art.FACE_OOPS);
+            final int s = slips;
+            handler.postDelayed(() -> {
+                if (!done) scale.setLiliFace(s >= 2 ? Art.FACE_THINK : Art.FACE_CALM);
+            }, 900);
         }
         refresh();
     }
 
     private void solved() {
         done = true;
+        scale.setLiliFace(Art.FACE_HAPPY);
         scale.setState("solved");
         handler.postDelayed(sounds::fanfare, 450);
         roundDone++;

@@ -1,5 +1,8 @@
 package io.github.foadsf.patternmachine;
 
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -25,6 +28,41 @@ final class Art {
     private static final Paint P = new Paint(Paint.ANTI_ALIAS_FLAG);
     private static final RectF R = new RectF();
     private static final Path PATH = new Path();
+    private static final Paint BMP = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
+
+    /** Lili's faces, indexed by FACE_*, plus her cheering pose. Art © Lili &amp; Friends, not GPL. */
+    private static final Bitmap[] LILI = new Bitmap[4];
+    private static Bitmap liliCheer;
+
+    /** Loads Lili's pictures once; call before anything is drawn. */
+    static void load(Resources res) {
+        if (liliCheer != null) return;
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inScaled = false;
+        LILI[FACE_CALM] = BitmapFactory.decodeResource(res, io.github.foadsf.patternmachine.R.drawable.lili_calm, o);
+        LILI[FACE_HAPPY] = BitmapFactory.decodeResource(res, io.github.foadsf.patternmachine.R.drawable.lili_happy, o);
+        LILI[FACE_OOPS] = BitmapFactory.decodeResource(res, io.github.foadsf.patternmachine.R.drawable.lili_oops, o);
+        LILI[FACE_THINK] = BitmapFactory.decodeResource(res, io.github.foadsf.patternmachine.R.drawable.lili_think, o);
+        liliCheer = BitmapFactory.decodeResource(res, io.github.foadsf.patternmachine.R.drawable.lili_cheer, o);
+    }
+
+    /** Draws {@code b} with its bottom-centre at (cx, bottom), {@code h} tall. */
+    private static void picture(Canvas c, Bitmap b, float cx, float bottom, float h) {
+        if (b == null) return;
+        float w = h * b.getWidth() / b.getHeight();
+        R.set(cx - w / 2f, bottom - h, cx + w / 2f, bottom);
+        c.drawBitmap(b, null, R, BMP);
+    }
+
+    /** Lili's bust, {@code h} tall, standing on (cx, bottom), showing {@code face}. */
+    static void lili(Canvas c, float cx, float bottom, float h, int face) {
+        picture(c, LILI[face >= 0 && face < LILI.length ? face : FACE_CALM], cx, bottom, h);
+    }
+
+    /** Lili pointing up with joy, for the sticker screen. */
+    static void liliCheer(Canvas c, float cx, float bottom, float h) {
+        picture(c, liliCheer, cx, bottom, h);
+    }
 
     private static Paint fill(int color) {
         P.setStyle(Paint.Style.FILL);
