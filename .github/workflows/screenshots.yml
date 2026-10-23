@@ -21,7 +21,7 @@ jobs:
           - { name: 1-small-old-phone-api21, api: 21, target: default, arch: x86, profile: "Nexus One", lang: en }
           - { name: 2-phone-api29, api: 29, target: default, arch: x86, profile: pixel_4, lang: en }
           - { name: 3-phone-api35-arabic, api: 35, target: google_apis, arch: x86_64, profile: pixel_7, lang: ar }
-          - { name: 5-phone-api36-arabic, api: 36, target: google_apis, arch: x86_64, profile: pixel_8, lang: ar }
+          - { name: 5-phone-api36-arabic, api: 36, target: google_apis, arch: x86_64, profile: pixel_7, lang: ar }
           - { name: 4-tablet-api34-arabic, api: 34, target: google_apis, arch: x86_64, profile: pixel_tablet, lang: ar }
     steps:
       - uses: actions/checkout@v4
