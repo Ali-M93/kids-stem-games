@@ -184,6 +184,7 @@ jobs:
             "$bt/apksigner" verify --print-certs out/lili-friends.apk | head -3
             "$bt/apksigner" verify -v --min-sdk-version 19 out/lili-friends.apk | grep "v1 scheme (JAR signing): true"
             keytool -printcert -jarfile out/lili-friends.aab | head -3
+            keytool -printcert -jarfile out/lili-friends.aab | grep -q "Lili and Friends" || { echo "::error::AAB غير موقّع بمفتاح ليلي (Lili and Friends)"; exit 1; }
           fi
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
