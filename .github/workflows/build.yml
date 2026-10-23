@@ -123,3 +123,70 @@ jobs:
         with:
           name: lili-app
           path: lili-app/app/build/outputs/apk/debug/app-debug.apk
+
+  # Signed release for Google Play: an AAB to upload, and an APK to try on a phone first.
+  lili-release:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: lili-app
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+
+      - name: Install the pinned Android SDK packages
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;37.0.0" > /dev/null
+
+      - name: Signing key
+        env:
+          KS_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KS_PASS_RAW: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASS_RAW: ${{ secrets.KEY_PASSWORD }}
+          KS_ALIAS_RAW: ${{ secrets.KEY_ALIAS }}
+        run: |
+          if [ -z "$KS_BASE64" ]; then
+            echo "::warning::ماكو مفتاح توقيع بعد. أضف KEYSTORE_BASE64 و KEYSTORE_PASSWORD و KEY_PASSWORD و KEY_ALIAS بالـ Secrets"
+            exit 0
+          fi
+          printf '%s' "$KS_BASE64" | tr -d '[:space:]' | base64 -d > "$RUNNER_TEMP/release.jks" || { echo "::error::KEYSTORE_BASE64 مو صحيح (النص الطويل ناقص أو بيه غلط)"; exit 1; }
+          P=$(printf '%s' "$KS_PASS_RAW" | tr -d '[:space:]')
+          KP=$(printf '%s' "$KEY_PASS_RAW" | tr -d '[:space:]')
+          A=$(printf '%s' "$KS_ALIAS_RAW" | tr -d '[:space:]')
+          keytool -list -keystore "$RUNNER_TEMP/release.jks" -storepass "$P" >/dev/null 2>&1 || { echo "::error::KEYSTORE_PASSWORD غلط"; exit 1; }
+          keytool -list -keystore "$RUNNER_TEMP/release.jks" -storepass "$P" -alias "$A" >/dev/null 2>&1 || { echo "::error::KEY_ALIAS غلط (لازم يكون upload)"; exit 1; }
+          [ -z "$KP" ] && KP="$P"
+          echo "::add-mask::$P"; echo "::add-mask::$KP"
+          { echo "KS_PATH=$RUNNER_TEMP/release.jks"; echo "KS_PASS=$P"; echo "KS_KEY_PASS=$KP"; echo "KS_ALIAS=$A"; } >> "$GITHUB_ENV"
+          echo "signed=yes" >> "$GITHUB_ENV"
+
+      - name: Build release AAB and APK
+        env:
+          VERSION_CODE: ${{ github.run_number }}
+        run: ./gradlew :app:bundleRelease :app:assembleRelease
+
+      - name: Check the release
+        run: |
+          bt="$ANDROID_HOME/build-tools/37.0.0"
+          mkdir -p out
+          cp app/build/outputs/bundle/release/app-release.aab out/lili-friends.aab
+          apk=$(ls app/build/outputs/apk/release/*.apk | head -1)
+          cp "$apk" out/lili-friends.apk
+          "$bt/aapt2" dump badging out/lili-friends.apk | grep -E "package:|sdkVersion|targetSdkVersion" | tee sdk.txt
+          grep -q "targetSdkVersion:'36'" sdk.txt || { echo "::error::targetSdk مو 36"; exit 1; }
+          grep -q "minSdkVersion:'19'" sdk.txt || { echo "::error::minSdk مو 19"; exit 1; }
+          if [ "${signed:-}" = "yes" ]; then
+            "$bt/apksigner" verify --print-certs out/lili-friends.apk | head -3
+            "$bt/apksigner" verify -v --min-sdk-version 19 out/lili-friends.apk | grep "v1 scheme (JAR signing): true"
+            keytool -printcert -jarfile out/lili-friends.aab | head -3
+          fi
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: lili-release
+          path: lili-app/out/

@@ -12,12 +12,27 @@ android {
         // Same floor as the games: a 2014 phone on KitKat 4.4 must run it. Do not raise.
         minSdk = 19
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        // CI passes the run number, so every uploaded build has a higher version code.
+        versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()
+        versionName = "1.0." + (System.getenv("VERSION_CODE") ?: "0")
+    }
+
+    // The upload key comes from GitHub secrets (same names as Madrasatuna); never from the repo.
+    val ksPath = System.getenv("KS_PATH")
+    signingConfigs {
+        create("release") {
+            if (ksPath != null) {
+                storeFile = file(ksPath)
+                storePassword = System.getenv("KS_PASS")
+                keyAlias = System.getenv("KS_ALIAS")
+                keyPassword = System.getenv("KS_KEY_PASS")
+            }
+        }
     }
 
     buildTypes {
         release {
+            if (ksPath != null) signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
