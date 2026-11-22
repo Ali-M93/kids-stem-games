@@ -39,7 +39,7 @@ public class LettersActivity extends Activity {
     public static final String EXTRA_PREFS = "prefs", EXTRA_STAGE = "stage";
 
     private static final int ROUNDS = 6;
-    private static final int INTRO = 0, SOUNDS = 1, WORDS = 2, READ = 3, DONE = 4, TRACE = 5, BUILD = 6;
+    private static final int INTRO = 0, SOUNDS = 1, WORDS = 2, READ = 3, DONE = 4, TRACE = 5, BUILD = 6, ORDER = 7;
 
     private SharedPreferences prefs;
     private Lessons book;
@@ -87,6 +87,7 @@ public class LettersActivity extends Activity {
         if (!lesson.words.isEmpty()) steps.add(WORDS);
         if (lesson.buildable().size() >= 2) steps.add(BUILD);
         if (!lesson.sentences.isEmpty()) steps.add(READ);
+        if (!lesson.orderable().isEmpty()) steps.add(ORDER);
         steps.add(DONE);
 
         Typeface face = Typeface.createFromAsset(getAssets(), "fonts/fredoka_semibold.ttf");
@@ -201,6 +202,12 @@ public class LettersActivity extends Activity {
                 rounds = Math.min(4, pool.size());
                 deal();
                 play(book.phrase("رَكِّبِ الْمَقَاطِع"), this::newBuild);
+                break;
+            case ORDER:
+                pool = lesson.orderable();
+                rounds = Math.min(3, pool.size());
+                deal();
+                newBuild();
                 break;
             case READ:
                 view.invalidate();
@@ -498,13 +505,13 @@ public class LettersActivity extends Activity {
             } else if (w == B_SPEAK) {
                 if (k == TRACE) play(lesson.intro.isEmpty() ? null : lesson.intro.get(0).sound, null);
                 else if (k == INTRO && !lesson.intro.isEmpty()) play(lesson.intro.get(0).sound, null);
-                else if ((k == SOUNDS || k == WORDS || k == BUILD) && target != null) play(target.sound, null);
+                else if ((k == SOUNDS || k == WORDS || k == BUILD || k == ORDER) && target != null) play(target.sound, null);
                 else if (k == READ) play(lesson.sentences.get(sentence).sound, null);
             } else if (w == B_NEXT) {
                 if (k == READ) nextSentence();
                 else nextStep();
             } else if (w >= 0) {
-                if (k == BUILD) place(w);
+                if (k == BUILD || k == ORDER) place(w);
                 else pick(w);
             }
         }
@@ -631,29 +638,34 @@ public class LettersActivity extends Activity {
                             Math.min((b - t) * 0.5f, 72 * dp), (r - l) * 0.85f, 0xFFFFFFFF);
                     c.restore();
                 }
-            } else if (k == BUILD) {
+            } else if (k == BUILD || k == ORDER) {
                 label(c, (round + 1) + " / " + rounds, w / 2, pad + 12 * dp, 18 * dp, w, 0xFF9AA0BC);
-                float sr = Math.max(40 * dp, Math.min(56 * dp, h * 0.08f));
-                speaker(c, w / 2, pad + 40 * dp + sr, sr);
+                if (k == ORDER) label(c, "رَتِّبِ الْكَلِمَاتِ", w / 2, pad + 40 * dp, 22 * dp, w, Draw.PLUM);
+                float sr = Math.max(36 * dp, Math.min(52 * dp, h * 0.07f));
+                float spT = pad + (k == ORDER ? 60 : 40) * dp;
+                speaker(c, w / 2, spT + sr, sr);
                 if (target != null && target.parts != null) {
                     int n = cards.size();
-                    boolean rtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
-                    float cw = Math.min(150 * dp, (w - pad * (n + 1)) / n), ch = Math.max(84 * dp, Math.min(120 * dp, cw));
-                    float rowW = n * cw + (n - 1) * pad, x0 = (w - rowW) / 2;
-                    // The slots, filled in reading order: first syllable on the right.
-                    float slotT = pad + 60 * dp + 2 * sr + pad;
+                    int cols = n <= 3 ? n : (n + 1) / 2, rowsN = (n + cols - 1) / cols;
+                    float cw = Math.min(170 * dp, (w - pad * (cols + 1)) / cols);
+                    float avail = (h - spT - 2 * sr - 4 * pad) / 2f;
+                    float ch = Math.max(64 * dp, Math.min(110 * dp, (avail - (rowsN - 1) * pad) / rowsN));
+                    float rowW = cols * cw + (cols - 1) * pad, x0 = (w - rowW) / 2;
+                    float slotT = spT + 2 * sr + pad;
+                    // The slots, filled in reading order: right to left, then the next row.
                     for (int s = 0; s < n; s++) {
-                        float l = rtl ? x0 + (n - 1 - s) * (cw + pad) : x0 + (n - 1 - s) * (cw + pad);
-                        float r = l + cw;
+                        int col = s % cols, row = s / cols;
+                        float l = x0 + (cols - 1 - col) * (cw + pad), r = l + cw;
+                        float t = slotT + row * (ch + pad), b = t + ch;
                         if (s < placed) {
-                            Draw.card(c, l, slotT, r, slotT + ch - 6 * dp, 20 * dp, Draw.MINT, Draw.MINT_D, 6 * dp);
-                            label(c, target.parts[s], (l + r) / 2, slotT + ch / 2 - 3 * dp, ch * 0.42f, cw * 0.85f, 0xFFFFFFFF);
+                            Draw.card(c, l, t, r, b - 6 * dp, 20 * dp, Draw.MINT, Draw.MINT_D, 6 * dp);
+                            label(c, target.parts[s], (l + r) / 2, (t + b) / 2 - 3 * dp, ch * 0.4f, cw * 0.85f, 0xFFFFFFFF);
                         } else {
-                            c.drawRoundRect(new android.graphics.RectF(l, slotT, r, slotT + ch - 6 * dp), 20 * dp, 20 * dp,
+                            c.drawRoundRect(new android.graphics.RectF(l, t, r, b - 6 * dp), 20 * dp, 20 * dp,
                                     Draw.stroke(0xFFC9CDE0, 3 * dp));
                         }
                     }
-                    float cardT = slotT + ch + 2 * pad;
+                    float cardT = slotT + rowsN * (ch + pad) + pad;
                     float wob = 0;
                     long since = SystemClock.uptimeMillis() - wobbleAt;
                     if (wrongPick >= 0 && since < 450) {
@@ -662,12 +674,14 @@ public class LettersActivity extends Activity {
                     }
                     for (int i = 0; i < n; i++) {
                         if (used.get(i)) continue;
-                        float l = x0 + (rtl ? n - 1 - i : i) * (cw + pad), r = l + cw;
+                        int col = i % cols, row = i / cols;
+                        float l = x0 + (cols - 1 - col) * (cw + pad), r = l + cw;
+                        float t = cardT + row * (ch + pad);
                         c.save();
                         if (i == wrongPick) c.translate(wob, 0);
-                        button(c, l, cardT, r, cardT + ch, i == wrongPick ? 0xFFFFB3B3 : Draw.LILAC,
+                        button(c, l, t, r, t + ch, i == wrongPick ? 0xFFFFB3B3 : Draw.LILAC,
                                 i == wrongPick ? 0xFFE07A7A : Draw.LILAC_D, i);
-                        label(c, cards.get(i), (l + r) / 2, cardT + ch / 2 - 3 * dp, ch * 0.42f, cw * 0.85f, 0xFFFFFFFF);
+                        label(c, cards.get(i), (l + r) / 2, t + ch / 2 - 3 * dp, ch * 0.4f, cw * 0.85f, 0xFFFFFFFF);
                         c.restore();
                     }
                 }

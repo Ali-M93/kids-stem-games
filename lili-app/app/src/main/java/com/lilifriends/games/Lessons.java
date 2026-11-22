@@ -47,6 +47,13 @@ final class Lessons {
             return out;
         }
 
+        /** Sentences that can be put back together from their words. */
+        List<Item> orderable() {
+            List<Item> out = new ArrayList<>();
+            for (Item it : sentences) if (it.parts != null) out.add(it);
+            return out;
+        }
+
         /** Syllables to hear and pick: the vowels and the stopped (sukun) syllables. */
         List<Item> sounds() {
             List<Item> out = new ArrayList<>(shortVowels);
