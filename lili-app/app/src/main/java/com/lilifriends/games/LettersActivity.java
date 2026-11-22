@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Path;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -28,7 +30,7 @@ import java.util.Random;
 
 /**
  * Lili's Letters: one lesson of «قراءتي الجديدة» per stop on the journey map. Lili says the
- * letter, then the child hears syllables and words in Lili's voice and picks the one written
+ * letter, the child traces it with a finger, then the child hears syllables and words in Lili's voice and picks the one written
  * the same way, and last reads the lesson's sentences with her. A wrong pick only wobbles and
  * Lili says «try again»; finishing the lesson opens the next stop.
  */
@@ -37,7 +39,7 @@ public class LettersActivity extends Activity {
     public static final String EXTRA_PREFS = "prefs", EXTRA_STAGE = "stage";
 
     private static final int ROUNDS = 6;
-    private static final int INTRO = 0, SOUNDS = 1, WORDS = 2, READ = 3, DONE = 4;
+    private static final int INTRO = 0, SOUNDS = 1, WORDS = 2, READ = 3, DONE = 4, TRACE = 5;
 
     private SharedPreferences prefs;
     private Lessons book;
@@ -76,6 +78,7 @@ public class LettersActivity extends Activity {
         lesson = book.lessons.get(stage);
 
         steps.add(INTRO);
+        if (lesson.title.startsWith("حرف")) steps.add(TRACE);
         if (lesson.sounds().size() >= 2) steps.add(SOUNDS);
         if (!lesson.words.isEmpty()) steps.add(WORDS);
         if (!lesson.sentences.isEmpty()) steps.add(READ);
@@ -168,6 +171,10 @@ public class LettersActivity extends Activity {
         sentence = 0;
         busy = false;
         switch (kind()) {
+            case TRACE:
+                view.clearTrace();
+                play(book.phrase("اُرْسُمِ الْحَرْف"), null);
+                break;
             case INTRO:
                 view.invalidate();
                 play(lesson.intro.isEmpty() ? null : lesson.intro.get(0).sound, null);
@@ -280,7 +287,15 @@ public class LettersActivity extends Activity {
         /** Buttons on screen now: left, top, right, bottom, and what they do (index or code). */
         private final List<float[]> boxes = new ArrayList<>();
         private int down = -1;
-        private static final int B_SPEAK = -10, B_NEXT = -11;
+        private static final int B_SPEAK = -10, B_NEXT = -11, B_CLEAR = -12;
+        // Tracing: the letter's ink as a mask, the child's finger path, and where it went.
+        private final Paint ink = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Path finger = new Path();
+        private final List<float[]> touches = new ArrayList<>();
+        private float[] traceBox;
+        private float[] samples = new float[0];
+        private int sampleCount;
+        private boolean traced, tracing;
 
         LessonView(Context ctx) {
             super(ctx);
@@ -296,6 +311,98 @@ public class LettersActivity extends Activity {
             boxes.add(new float[]{l, t, r, b, what});
         }
 
+        void clearTrace() {
+            finger.reset();
+            touches.clear();
+            traced = false;
+            invalidate();
+        }
+
+        /** Points inside the letter's ink, found once from an off-screen copy of the letter. */
+        private void buildSamples(float l, float t, float r, float b) {
+            int bw = Math.max(1, Math.round(r - l)), bh = Math.max(1, Math.round(b - t));
+            Bitmap m = Bitmap.createBitmap(bw, bh, Bitmap.Config.ALPHA_8);
+            Canvas mc = new Canvas(m);
+            letterPaint(bw, bh);
+            mc.drawText(lesson.big, bw / 2f, bh / 2f - (ink.ascent() + ink.descent()) / 2f, ink);
+            int stepPx = Math.max(3, Math.round(Math.min(bw, bh) / 70f));
+            float[] pts = new float[(bw / stepPx + 1) * (bh / stepPx + 1) * 2];
+            int n = 0;
+            for (int y = 0; y < bh; y += stepPx) {
+                for (int x = 0; x < bw; x += stepPx) {
+                    if (Color.alpha(m.getPixel(x, y)) > 128) {
+                        pts[n++] = l + x;
+                        pts[n++] = t + y;
+                    }
+                }
+            }
+            m.recycle();
+            samples = pts;
+            sampleCount = n / 2;
+        }
+
+        private void letterPaint(float bw, float bh) {
+            ink.setTypeface(Typeface.DEFAULT_BOLD);
+            ink.setTextAlign(Paint.Align.CENTER);
+            ink.setStyle(Paint.Style.FILL);
+            ink.setTextSize(Math.min(bw, bh) * 0.8f);
+            float tw = ink.measureText(lesson.big);
+            if (tw > bw * 0.9f && tw > 0) ink.setTextSize(ink.getTextSize() * bw * 0.9f / tw);
+        }
+
+        /** Share of the letter's ink that the finger has passed over. */
+        private float coverage() {
+            if (sampleCount == 0) return 0;
+            float rad = 22 * dp, r2 = rad * rad;
+            int hitCount = 0;
+            for (int i = 0; i < sampleCount; i++) {
+                float sx = samples[2 * i], sy = samples[2 * i + 1];
+                for (float[] p : touches) {
+                    float dx = p[0] - sx, dy = p[1] - sy;
+                    if (dx * dx + dy * dy <= r2) {
+                        hitCount++;
+                        break;
+                    }
+                }
+            }
+            return hitCount / (float) sampleCount;
+        }
+
+        private boolean inTrace(float x, float y) {
+            return traceBox != null && x >= traceBox[0] && x <= traceBox[2] && y >= traceBox[1] && y <= traceBox[3];
+        }
+
+        private boolean traceTouch(MotionEvent e) {
+            float x = e.getX(), y = e.getY();
+            switch (e.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    if (!inTrace(x, y) || traced) return false;
+                    tracing = true;
+                    finger.moveTo(x, y);
+                    touches.add(new float[]{x, y});
+                    invalidate();
+                    return true;
+                case MotionEvent.ACTION_MOVE:
+                    if (!tracing) return false;
+                    finger.lineTo(x, y);
+                    touches.add(new float[]{x, y});
+                    invalidate();
+                    return true;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    if (!tracing) return false;
+                    tracing = false;
+                    if (coverage() >= 0.72f) {
+                        traced = true;
+                        Lessons.Item ok = any(book.praise);
+                        play(ok != null ? ok.sound : null, null);
+                    }
+                    invalidate();
+                    return true;
+            }
+            return false;
+        }
+
         private int hit(float x, float y) {
             for (float[] b : boxes) {
                 if (x >= b[0] && x <= b[2] && y >= b[1] && y <= b[3]) return (int) b[4];
@@ -305,6 +412,7 @@ public class LettersActivity extends Activity {
 
         @Override
         public boolean onTouchEvent(MotionEvent e) {
+            if (kind() == TRACE && (tracing || e.getActionMasked() == MotionEvent.ACTION_DOWN) && traceTouch(e)) return true;
             switch (e.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
                     down = hit(e.getX(), e.getY());
@@ -326,8 +434,11 @@ public class LettersActivity extends Activity {
 
         private void act(int w) {
             int k = kind();
-            if (w == B_SPEAK) {
-                if (k == INTRO && !lesson.intro.isEmpty()) play(lesson.intro.get(0).sound, null);
+            if (w == B_CLEAR) {
+                clearTrace();
+            } else if (w == B_SPEAK) {
+                if (k == TRACE) play(lesson.intro.isEmpty() ? null : lesson.intro.get(0).sound, null);
+                else if (k == INTRO && !lesson.intro.isEmpty()) play(lesson.intro.get(0).sound, null);
                 else if ((k == SOUNDS || k == WORDS) && target != null) play(target.sound, null);
                 else if (k == READ) play(lesson.sentences.get(sentence).sound, null);
             } else if (w == B_NEXT) {
@@ -384,7 +495,27 @@ public class LettersActivity extends Activity {
             c.drawColor(Draw.SKY_TOP);
             int k = kind();
             float btnH = Math.max(64 * dp, Math.min(84 * dp, h * 0.11f));
-            if (k == INTRO) {
+            if (k == TRACE) {
+                float bottomRow = h - pad - btnH / 2;
+                float l = pad, t = pad, r = w - pad, b = h - 2 * pad - btnH;
+                if (traceBox == null || traceBox[2] != r || traceBox[3] != b) {
+                    traceBox = new float[]{l, t, r, b};
+                    buildSamples(l, t, r, b);
+                }
+                Draw.card(c, l, t, r, b - 8 * dp, 32 * dp, 0xFFFFFFFF, 0xFFE6DCCB, 8 * dp);
+                letterPaint(r - l, b - t);
+                ink.setColor(traced ? Draw.MINT : 0xFFE9E1F5);
+                c.drawText(lesson.big, (l + r) / 2f, (t + b) / 2f - (ink.ascent() + ink.descent()) / 2f, ink);
+                Paint pen = Draw.stroke(traced ? Draw.MINT_D : Draw.PINK_D, 18 * dp);
+                c.drawPath(finger, pen);
+                if (!traced) {
+                    button(c, w / 2 - btnH * 2.2f - btnH / 2, bottomRow - btnH / 2, w / 2 - btnH * 2.2f + btnH / 2,
+                            bottomRow + btnH / 2, Draw.BLUE, Draw.BLUE_D, B_CLEAR);
+                    label(c, "اِمْسَحْ", w / 2 - btnH * 2.2f, bottomRow - 3 * dp, btnH * 0.32f, btnH * 0.85f, 0xFFFFFFFF);
+                }
+                speaker(c, w / 2 + btnH * 0.9f, bottomRow, btnH / 2);
+                next(c, w / 2 - btnH * 1.1f, bottomRow, btnH * 2.2f, btnH, traced ? "هَيَّا" : "التَّالِي");
+            } else if (k == INTRO) {
                 float size = Math.min(w - 2 * pad, h * 0.5f);
                 float cx = w / 2, top = pad;
                 Draw.card(c, cx - size / 2, top, cx + size / 2, top + size - 8 * dp, 40 * dp, Draw.PINK, Draw.PINK_D, 8 * dp);
