@@ -39,7 +39,7 @@ public class LettersActivity extends Activity {
     public static final String EXTRA_PREFS = "prefs", EXTRA_STAGE = "stage";
 
     private static final int ROUNDS = 6;
-    private static final int INTRO = 0, SOUNDS = 1, WORDS = 2, READ = 3, DONE = 4, TRACE = 5;
+    private static final int INTRO = 0, SOUNDS = 1, WORDS = 2, READ = 3, DONE = 4, TRACE = 5, BUILD = 6;
 
     private SharedPreferences prefs;
     private Lessons book;
@@ -58,6 +58,10 @@ public class LettersActivity extends Activity {
     private Lessons.Item target;
     private final List<Lessons.Item> options = new ArrayList<>();
     private int wrongPick = -1, rightPick = -1;
+    /** Building a word: its syllables shuffled as cards, and how many are placed so far. */
+    private final List<String> cards = new ArrayList<>();
+    private final List<Boolean> used = new ArrayList<>();
+    private int placed;
     private long wobbleAt;
     private boolean busy;
 
@@ -81,6 +85,7 @@ public class LettersActivity extends Activity {
         if (lesson.title.startsWith("حرف")) steps.add(TRACE);
         if (lesson.sounds().size() >= 2) steps.add(SOUNDS);
         if (!lesson.words.isEmpty()) steps.add(WORDS);
+        if (lesson.buildable().size() >= 2) steps.add(BUILD);
         if (!lesson.sentences.isEmpty()) steps.add(READ);
         steps.add(DONE);
 
@@ -191,6 +196,12 @@ public class LettersActivity extends Activity {
                 deal();
                 play(book.phrase("اِسْمَعْ وَاخْتَرْ"), this::newRound);
                 break;
+            case BUILD:
+                pool = lesson.buildable();
+                rounds = Math.min(4, pool.size());
+                deal();
+                play(book.phrase("رَكِّبِ الْمَقَاطِع"), this::newBuild);
+                break;
             case READ:
                 view.invalidate();
                 play(book.phrase("اِقْرَأْ مَعِي"), () -> play(lesson.sentences.get(0).sound, null));
@@ -239,6 +250,54 @@ public class LettersActivity extends Activity {
         Collections.shuffle(options, rnd);
         view.invalidate();
         play(target.sound, null);
+    }
+
+    /** A new word to build: Lili says it, and its syllables wait as shuffled cards. */
+    private void newBuild() {
+        busy = false;
+        wrongPick = -1;
+        target = seq.get(round % seq.size());
+        cards.clear();
+        used.clear();
+        placed = 0;
+        Collections.addAll(cards, target.parts);
+        // Shuffle until the cards are not already in order (when that is possible).
+        for (int t = 0; t < 8; t++) {
+            Collections.shuffle(cards, rnd);
+            boolean same = true;
+            for (int i = 0; i < cards.size(); i++) if (!cards.get(i).equals(target.parts[i])) same = false;
+            if (!same) break;
+        }
+        for (int i = 0; i < cards.size(); i++) used.add(false);
+        view.invalidate();
+        play(target.sound, null);
+    }
+
+    private void place(int i) {
+        if (busy || i < 0 || i >= cards.size() || used.get(i)) return;
+        if (cards.get(i).equals(target.parts[placed])) {
+            used.set(i, true);
+            placed++;
+            wrongPick = -1;
+            view.invalidate();
+            if (placed == target.parts.length) {
+                busy = true;
+                play(target.sound, () -> {
+                    Lessons.Item ok = any(book.praise);
+                    play(ok != null ? ok.sound : null, () -> {
+                        round++;
+                        if (round < rounds) newBuild();
+                        else nextStep();
+                    });
+                });
+            }
+        } else {
+            wrongPick = i;
+            wobbleAt = SystemClock.uptimeMillis();
+            view.invalidate();
+            Lessons.Item again = any(book.tryAgain);
+            play(again != null ? again.sound : null, null);
+        }
     }
 
     private boolean hasText(String t) {
@@ -439,13 +498,14 @@ public class LettersActivity extends Activity {
             } else if (w == B_SPEAK) {
                 if (k == TRACE) play(lesson.intro.isEmpty() ? null : lesson.intro.get(0).sound, null);
                 else if (k == INTRO && !lesson.intro.isEmpty()) play(lesson.intro.get(0).sound, null);
-                else if ((k == SOUNDS || k == WORDS) && target != null) play(target.sound, null);
+                else if ((k == SOUNDS || k == WORDS || k == BUILD) && target != null) play(target.sound, null);
                 else if (k == READ) play(lesson.sentences.get(sentence).sound, null);
             } else if (w == B_NEXT) {
                 if (k == READ) nextSentence();
                 else nextStep();
             } else if (w >= 0) {
-                pick(w);
+                if (k == BUILD) place(w);
+                else pick(w);
             }
         }
 
@@ -570,6 +630,46 @@ public class LettersActivity extends Activity {
                     label(c, options.get(i).text, (l + r) / 2, (t + b) / 2 - 3 * dp,
                             Math.min((b - t) * 0.5f, 72 * dp), (r - l) * 0.85f, 0xFFFFFFFF);
                     c.restore();
+                }
+            } else if (k == BUILD) {
+                label(c, (round + 1) + " / " + rounds, w / 2, pad + 12 * dp, 18 * dp, w, 0xFF9AA0BC);
+                float sr = Math.max(40 * dp, Math.min(56 * dp, h * 0.08f));
+                speaker(c, w / 2, pad + 40 * dp + sr, sr);
+                if (target != null && target.parts != null) {
+                    int n = cards.size();
+                    boolean rtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
+                    float cw = Math.min(150 * dp, (w - pad * (n + 1)) / n), ch = Math.max(84 * dp, Math.min(120 * dp, cw));
+                    float rowW = n * cw + (n - 1) * pad, x0 = (w - rowW) / 2;
+                    // The slots, filled in reading order: first syllable on the right.
+                    float slotT = pad + 60 * dp + 2 * sr + pad;
+                    for (int s = 0; s < n; s++) {
+                        float l = rtl ? x0 + (n - 1 - s) * (cw + pad) : x0 + (n - 1 - s) * (cw + pad);
+                        float r = l + cw;
+                        if (s < placed) {
+                            Draw.card(c, l, slotT, r, slotT + ch - 6 * dp, 20 * dp, Draw.MINT, Draw.MINT_D, 6 * dp);
+                            label(c, target.parts[s], (l + r) / 2, slotT + ch / 2 - 3 * dp, ch * 0.42f, cw * 0.85f, 0xFFFFFFFF);
+                        } else {
+                            c.drawRoundRect(new android.graphics.RectF(l, slotT, r, slotT + ch - 6 * dp), 20 * dp, 20 * dp,
+                                    Draw.stroke(0xFFC9CDE0, 3 * dp));
+                        }
+                    }
+                    float cardT = slotT + ch + 2 * pad;
+                    float wob = 0;
+                    long since = SystemClock.uptimeMillis() - wobbleAt;
+                    if (wrongPick >= 0 && since < 450) {
+                        wob = (float) Math.sin(since / 30.0) * 10 * dp * (1 - since / 450f);
+                        postInvalidateOnAnimation();
+                    }
+                    for (int i = 0; i < n; i++) {
+                        if (used.get(i)) continue;
+                        float l = x0 + (rtl ? n - 1 - i : i) * (cw + pad), r = l + cw;
+                        c.save();
+                        if (i == wrongPick) c.translate(wob, 0);
+                        button(c, l, cardT, r, cardT + ch, i == wrongPick ? 0xFFFFB3B3 : Draw.LILAC,
+                                i == wrongPick ? 0xFFE07A7A : Draw.LILAC_D, i);
+                        label(c, cards.get(i), (l + r) / 2, cardT + ch / 2 - 3 * dp, ch * 0.42f, cw * 0.85f, 0xFFFFFFFF);
+                        c.restore();
+                    }
                 }
             } else if (k == READ) {
                 Lessons.Item s = lesson.sentences.get(sentence);

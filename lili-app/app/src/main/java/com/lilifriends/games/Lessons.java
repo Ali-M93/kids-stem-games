@@ -15,10 +15,13 @@ final class Lessons {
     /** A word, syllable or sentence, and the sound of Lili saying it. */
     static final class Item {
         final String text, sound;
+        /** The word cut into syllables, as in the book's «ركّب المقاطع», or null. */
+        final String[] parts;
 
-        Item(String text, String sound) {
+        Item(String text, String sound, String parts) {
             this.text = text;
             this.sound = sound;
+            this.parts = parts == null || parts.isEmpty() ? null : parts.split("\\|");
         }
     }
 
@@ -35,6 +38,13 @@ final class Lessons {
             sukun = items(o.optJSONArray("sukun"));
             words = items(o.optJSONArray("words"));
             sentences = items(o.optJSONArray("sents"));
+        }
+
+        /** Words that can be built from their syllables. */
+        List<Item> buildable() {
+            List<Item> out = new ArrayList<>();
+            for (Item it : words) if (it.parts != null) out.add(it);
+            return out;
         }
 
         /** Syllables to hear and pick: the vowels and the stopped (sukun) syllables. */
@@ -71,7 +81,7 @@ final class Lessons {
         if (a == null) return out;
         for (int i = 0; i < a.length(); i++) {
             JSONArray p = a.getJSONArray(i);
-            out.add(new Item(p.getString(0), p.getString(1)));
+            out.add(new Item(p.getString(0), p.getString(1), p.length() > 2 ? p.getString(2) : null));
         }
         return out;
     }
