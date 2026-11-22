@@ -7,6 +7,7 @@
     <string name="remove_q">Remove this player and all their progress?</string>
     <string name="remove">Remove</string>
     <string name="cancel">Cancel</string>
+    <string name="game_letters">Lili\'s Letters</string>
     <string name="game_path">Lili\'s Path</string>
     <string name="game_hops">Lili Hops</string>
     <string name="game_pattern">Pattern Machine</string>

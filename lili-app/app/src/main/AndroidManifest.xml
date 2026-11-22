@@ -23,6 +23,10 @@
             android:configChanges="orientation|screenSize|keyboardHidden|screenLayout"
             android:exported="false" />
         <activity
+            android:name=".LettersActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout"
+            android:exported="false" />
+        <activity
             android:name=".MapActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|screenLayout"
             android:exported="false" />

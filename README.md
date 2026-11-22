@@ -14,7 +14,11 @@ The code stays under GPL-3.0. Changes in this fork:
 - Targets Android 16 (API 36, required by Google Play since 31 Aug 2026); every screen lays itself
   out inside the status and navigation bars, since Android 15+ draws apps edge to edge.
 - New app ids and icons for Robot Path and Lili Hops.
-- **lili-app/**: all four games in one app, "Lili & Friends": a "Who is playing?" screen with a
+- **Lili's Letters** (حروف ليلي), in lili-app only: one journey stop per lesson of the Iraqi grade-1
+  reading book «قراءتي الجديدة» (28 letters, tanween, shadda, the sun and moon lām). Lili says the
+  letter; the child hears syllables and words in Lili's voice and picks the one written that way,
+  then reads the lesson's sentences with her. Data in `lili-app/app/src/main/assets/letters/`.
+- **lili-app/**: all the games in one app, "Lili & Friends": a "Who is playing?" screen with a
   badge per child, separate progress for each child, and a journey map per game where reached
   stops can be replayed and later ones stay locked.
 

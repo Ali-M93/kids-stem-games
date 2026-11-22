@@ -14,7 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 
-/** The four games as big picture cards. A card opens that game's journey map for this child. */
+/** The games as big picture cards. A card opens that game's journey map for this child. */
 public class HomeActivity extends Activity {
     private int player;
     private Typeface face;
@@ -68,7 +68,8 @@ public class HomeActivity extends Activity {
         protected void onSizeChanged(int w, int h, int ow, int oh) {
             sky.setShader(new LinearGradient(0, 0, 0, h, Draw.SKY_TOP, Draw.SKY_BOTTOM, Shader.TileMode.CLAMP));
             boolean wide = w > h * 1.3f;
-            int cols = wide ? 4 : 2, rows = wide ? 1 : 2;
+            int n = box.length;
+            int cols = wide ? (n <= 4 ? n : 3) : 2, rows = (n + cols - 1) / cols;
             float pad = 14 * dp;
             float cw = (w - pad * (cols + 1)) / cols, ch = (h - pad * (rows + 1)) / rows;
             boolean rtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;

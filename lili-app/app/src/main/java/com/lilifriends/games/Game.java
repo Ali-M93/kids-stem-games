@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 
 /**
- * The four games and how the journey map talks to each. Robot Path counts open-ended levels
+ * The games and how the journey map talks to each. Robot Path counts open-ended levels
  * from 1 ("level" = the furthest reached); the other three have stages from 0 ("stage" = the
  * furthest reached), and past their last stage they mix all stages, shown as one final stop.
  */
@@ -33,7 +33,10 @@ final class Game {
             R.string.game_pattern, R.drawable.home_cheer, Draw.LILAC, Draw.LILAC_D, 8 + 2);
     static final Game SCALE = new Game("scale", "io.github.foadsf.balancescale.GameActivity",
             R.string.game_scale, R.drawable.home_think, Draw.MINT, Draw.MINT_D, 7 + 2);
-    static final Game[] ALL = {PATH, HOPS, PATTERN, SCALE};
+    /** Lili's Letters: one stop per lesson of the grade-1 reading book (see {@link Lessons}). */
+    static final Game LETTERS = new Game("letters", "com.lilifriends.games.LettersActivity",
+            R.string.game_letters, R.drawable.home_happy, Draw.PINK, Draw.PINK_D, 34);
+    static final Game[] ALL = {LETTERS, PATH, HOPS, PATTERN, SCALE};
 
     static Game byId(String id) {
         for (Game g : ALL) if (g.id.equals(id)) return g;

@@ -7,6 +7,7 @@
     <string name="remove_q">حذف هذا اللاعب وكل تقدّمه؟</string>
     <string name="remove">حذف</string>
     <string name="cancel">إلغاء</string>
+    <string name="game_letters">حروف ليلي</string>
     <string name="game_path">طريق ليلي</string>
     <string name="game_hops">قفزات ليلي</string>
     <string name="game_pattern">آلة الأنماط</string>
