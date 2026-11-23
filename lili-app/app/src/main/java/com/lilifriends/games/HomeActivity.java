@@ -76,7 +76,10 @@ public class HomeActivity extends Activity {
             for (int i = 0; i < box.length; i++) {
                 int col = i % cols, row = i / cols;
                 if (rtl) col = cols - 1 - col;
-                box[i][0] = pad + col * (cw + pad);
+                // A short last row sits in the middle.
+                int inRow = Math.min(cols, n - row * cols);
+                float shift = (cols - inRow) * (cw + pad) / 2f * (rtl ? -1 : 1);
+                box[i][0] = pad + col * (cw + pad) + shift;
                 box[i][1] = pad + row * (ch + pad);
                 box[i][2] = box[i][0] + cw;
                 box[i][3] = box[i][1] + ch;

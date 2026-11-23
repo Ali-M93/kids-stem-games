@@ -78,6 +78,8 @@ public class LettersActivity extends Activity {
         }
         int last = book.lessons.size() - 1;
         int furthest = Math.min(prefs.getInt("stage", 0), last);
+        // Only the debug build exports this screen, for tools/screenshots.sh.
+        if (getIntent().getBooleanExtra("unlock", false)) furthest = last;
         stage = Math.max(0, Math.min(getIntent().getIntExtra(EXTRA_STAGE, furthest), furthest));
         lesson = book.lessons.get(stage);
 
@@ -102,7 +104,7 @@ public class LettersActivity extends Activity {
         view = new LessonView(this);
         root.addView(view, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f));
         setContentView(root);
-        startStep(0);
+        startStep(Math.max(0, Math.min(getIntent().getIntExtra("step", 0), steps.size() - 1)));
     }
 
     @Override

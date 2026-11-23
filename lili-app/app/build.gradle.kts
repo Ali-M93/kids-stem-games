@@ -32,6 +32,11 @@ android {
     }
 
     buildTypes {
+        // A test build installs beside the Play Store app (whose Play signing key differs), as
+        // «ليلي (تجربة)», so a phone can try a new version without removing the real one.
+        debug {
+            applicationIdSuffix = ".test"
+        }
         release {
             if (ksPath != null) signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true

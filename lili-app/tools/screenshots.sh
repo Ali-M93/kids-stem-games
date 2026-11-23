@@ -6,7 +6,8 @@ name=$1
 lang=${2:-en}
 out="shots/$name"
 mkdir -p "$out"
-pkg=com.lilifriends.games
+pkg=com.lilifriends.games.test
+cls=com.lilifriends.games
 apk=lili-app/app/build/outputs/apk/debug/app-debug.apk
 
 wait_boot() {
@@ -44,7 +45,7 @@ ROT=$(adb shell dumpsys input | tr -d '\r' | sed -n 's/.*SurfaceOrientation: *\(
 if [ "${ROT:-0}" = "1" ] || [ "${ROT:-0}" = "3" ]; then t=$W; W=$H; H=$t; fi
 echo "screen ${W}x${H} @${D}dpi rot ${ROT:-0}" | tee -a "$out/screen.txt"
 
-adb shell am start -W -n $pkg/.ProfilesActivity >/dev/null
+adb shell am start -W -n $pkg/$cls.ProfilesActivity >/dev/null
 shot 01-who-empty
 
 # Tap "+": layout mirrors ProfilesActivity.layoutBadges with a single badge.
@@ -57,8 +58,8 @@ shot 02-home
 adb shell input keyevent KEYCODE_BACK
 shot 03-who-one-player
 
-for g in path hops pattern scale; do
-    adb shell am start -W -n $pkg/.MapActivity --ei player 1 --es game $g >/dev/null
+for g in letters path hops pattern scale; do
+    adb shell am start -W -n $pkg/$cls.MapActivity --ei player 1 --es game $g >/dev/null
     shot "1-map-$g"
     adb shell input keyevent KEYCODE_BACK
     sleep 1
@@ -72,14 +73,24 @@ for pair in path:robotpath hops:kangaroohops pattern:patternmachine scale:balanc
     sleep 1
 done
 
+# Lili's Letters: each kind of step of a lesson (stop 5, «ر», has every kind).
+i=0
+for st in 0 1 2 3 4 5 6 7; do
+    adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --ei stage 4 --ei step $st --ez unlock true >/dev/null
+    sleep 5
+    shot "4-letters-step$st"
+    adb shell input keyevent KEYCODE_BACK
+    sleep 1
+done
+
 # Landscape on phones too.
 adb shell settings put system accelerometer_rotation 0
 adb shell settings put system user_rotation 1
 sleep 3
-adb shell am start -W -n $pkg/.HomeActivity --ei player 1 >/dev/null
+adb shell am start -W -n $pkg/$cls.HomeActivity --ei player 1 >/dev/null
 shot "3-landscape-home"
 adb shell input keyevent KEYCODE_BACK
-adb shell am start -W -n $pkg/.MapActivity --ei player 1 --es game path >/dev/null
+adb shell am start -W -n $pkg/$cls.MapActivity --ei player 1 --es game path >/dev/null
 shot "3-landscape-map"
 adb shell input keyevent KEYCODE_BACK
 adb shell am start -W -n $pkg/io.github.foadsf.robotpath.GameActivity --es prefs p1_path >/dev/null
@@ -92,5 +103,9 @@ for pair in hops:kangaroohops pattern:patternmachine scale:balancescale; do
     adb shell input keyevent KEYCODE_BACK
     sleep 1
 done
+adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --ei stage 4 --ei step 4 --ez unlock true >/dev/null
+sleep 5
+shot "3-landscape-letters"
+adb shell input keyevent KEYCODE_BACK
 adb shell settings put system user_rotation 0
 ls -la "$out"
