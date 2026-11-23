@@ -177,8 +177,11 @@ public class MapActivity extends Activity {
                     text.setColor(here ? Draw.PLUM : 0xFFFFFFFF);
                     text.setTextSize(r * 0.95f);
                     String label = String.format(Locale.getDefault(), "%d", n);
+                    if (game == Game.LETTERS && n <= LettersActivity.STOP_LABELS.length) {
+                        label = LettersActivity.STOP_LABELS[n - 1];
+                    }
                     c.drawText(label, x, y - (text.ascent() + text.descent()) / 2f, text);
-                    if (!here) Draw.star(c, x + r * 0.72f, y - r * 0.72f, r * 0.3f, Draw.YELLOW_D);
+                    if (!here && n < furthest) Draw.star(c, x + r * 0.72f, y - r * 0.72f, r * 0.3f, Draw.YELLOW_D);
                 } else {
                     c.drawCircle(x, y + 5 * dp, r, Draw.fill(0xFFB9BED3));
                     c.drawCircle(x, y, r, Draw.fill(0xFFE4E7F1));

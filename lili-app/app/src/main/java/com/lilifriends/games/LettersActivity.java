@@ -39,6 +39,8 @@ public class LettersActivity extends Activity {
     public static final String EXTRA_PREFS = "prefs", EXTRA_STAGE = "stage";
 
     private static final int ROUNDS = 6;
+    /** What each stop of the map shows: the lesson's letter or sign, in the book's order. */
+    static final String[] STOP_LABELS = {"ب", "م", "د", "ف", "ر", "س", "ن", "ت", "ة", "ـٌ", "و", "ي", "ق", "ل", "ط", "ع", "ـً", "ح", "ش", "ز", "ج", "ص", "ـٍ", "أ", "ض", "خ", "ث", "ك", "ـّ", "غ", "ه", "ذ", "ظ", "الـ"};
     private static final int INTRO = 0, SOUNDS = 1, WORDS = 2, READ = 3, DONE = 4, TRACE = 5, BUILD = 6, ORDER = 7, ASK = 8;
 
     private SharedPreferences prefs;
