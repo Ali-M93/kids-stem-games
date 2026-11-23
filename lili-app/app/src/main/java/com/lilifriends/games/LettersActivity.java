@@ -565,6 +565,7 @@ public class LettersActivity extends Activity {
             int k = kind();
             float btnH = Math.max(64 * dp, Math.min(84 * dp, h * 0.11f));
             if (k == TRACE) {
+                btnH = Math.min(btnH, (w - 2 * pad) / 4.9f);
                 float bottomRow = h - pad - btnH / 2;
                 float l = pad, t = pad, r = w - pad, b = h - 2 * pad - btnH;
                 if (traceBox == null || traceBox[2] != r || traceBox[3] != b) {
