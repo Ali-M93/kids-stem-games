@@ -73,10 +73,15 @@ for pair in path:robotpath hops:kangaroohops pattern:patternmachine scale:balanc
     sleep 1
 done
 
-# Lili's Letters: each kind of step of a lesson (stop 5, «ر», has every kind).
-i=0
+# Lili's Letters: the boy-or-girl question a new child sees first, then each kind of step of a
+# lesson (stop 5, «ر», has every kind).
+adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p9_letters --ei stage 0 >/dev/null
+sleep 4
+shot "4-letters-ask"
+adb shell input keyevent KEYCODE_BACK
+sleep 1
 for st in 0 1 2 3 4 5 6 7; do
-    adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --ei stage 4 --ei step $st --ez unlock true >/dev/null
+    adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --es gender b --ei stage 4 --ei step $st >/dev/null
     sleep 5
     shot "4-letters-step$st"
     adb shell input keyevent KEYCODE_BACK
@@ -103,7 +108,7 @@ for pair in hops:kangaroohops pattern:patternmachine scale:balancescale; do
     adb shell input keyevent KEYCODE_BACK
     sleep 1
 done
-adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --ei stage 4 --ei step 4 --ez unlock true >/dev/null
+adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --es gender g --ei stage 4 --ei step 4 >/dev/null
 sleep 5
 shot "3-landscape-letters"
 adb shell input keyevent KEYCODE_BACK

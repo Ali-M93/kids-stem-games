@@ -143,7 +143,7 @@ public class MapActivity extends Activity {
                     int n = down;
                     down = -1;
                     invalidate();
-                    if (n >= 1 && n <= furthest) play(n);
+                    if (n >= 1 && (n <= furthest || (game.allOpen() && n <= shown))) play(n);
                     return true;
                 case MotionEvent.ACTION_CANCEL:
                     down = -1;
@@ -166,7 +166,7 @@ public class MapActivity extends Activity {
             }
             for (int n = 1; n <= shown; n++) {
                 float x = xOf(n), y = yOf(n);
-                boolean open = n <= furthest, here = n == furthest;
+                boolean open = n <= furthest || game.allOpen(), here = n == furthest;
                 float s = (n == down ? 0.9f : 1f) * (here ? 1.18f : 1f);
                 c.save();
                 c.scale(s, s, x, y);

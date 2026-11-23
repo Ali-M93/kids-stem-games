@@ -39,7 +39,7 @@ public class LettersActivity extends Activity {
     public static final String EXTRA_PREFS = "prefs", EXTRA_STAGE = "stage";
 
     private static final int ROUNDS = 6;
-    private static final int INTRO = 0, SOUNDS = 1, WORDS = 2, READ = 3, DONE = 4, TRACE = 5, BUILD = 6, ORDER = 7;
+    private static final int INTRO = 0, SOUNDS = 1, WORDS = 2, READ = 3, DONE = 4, TRACE = 5, BUILD = 6, ORDER = 7, ASK = 8;
 
     private SharedPreferences prefs;
     private Lessons book;
@@ -64,6 +64,8 @@ public class LettersActivity extends Activity {
     private int placed;
     private long wobbleAt;
     private boolean busy;
+    /** Lili speaks to a girl or a boy (Arabic praise and instructions differ); asked once. */
+    private boolean girl;
 
     @Override
     protected void onCreate(Bundle saved) {
@@ -77,12 +79,16 @@ public class LettersActivity extends Activity {
             return;
         }
         int last = book.lessons.size() - 1;
+        // Every lesson is open (see Game.allOpen), so a child can play the one their class is on.
         int furthest = Math.min(prefs.getInt("stage", 0), last);
-        // Only the debug build exports this screen, for tools/screenshots.sh.
-        if (getIntent().getBooleanExtra("unlock", false)) furthest = last;
-        stage = Math.max(0, Math.min(getIntent().getIntExtra(EXTRA_STAGE, furthest), furthest));
+        stage = Math.max(0, Math.min(getIntent().getIntExtra(EXTRA_STAGE, furthest), last));
+        // tools/screenshots.sh passes the answer to skip the question.
+        String forced = getIntent().getStringExtra("gender");
+        if (forced != null) prefs.edit().putString("gender", forced).commit();
+        girl = "g".equals(prefs.getString("gender", ""));
         lesson = book.lessons.get(stage);
 
+        if (prefs.getString("gender", "").isEmpty()) steps.add(ASK);
         steps.add(INTRO);
         if (lesson.title.startsWith("حرف")) steps.add(TRACE);
         if (lesson.sounds().size() >= 2) steps.add(SOUNDS);
@@ -163,6 +169,32 @@ public class LettersActivity extends Activity {
         }
     }
 
+    private static final String[] BOY_ONLY = {"أَحْسَنْتَ!", "حَاوِلْ مَرَّةً أُخْرَى"};
+    private static final String[] GIRL_ONLY = {"أَحْسَنْتِ!", "حَاوِلِي مَرَّةً أُخْرَى"};
+
+    /** Praise or «try again» that fits the child: words for the other one are left out. */
+    private Lessons.Item cheer(List<Lessons.Item> list) {
+        List<Lessons.Item> fit = new ArrayList<>();
+        for (Lessons.Item it : list) {
+            boolean other = false;
+            for (String s : girl ? BOY_ONLY : GIRL_ONLY) if (s.equals(it.text)) other = true;
+            if (!other) fit.add(it);
+        }
+        return any(fit.isEmpty() ? list : fit);
+    }
+
+    /** An instruction in the form for a boy, or for a girl when Lili has that recording. */
+    private String say(String boy, String girlForm) {
+        if (girl) return book.phrase(girlForm);
+        return book.phrase(boy);
+    }
+
+    private void chooseGender(boolean g) {
+        girl = g;
+        prefs.edit().putString("gender", g ? "g" : "b").apply();
+        nextStep();
+    }
+
     private Lessons.Item any(List<Lessons.Item> list) {
         return list.isEmpty() ? null : list.get(rnd.nextInt(list.size()));
     }
@@ -181,7 +213,7 @@ public class LettersActivity extends Activity {
         switch (kind()) {
             case TRACE:
                 view.clearTrace();
-                play(book.phrase("اُرْسُمِ الْحَرْف"), null);
+                play(say("اُرْسُمِ الْحَرْف", "اُرْسُمِي الْحَرْف"), null);
                 break;
             case INTRO:
                 view.invalidate();
@@ -191,35 +223,38 @@ public class LettersActivity extends Activity {
                 pool = lesson.sounds();
                 rounds = Math.min(ROUNDS, pool.size());
                 deal();
-                play(book.phrase("اِسْمَعْ وَاخْتَرْ"), this::newRound);
+                play(say("اِسْمَعْ وَاخْتَرْ", "اِسْمَعِي وَاخْتَارِي"), this::newRound);
                 break;
             case WORDS:
                 pool = new ArrayList<>(lesson.words);
                 rounds = Math.min(ROUNDS, pool.size());
                 deal();
-                play(book.phrase("اِسْمَعْ وَاخْتَرْ"), this::newRound);
+                play(say("اِسْمَعْ وَاخْتَرْ", "اِسْمَعِي وَاخْتَارِي"), this::newRound);
                 break;
             case BUILD:
                 pool = lesson.buildable();
                 rounds = Math.min(4, pool.size());
                 deal();
-                play(book.phrase("رَكِّبِ الْمَقَاطِع"), this::newBuild);
+                play(say("رَكِّبِ الْمَقَاطِع", "رَكِّبِي الْمَقَاطِع"), this::newBuild);
                 break;
             case ORDER:
                 pool = lesson.orderable();
                 rounds = Math.min(3, pool.size());
                 deal();
-                newBuild();
+                play(say("رَتِّبِ الْكَلِمَات", "رَتِّبِي الْكَلِمَات"), this::newBuild);
+                break;
+            case ASK:
+                play(book.phrase("مَرْحَبًا، أَنَا لِيلِي!"), null);
                 break;
             case READ:
                 view.invalidate();
-                play(book.phrase("اِقْرَأْ مَعِي"), () -> play(lesson.sentences.get(0).sound, null));
+                play(say("اِقْرَأْ مَعِي", "اِقْرَئِي مَعِي"), () -> play(lesson.sentences.get(0).sound, null));
                 break;
             default:
                 int reached = prefs.getInt("stage", 0);
                 if (stage + 1 > reached) prefs.edit().putInt("stage", stage + 1).apply();
                 view.invalidate();
-                Lessons.Item ok = any(book.praise);
+                Lessons.Item ok = cheer(book.praise);
                 play(ok != null ? ok.sound : null, null);
         }
         view.invalidate();
@@ -292,7 +327,7 @@ public class LettersActivity extends Activity {
             if (placed == target.parts.length) {
                 busy = true;
                 play(target.sound, () -> {
-                    Lessons.Item ok = any(book.praise);
+                    Lessons.Item ok = cheer(book.praise);
                     play(ok != null ? ok.sound : null, () -> {
                         round++;
                         if (round < rounds) newBuild();
@@ -304,7 +339,7 @@ public class LettersActivity extends Activity {
             wrongPick = i;
             wobbleAt = SystemClock.uptimeMillis();
             view.invalidate();
-            Lessons.Item again = any(book.tryAgain);
+            Lessons.Item again = cheer(book.tryAgain);
             play(again != null ? again.sound : null, null);
         }
     }
@@ -320,7 +355,7 @@ public class LettersActivity extends Activity {
             busy = true;
             rightPick = i;
             view.invalidate();
-            Lessons.Item ok = any(book.praise);
+            Lessons.Item ok = cheer(book.praise);
             play(ok != null ? ok.sound : null, () -> {
                 round++;
                 if (round < rounds) newRound();
@@ -330,7 +365,7 @@ public class LettersActivity extends Activity {
             wrongPick = i;
             wobbleAt = SystemClock.uptimeMillis();
             view.invalidate();
-            Lessons.Item again = any(book.tryAgain);
+            Lessons.Item again = cheer(book.tryAgain);
             play(again != null ? again.sound : null, () -> play(target.sound, null));
         }
     }
@@ -355,7 +390,7 @@ public class LettersActivity extends Activity {
         /** Buttons on screen now: left, top, right, bottom, and what they do (index or code). */
         private final List<float[]> boxes = new ArrayList<>();
         private int down = -1;
-        private static final int B_SPEAK = -10, B_NEXT = -11, B_CLEAR = -12;
+        private static final int B_SPEAK = -10, B_NEXT = -11, B_CLEAR = -12, B_BOY = -13, B_GIRL = -14;
         // Tracing: the letter's ink as a mask, the child's finger path, and where it went.
         private final Paint ink = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final Path finger = new Path();
@@ -462,7 +497,7 @@ public class LettersActivity extends Activity {
                     tracing = false;
                     if (coverage() >= 0.72f) {
                         traced = true;
-                        Lessons.Item ok = any(book.praise);
+                        Lessons.Item ok = cheer(book.praise);
                         play(ok != null ? ok.sound : null, null);
                     }
                     invalidate();
@@ -502,7 +537,9 @@ public class LettersActivity extends Activity {
 
         private void act(int w) {
             int k = kind();
-            if (w == B_CLEAR) {
+            if (w == B_BOY || w == B_GIRL) {
+                chooseGender(w == B_GIRL);
+            } else if (w == B_CLEAR) {
                 clearTrace();
             } else if (w == B_SPEAK) {
                 if (k == TRACE) play(lesson.intro.isEmpty() ? null : lesson.intro.get(0).sound, null);
@@ -564,7 +601,21 @@ public class LettersActivity extends Activity {
             c.drawColor(Draw.SKY_TOP);
             int k = kind();
             float btnH = Math.max(64 * dp, Math.min(84 * dp, h * 0.11f));
-            if (k == TRACE) {
+            if (k == ASK) {
+                // Asked once per child: Lili's praise and instructions are different for a girl.
+                label(c, "مَنْ يَلْعَبُ مَعَ لِيلِي؟", w / 2, pad + 30 * dp, 30 * dp, w - 2 * pad, Draw.PLUM);
+                boolean side = w > h;
+                float cw = side ? Math.min((w - 3 * pad) / 2, h * 0.6f) : Math.min(w - 2 * pad, (h - 100 * dp) / 2 - pad);
+                float ch = cw * 0.75f;
+                float t0 = pad + 70 * dp;
+                float[][] at = side
+                        ? new float[][]{{w / 2 + pad / 2, t0}, {w / 2 - pad / 2 - cw, t0}}
+                        : new float[][]{{(w - cw) / 2, t0}, {(w - cw) / 2, t0 + ch + pad}};
+                button(c, at[0][0], at[0][1], at[0][0] + cw, at[0][1] + ch, Draw.BLUE, Draw.BLUE_D, B_BOY);
+                label(c, "وَلَد", at[0][0] + cw / 2, at[0][1] + ch / 2 - 3 * dp, ch * 0.32f, cw * 0.8f, 0xFFFFFFFF);
+                button(c, at[1][0], at[1][1], at[1][0] + cw, at[1][1] + ch, Draw.PINK, Draw.PINK_D, B_GIRL);
+                label(c, "بِنْت", at[1][0] + cw / 2, at[1][1] + ch / 2 - 3 * dp, ch * 0.32f, cw * 0.8f, 0xFFFFFFFF);
+            } else if (k == TRACE) {
                 btnH = Math.min(btnH, (w - 2 * pad) / 4.9f);
                 float bottomRow = h - pad - btnH / 2;
                 float l = pad, t = pad, r = w - pad, b = h - 2 * pad - btnH;
@@ -648,7 +699,7 @@ public class LettersActivity extends Activity {
             } else if (k == BUILD || k == ORDER) {
                 label(c, (round + 1) + " / " + rounds, w / 2, pad + 12 * dp, 18 * dp, w, 0xFF9AA0BC);
                 boolean side = w > h * 1.2f;
-                if (k == ORDER && !side) label(c, "رَتِّبِ الْكَلِمَاتِ", w / 2, pad + 40 * dp, 22 * dp, w, Draw.PLUM);
+                if (k == ORDER && !side) label(c, girl ? "رَتِّبِي الْكَلِمَاتِ" : "رَتِّبِ الْكَلِمَاتِ", w / 2, pad + 40 * dp, 22 * dp, w, Draw.PLUM);
                 float sr = side ? 30 * dp : Math.max(36 * dp, Math.min(52 * dp, h * 0.07f));
                 float spT = side ? pad : pad + (k == ORDER ? 60 : 40) * dp;
                 if (side) speaker(c, pad + sr, pad + sr, sr);
@@ -716,7 +767,7 @@ public class LettersActivity extends Activity {
                 Draw.picture(c, lili, w / 2 - ph / 2, pad, w / 2 + ph / 2, pad + ph);
                 float y = pad + ph + pad;
                 for (int i = 0; i < 3; i++) Draw.star(c, w / 2 + (i - 1) * 54 * dp, y + 26 * dp, 22 * dp, Draw.YELLOW_D);
-                label(c, "أَحْسَنْتَ!", w / 2, y + 90 * dp, 40 * dp, w - 2 * pad, Draw.PLUM);
+                label(c, girl ? "أَحْسَنْتِ!" : "أَحْسَنْتَ!", w / 2, y + 90 * dp, 40 * dp, w - 2 * pad, Draw.PLUM);
                 next(c, w / 2, y + 150 * dp + btnH / 2, btnH * 2.4f, btnH, "تَمّ");
             }
         }

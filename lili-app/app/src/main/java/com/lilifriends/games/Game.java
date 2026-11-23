@@ -43,6 +43,14 @@ final class Game {
         return PATH;
     }
 
+    /**
+     * Every stop of Lili's Letters is open from the start, so a child can play the lesson their
+     * class has reached; Lili still stands on the furthest one finished.
+     */
+    boolean allOpen() {
+        return this == LETTERS;
+    }
+
     boolean openEnded() {
         return stops == 0;
     }
