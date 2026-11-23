@@ -577,13 +577,15 @@ public class LettersActivity extends Activity {
                 c.drawText(lesson.big, (l + r) / 2f, (t + b) / 2f - (ink.ascent() + ink.descent()) / 2f, ink);
                 Paint pen = Draw.stroke(traced ? Draw.MINT_D : Draw.PINK_D, 18 * dp);
                 c.drawPath(finger, pen);
+                // One row: clear (start side), next (middle), speaker (end side).
                 if (!traced) {
-                    button(c, w / 2 - btnH * 2.2f - btnH / 2, bottomRow - btnH / 2, w / 2 - btnH * 2.2f + btnH / 2,
-                            bottomRow + btnH / 2, Draw.BLUE, Draw.BLUE_D, B_CLEAR);
-                    label(c, "اِمْسَحْ", w / 2 - btnH * 2.2f, bottomRow - 3 * dp, btnH * 0.32f, btnH * 0.85f, 0xFFFFFFFF);
+                    float cx = w / 2 - 1.9f * btnH;
+                    button(c, cx - 0.65f * btnH, bottomRow - btnH / 2, cx + 0.65f * btnH, bottomRow + btnH / 2,
+                            Draw.BLUE, Draw.BLUE_D, B_CLEAR);
+                    label(c, "اِمْسَحْ", cx, bottomRow - 3 * dp, btnH * 0.32f, btnH * 1.1f, 0xFFFFFFFF);
                 }
-                speaker(c, w / 2 + btnH * 0.9f, bottomRow, btnH / 2);
-                next(c, w / 2 - btnH * 1.1f, bottomRow, btnH * 2.2f, btnH, traced ? "هَيَّا" : "التَّالِي");
+                speaker(c, w / 2 + 1.7f * btnH, bottomRow, btnH / 2);
+                next(c, w / 2, bottomRow, btnH * 1.9f, btnH, traced ? "هَيَّا" : "التَّالِي");
             } else if (k == INTRO) {
                 float size = Math.min(w - 2 * pad, h * 0.5f);
                 float cx = w / 2, top = pad;
@@ -596,10 +598,12 @@ public class LettersActivity extends Activity {
                 speaker(c, cx + btnH * 0.9f, row, btnH / 2);
                 next(c, cx - btnH * 1.1f, row, btnH * 2.2f, btnH, "هَيَّا");
             } else if (k == SOUNDS || k == WORDS) {
+                boolean side = w > h * 1.2f;
                 label(c, (round + 1) + " / " + rounds, w / 2, pad + 12 * dp, 18 * dp, w, 0xFF9AA0BC);
-                float sr = Math.max(40 * dp, Math.min(56 * dp, h * 0.08f));
-                speaker(c, w / 2, pad + 40 * dp + sr, sr);
-                float top = pad + 60 * dp + 2 * sr + pad;
+                float sr = side ? 34 * dp : Math.max(40 * dp, Math.min(56 * dp, h * 0.08f));
+                if (side) speaker(c, pad + sr, pad + sr, sr);
+                else speaker(c, w / 2, pad + 40 * dp + sr, sr);
+                float top = side ? pad + 2 * sr + pad : pad + 60 * dp + 2 * sr + pad;
                 boolean column = w < h * 0.8f && k == WORDS;
                 int n = options.size();
                 float wob = 0;
@@ -642,16 +646,19 @@ public class LettersActivity extends Activity {
                 }
             } else if (k == BUILD || k == ORDER) {
                 label(c, (round + 1) + " / " + rounds, w / 2, pad + 12 * dp, 18 * dp, w, 0xFF9AA0BC);
-                if (k == ORDER) label(c, "رَتِّبِ الْكَلِمَاتِ", w / 2, pad + 40 * dp, 22 * dp, w, Draw.PLUM);
-                float sr = Math.max(36 * dp, Math.min(52 * dp, h * 0.07f));
-                float spT = pad + (k == ORDER ? 60 : 40) * dp;
-                speaker(c, w / 2, spT + sr, sr);
+                boolean side = w > h * 1.2f;
+                if (k == ORDER && !side) label(c, "رَتِّبِ الْكَلِمَاتِ", w / 2, pad + 40 * dp, 22 * dp, w, Draw.PLUM);
+                float sr = side ? 30 * dp : Math.max(36 * dp, Math.min(52 * dp, h * 0.07f));
+                float spT = side ? pad : pad + (k == ORDER ? 60 : 40) * dp;
+                if (side) speaker(c, pad + sr, pad + sr, sr);
+                else speaker(c, w / 2, spT + sr, sr);
+                if (side) spT = pad + 6 * dp - 2 * sr;
                 if (target != null && target.parts != null) {
                     int n = cards.size();
                     int cols = n <= 3 ? n : (n + 1) / 2, rowsN = (n + cols - 1) / cols;
                     float cw = Math.min(170 * dp, (w - pad * (cols + 1)) / cols);
                     float avail = (h - spT - 2 * sr - 4 * pad) / 2f;
-                    float ch = Math.max(64 * dp, Math.min(110 * dp, (avail - (rowsN - 1) * pad) / rowsN));
+                    float ch = Math.max(40 * dp, Math.min(110 * dp, (avail - (rowsN - 1) * pad) / rowsN));
                     float rowW = cols * cw + (cols - 1) * pad, x0 = (w - rowW) / 2;
                     float slotT = spT + 2 * sr + pad;
                     // The slots, filled in reading order: right to left, then the next row.
@@ -692,7 +699,7 @@ public class LettersActivity extends Activity {
                 label(c, (sentence + 1) + " / " + lesson.sentences.size(), w / 2, pad + 12 * dp, 18 * dp, w, 0xFF9AA0BC);
                 float cardT = pad + 32 * dp, cardB = h - pad - btnH - pad;
                 Draw.card(c, pad, cardT, w - pad, cardB - 8 * dp, 28 * dp, 0xFFFFFFFF, 0xFFE6DCCB, 8 * dp);
-                para.setTextSize(Math.min(44 * dp, w * 0.075f));
+                para.setTextSize(Math.min(56 * dp, Math.min(w, h) * 0.1f));
                 int lw = (int) (w - 4 * pad);
                 StaticLayout sl = StaticLayout.Builder.obtain(s.text, 0, s.text.length(), para, lw)
                         .setAlignment(Layout.Alignment.ALIGN_CENTER).setLineSpacing(0, 1.25f).build();
