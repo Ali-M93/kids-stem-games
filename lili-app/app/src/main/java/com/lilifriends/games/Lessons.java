@@ -27,6 +27,8 @@ final class Lessons {
 
     static final class Lesson {
         final String title, big;
+        /** A page of the book to look at (listening, conversation and songs), or null. */
+        final String pic;
         final List<Item> intro, shortVowels, longVowels, sukun, words, sentences;
         /** «Put another letter in place of the red one»: the word, and the new word it makes. */
         final List<Item[]> swaps = new ArrayList<>();
@@ -36,6 +38,8 @@ final class Lessons {
         Lesson(JSONObject o) throws JSONException {
             title = o.getString("title");
             big = o.getString("big");
+            String p = o.optString("pic", "");
+            pic = p.isEmpty() ? null : p;
             intro = items(o.optJSONArray("intro"));
             shortVowels = items(o.optJSONArray("short"));
             longVowels = items(o.optJSONArray("long"));

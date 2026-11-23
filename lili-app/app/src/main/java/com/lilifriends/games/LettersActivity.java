@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Path;
 import android.graphics.Canvas;
@@ -40,12 +41,14 @@ public class LettersActivity extends Activity {
 
     private static final int ROUNDS = 6;
     /** What each stop of the map shows: the lesson's letter or sign, in the book's order. */
-    static final String[] STOP_LABELS = {"ـا", "ـو", "ـي", "ب", "م", "د", "ف", "ر", "س", "ن", "ت", "ة", "ـٌ", "و", "ي", "ق", "ل", "ط", "ع", "ـً", "ح", "ش", "ز", "ج", "ص", "ـٍ", "أ", "ض", "خ", "ث", "ك", "ـّ", "غ", "ه", "ذ", "ظ", "الـ"};
+    static final String[] STOP_LABELS = {"ـا","ـو","ـي","🎧","ب","م","د","ف","🎵","🎧","ر","س","ن","ت","ة","ـٌ","🎵","🎧","و","ي","ق","ل","ط","ع","ـً","🎵","🎧","ح","ش","ز","ج","ص","ـٍ","🎧","أ","ض","خ","ث","ك","ـّ","🎵","🎧","غ","ه","ذ","ظ","الـ","🎵"};
     private static final int INTRO = 0, SOUNDS = 1, WORDS = 2, READ = 3, DONE = 4, TRACE = 5, BUILD = 6, ORDER = 7, ASK = 8, SPELL = 9, SWAP = 10;
 
     private SharedPreferences prefs;
     private Lessons book;
     private Lessons.Lesson lesson;
+    /** The book page shown with this lesson, if it has one. */
+    private Bitmap page;
     private int stage;
     private final Random rnd = new Random();
     private MediaPlayer player;
@@ -94,6 +97,13 @@ public class LettersActivity extends Activity {
         if (forced != null) prefs.edit().putString("gender", forced).commit();
         girl = "g".equals(prefs.getString("gender", ""));
         lesson = book.lessons.get(stage);
+        if (lesson.pic != null) {
+            try (InputStream in = getAssets().open("letters/" + lesson.pic)) {
+                page = BitmapFactory.decodeStream(in);
+            } catch (IOException e) {
+                page = null;
+            }
+        }
 
         if (prefs.getString("gender", "").isEmpty()) steps.add(ASK);
         steps.add(INTRO);
@@ -228,7 +238,8 @@ public class LettersActivity extends Activity {
                 break;
             case INTRO:
                 view.invalidate();
-                String first = lesson.title.startsWith("حرف") ? book.phrase("هَيَّا نَتَعَلَّمُ حَرْفًا جَدِيدًا") : null;
+                String first = lesson.title.startsWith("حرف") ? book.phrase("هَيَّا نَتَعَلَّمُ حَرْفًا جَدِيدًا")
+                        : lesson.title.startsWith("أستمع") ? book.phrase("أَسْتَمِعُ وَأَتَحَدَّث") : null;
                 play(first, () -> play(lesson.intro.isEmpty() ? null : lesson.intro.get(0).sound, null));
                 break;
             case SOUNDS:
@@ -270,7 +281,9 @@ public class LettersActivity extends Activity {
                 break;
             case READ:
                 view.invalidate();
-                play(say("اِقْرَأْ مَعِي", "اِقْرَئِي مَعِي"), () -> play(lesson.sentences.get(0).sound, null));
+                // «أنا أتحدث»: questions to answer about the pictures, not lines to read along.
+                String lead = page != null ? null : say("اِقْرَأْ مَعِي", "اِقْرَئِي مَعِي");
+                play(lead, () -> play(lesson.sentences.get(0).sound, null));
                 break;
             default:
                 int reached = prefs.getInt("stage", 0);
@@ -730,6 +743,15 @@ public class LettersActivity extends Activity {
                 }
                 speaker(c, w / 2 + 1.7f * btnH, bottomRow, btnH / 2);
                 next(c, w / 2, bottomRow, btnH * 1.9f, btnH, traced ? "هَيَّا" : "التَّالِي");
+            } else if (k == INTRO && page != null) {
+                // A page of the book: the unit's pictures to talk about, or the song's picture.
+                float row = h - pad - btnH / 2;
+                float y = row - btnH / 2 - pad - 44 * dp;
+                Draw.picture(c, page, pad, pad, w - pad, y - pad);
+                String say = lesson.intro.isEmpty() ? lesson.title : lesson.intro.get(0).text;
+                label(c, say, w / 2, y + 22 * dp, 30 * dp, w - 2 * pad, Draw.PLUM);
+                speaker(c, w / 2 + btnH * 0.9f, row, btnH / 2);
+                next(c, w / 2 - btnH * 1.1f, row, btnH * 2.2f, btnH, "هَيَّا");
             } else if (k == INTRO) {
                 float size = Math.min(w - 2 * pad, h * 0.5f);
                 float cx = w / 2, top = pad;
@@ -885,14 +907,27 @@ public class LettersActivity extends Activity {
             } else if (k == READ) {
                 Lessons.Item s = lesson.sentences.get(sentence);
                 label(c, (sentence + 1) + " / " + lesson.sentences.size(), w / 2, pad + 12 * dp, 18 * dp, w, 0xFF9AA0BC);
-                float cardT = pad + 32 * dp, cardB = h - pad - btnH - pad;
-                Draw.card(c, pad, cardT, w - pad, cardB - 8 * dp, 28 * dp, 0xFFFFFFFF, 0xFFE6DCCB, 8 * dp);
-                para.setTextSize(Math.min(56 * dp, Math.min(w, h) * 0.1f));
-                int lw = (int) (w - 4 * pad);
+                float cardL = pad, cardR = w - pad, cardT = pad + 32 * dp, cardB = h - pad - btnH - pad;
+                float textSize = Math.min(56 * dp, Math.min(w, h) * 0.1f);
+                if (page != null) {
+                    // Questions about the book's pictures: the page stays in view beside or above them.
+                    textSize = Math.min(34 * dp, Math.min(w, h) * 0.065f);
+                    if (w > h * 1.2f) {
+                        Draw.picture(c, page, w / 2 + pad / 2, cardT, w - pad, cardB);
+                        cardR = w / 2 - pad / 2;
+                    } else {
+                        float picB = cardT + (cardB - cardT) * 0.58f;
+                        Draw.picture(c, page, pad, cardT, w - pad, picB);
+                        cardT = picB + pad;
+                    }
+                }
+                Draw.card(c, cardL, cardT, cardR, cardB - 8 * dp, 28 * dp, 0xFFFFFFFF, 0xFFE6DCCB, 8 * dp);
+                para.setTextSize(textSize);
+                int lw = (int) (cardR - cardL - 2 * pad);
                 StaticLayout sl = StaticLayout.Builder.obtain(s.text, 0, s.text.length(), para, lw)
                         .setAlignment(Layout.Alignment.ALIGN_CENTER).setLineSpacing(0, 1.25f).build();
                 c.save();
-                c.translate(2 * pad, cardT + Math.max(pad, (cardB - cardT - sl.getHeight()) / 2f));
+                c.translate(cardL + pad, cardT + Math.max(pad, (cardB - 8 * dp - cardT - sl.getHeight()) / 2f));
                 sl.draw(c);
                 c.restore();
                 float row = h - pad - btnH / 2;

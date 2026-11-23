@@ -81,7 +81,7 @@ shot "4-letters-ask"
 adb shell input keyevent KEYCODE_BACK
 sleep 1
 for st in 0 1 2 3 4 5 6 7 8; do
-    adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --es gender b --ei stage 7 --ei step $st >/dev/null
+    adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --es gender b --ei stage 10 --ei step $st >/dev/null
     sleep 5
     shot "4-letters-step$st"
     adb shell input keyevent KEYCODE_BACK
@@ -89,7 +89,7 @@ for st in 0 1 2 3 4 5 6 7 8; do
 done
 
 for st in 5 6 7; do
-    adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --es gender g --ei stage 32 --ei step $st >/dev/null
+    adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --es gender g --ei stage 42 --ei step $st >/dev/null
     sleep 6
     shot "4-letters-ghain-step$st"
     adb shell input keyevent KEYCODE_BACK
@@ -98,6 +98,19 @@ done
 adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --es gender b --ei stage 0 --ei step 1 >/dev/null
 sleep 5
 shot "4-letters-madd-step1"
+adb shell input keyevent KEYCODE_BACK
+sleep 1
+# The book's «أستمع وأتحدث» (stage 3, unit 1) and a song (stage 25, «نحن أطفال العراق»).
+for st in 0 1; do
+    adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --es gender b --ei stage 3 --ei step $st >/dev/null
+    sleep 5
+    shot "4-letters-talk-step$st"
+    adb shell input keyevent KEYCODE_BACK
+    sleep 1
+done
+adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --es gender b --ei stage 25 --ei step 0 >/dev/null
+sleep 5
+shot "4-letters-song"
 adb shell input keyevent KEYCODE_BACK
 sleep 1
 
@@ -121,9 +134,13 @@ for pair in hops:kangaroohops pattern:patternmachine scale:balancescale; do
     adb shell input keyevent KEYCODE_BACK
     sleep 1
 done
-adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --es gender g --ei stage 7 --ei step 4 >/dev/null
+adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --es gender g --ei stage 10 --ei step 4 >/dev/null
 sleep 5
 shot "3-landscape-letters"
+adb shell input keyevent KEYCODE_BACK
+adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --es gender b --ei stage 9 --ei step 1 >/dev/null
+sleep 5
+shot "3-landscape-letters-talk"
 adb shell input keyevent KEYCODE_BACK
 adb shell settings put system user_rotation 0
 ls -la "$out"
