@@ -74,19 +74,32 @@ for pair in path:robotpath hops:kangaroohops pattern:patternmachine scale:balanc
 done
 
 # Lili's Letters: the boy-or-girl question a new child sees first, then each kind of step of a
-# lesson (stop 5, «ر», has every kind).
+# lesson (stop 8, «ر», has most kinds), and the red-letter swap of «غ» (stop 33).
 adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p9_letters --ei stage 0 >/dev/null
 sleep 4
 shot "4-letters-ask"
 adb shell input keyevent KEYCODE_BACK
 sleep 1
 for st in 0 1 2 3 4 5 6 7 8; do
-    adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --es gender b --ei stage 4 --ei step $st >/dev/null
+    adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --es gender b --ei stage 7 --ei step $st >/dev/null
     sleep 5
     shot "4-letters-step$st"
     adb shell input keyevent KEYCODE_BACK
     sleep 1
 done
+
+for st in 5 6 7; do
+    adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --es gender g --ei stage 32 --ei step $st >/dev/null
+    sleep 6
+    shot "4-letters-ghain-step$st"
+    adb shell input keyevent KEYCODE_BACK
+    sleep 1
+done
+adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --es gender b --ei stage 0 --ei step 1 >/dev/null
+sleep 5
+shot "4-letters-madd-step1"
+adb shell input keyevent KEYCODE_BACK
+sleep 1
 
 # Landscape on phones too.
 adb shell settings put system accelerometer_rotation 0
@@ -108,7 +121,7 @@ for pair in hops:kangaroohops pattern:patternmachine scale:balancescale; do
     adb shell input keyevent KEYCODE_BACK
     sleep 1
 done
-adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --es gender g --ei stage 4 --ei step 4 >/dev/null
+adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --es gender g --ei stage 7 --ei step 4 >/dev/null
 sleep 5
 shot "3-landscape-letters"
 adb shell input keyevent KEYCODE_BACK

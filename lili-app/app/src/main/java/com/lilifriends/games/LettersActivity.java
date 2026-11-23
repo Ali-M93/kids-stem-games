@@ -40,7 +40,7 @@ public class LettersActivity extends Activity {
 
     private static final int ROUNDS = 6;
     /** What each stop of the map shows: the lesson's letter or sign, in the book's order. */
-    static final String[] STOP_LABELS = {"ب", "م", "د", "ف", "ر", "س", "ن", "ت", "ة", "ـٌ", "و", "ي", "ق", "ل", "ط", "ع", "ـً", "ح", "ش", "ز", "ج", "ص", "ـٍ", "أ", "ض", "خ", "ث", "ك", "ـّ", "غ", "ه", "ذ", "ظ", "الـ"};
+    static final String[] STOP_LABELS = {"ـا", "ـو", "ـي", "ب", "م", "د", "ف", "ر", "س", "ن", "ت", "ة", "ـٌ", "و", "ي", "ق", "ل", "ط", "ع", "ـً", "ح", "ش", "ز", "ج", "ص", "ـٍ", "أ", "ض", "خ", "ث", "ك", "ـّ", "غ", "ه", "ذ", "ظ", "الـ"};
     private static final int INTRO = 0, SOUNDS = 1, WORDS = 2, READ = 3, DONE = 4, TRACE = 5, BUILD = 6, ORDER = 7, ASK = 8, SPELL = 9, SWAP = 10;
 
     private SharedPreferences prefs;
@@ -178,8 +178,8 @@ public class LettersActivity extends Activity {
         }
     }
 
-    private static final String[] BOY_ONLY = {"أَحْسَنْتَ!", "حَاوِلْ مَرَّةً أُخْرَى"};
-    private static final String[] GIRL_ONLY = {"أَحْسَنْتِ!", "حَاوِلِي مَرَّةً أُخْرَى"};
+    private static final String[] BOY_ONLY = {"أَحْسَنْتَ!", "حَاوِلْ مَرَّةً أُخْرَى", "أَحْسَنْتَ يَا بَطَل!"};
+    private static final String[] GIRL_ONLY = {"أَحْسَنْتِ!", "حَاوِلِي مَرَّةً أُخْرَى", "أَحْسَنْتِ يَا بَطَلَة!"};
 
     /** Praise or «try again» that fits the child: words for the other one are left out. */
     private Lessons.Item cheer(List<Lessons.Item> list) {
@@ -199,9 +199,11 @@ public class LettersActivity extends Activity {
     }
 
     private void chooseGender(boolean g) {
+        if (kind() != ASK || busy) return;
+        busy = true;
         girl = g;
         prefs.edit().putString("gender", g ? "g" : "b").apply();
-        nextStep();
+        play(book.phrase(g ? "بِنْت" : "وَلَد"), this::nextStep);
     }
 
     private Lessons.Item any(List<Lessons.Item> list) {
@@ -226,7 +228,8 @@ public class LettersActivity extends Activity {
                 break;
             case INTRO:
                 view.invalidate();
-                play(lesson.intro.isEmpty() ? null : lesson.intro.get(0).sound, null);
+                String first = lesson.title.startsWith("حرف") ? book.phrase("هَيَّا نَتَعَلَّمُ حَرْفًا جَدِيدًا") : null;
+                play(first, () -> play(lesson.intro.isEmpty() ? null : lesson.intro.get(0).sound, null));
                 break;
             case SOUNDS:
                 pool = lesson.sounds();
@@ -263,7 +266,7 @@ public class LettersActivity extends Activity {
                 play(say("رَتِّبِ الْكَلِمَات", "رَتِّبِي الْكَلِمَات"), this::newBuild);
                 break;
             case ASK:
-                play(book.phrase("مَرْحَبًا، أَنَا لِيلِي!"), null);
+                play(book.phrase("مَرْحَبًا، أَنَا لِيلِي!"), () -> play(book.phrase("مَنْ يَلْعَبُ مَعَ لِيلِي؟"), null));
                 break;
             case READ:
                 view.invalidate();
