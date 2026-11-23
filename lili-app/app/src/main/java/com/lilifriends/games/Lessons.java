@@ -28,6 +28,10 @@ final class Lessons {
     static final class Lesson {
         final String title, big;
         final List<Item> intro, shortVowels, longVowels, sukun, words, sentences;
+        /** «Put another letter in place of the red one»: the word, and the new word it makes. */
+        final List<Item[]> swaps = new ArrayList<>();
+        /** For each swap: which letter (counted in {@link #letters}) is red, and its new letter. */
+        final List<String[]> swapHow = new ArrayList<>();
 
         Lesson(JSONObject o) throws JSONException {
             title = o.getString("title");
@@ -38,6 +42,23 @@ final class Lessons {
             sukun = items(o.optJSONArray("sukun"));
             words = items(o.optJSONArray("words"));
             sentences = items(o.optJSONArray("sents"));
+            JSONArray sw = o.optJSONArray("swap");
+            for (int i = 0; sw != null && i < sw.length(); i++) {
+                JSONArray s = sw.getJSONArray(i);
+                swaps.add(new Item[]{new Item(s.getString(0), s.getString(1), null),
+                        new Item(s.getString(2), s.getString(3), null)});
+                swapHow.add(new String[]{s.getString(4), s.getString(5)});
+            }
+        }
+
+        /** Words to spell letter by letter: three to five letters long. */
+        List<Item> spellable() {
+            List<Item> out = new ArrayList<>();
+            for (Item it : words) {
+                int n = letters(it.text).size();
+                if (n >= 3 && n <= 5) out.add(it);
+            }
+            return out;
         }
 
         /** Words that can be built from their syllables. */
@@ -75,6 +96,25 @@ final class Lessons {
         praise = items(g.optJSONArray("ok"));
         tryAgain = items(g.optJSONArray("again"));
         say = g.optJSONObject("say") != null ? g.optJSONObject("say") : new JSONObject();
+    }
+
+    /** A word cut into letters, each with its marks (حركات، شدة، سكون). */
+    static List<String> letters(String word) {
+        List<String> out = new ArrayList<>();
+        StringBuilder cur = new StringBuilder();
+        for (int i = 0; i < word.length(); ) {
+            int cp = word.codePointAt(i);
+            int n = Character.charCount(cp);
+            boolean mark = Character.getType(cp) == Character.NON_SPACING_MARK;
+            if (!mark && cur.length() > 0) {
+                out.add(cur.toString());
+                cur.setLength(0);
+            }
+            if (!Character.isWhitespace(cp)) cur.appendCodePoint(cp);
+            i += n;
+        }
+        if (cur.length() > 0) out.add(cur.toString());
+        return out;
     }
 
     /** The sound file of a general phrase such as «اِسْمَعْ وَاخْتَرْ», or null. */

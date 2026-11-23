@@ -80,7 +80,7 @@ sleep 4
 shot "4-letters-ask"
 adb shell input keyevent KEYCODE_BACK
 sleep 1
-for st in 0 1 2 3 4 5 6 7; do
+for st in 0 1 2 3 4 5 6 7 8; do
     adb shell am start -W -n $pkg/$cls.LettersActivity --es prefs p1_letters --es gender b --ei stage 4 --ei step $st >/dev/null
     sleep 5
     shot "4-letters-step$st"

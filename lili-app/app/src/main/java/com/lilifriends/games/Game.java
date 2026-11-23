@@ -35,7 +35,8 @@ final class Game {
             R.string.game_scale, R.drawable.home_think, Draw.MINT, Draw.MINT_D, 7 + 2);
     /** Lili's Letters: one stop per lesson of the grade-1 reading book (see {@link Lessons}). */
     static final Game LETTERS = new Game("letters", "com.lilifriends.games.LettersActivity",
-            R.string.game_letters, R.drawable.home_happy, Draw.PINK, Draw.PINK_D, 34);
+            R.string.game_letters, R.drawable.home_happy, Draw.PINK, Draw.PINK_D,
+            LettersActivity.STOP_LABELS.length);
     static final Game[] ALL = {LETTERS, PATH, HOPS, PATTERN, SCALE};
 
     static Game byId(String id) {
