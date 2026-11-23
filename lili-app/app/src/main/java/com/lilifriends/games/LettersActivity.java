@@ -913,7 +913,7 @@ public class LettersActivity extends Activity {
                     // Questions about the book's pictures: the page stays in view beside or above them.
                     textSize = Math.min(34 * dp, Math.min(w, h) * 0.065f);
                     if (w > h * 1.2f) {
-                        Draw.picture(c, page, w / 2 + pad / 2, cardT, w - pad, cardB);
+                        Draw.picture(c, page, w / 2 + pad / 2, pad, w - pad, h - pad);
                         cardR = w / 2 - pad / 2;
                     } else {
                         float picB = cardT + (cardB - cardT) * 0.58f;
@@ -931,8 +931,9 @@ public class LettersActivity extends Activity {
                 sl.draw(c);
                 c.restore();
                 float row = h - pad - btnH / 2;
-                speaker(c, w / 2 + btnH * 0.9f, row, btnH / 2);
-                next(c, w / 2 - btnH * 1.1f, row, btnH * 2.2f, btnH, "التَّالِي");
+                float mid = (cardL + cardR) / 2;
+                speaker(c, mid + btnH * 0.9f, row, btnH / 2);
+                next(c, mid - btnH * 1.1f, row, btnH * 2.2f, btnH, "التَّالِي");
             } else {
                 float ph = Math.min(h * 0.45f, w * 0.6f);
                 Draw.picture(c, lili, w / 2 - ph / 2, pad, w / 2 + ph / 2, pad + ph);
