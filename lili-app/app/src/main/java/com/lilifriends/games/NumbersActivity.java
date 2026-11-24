@@ -836,6 +836,11 @@ public class NumbersActivity extends Activity {
 
         /** {@code n} round things to count, in rows of five like the book's ten-frames. */
         private void things(Canvas c, int n, float l, float t, float r, float b, int colour, int crossed) {
+            things(c, n, l, t, r, b, colour, crossed, n);
+        }
+
+        /** As above, but sized as if there were {@code sizeFor} things, so two groups side by side look alike. */
+        private void things(Canvas c, int n, float l, float t, float r, float b, int colour, int crossed, int sizeFor) {
             if (n <= 0) {
                 // Zero: an empty plate.
                 float cx = (l + r) / 2, cy = (t + b) / 2, pr = Math.min(r - l, b - t) * 0.35f;
@@ -844,7 +849,9 @@ public class NumbersActivity extends Activity {
                 return;
             }
             int cols = Math.min(5, n), rows = (n + 4) / 5;
-            float cell = Math.min((r - l) / cols, (b - t) / rows);
+            int sc = Math.max(n, sizeFor);
+            float cell = Math.min((r - l) / Math.min(5, sc), (b - t) / ((sc + 4) / 5));
+            cell = Math.min(cell, 90 * dp);
             float rad = cell * 0.36f;
             float x0 = (l + r) / 2 + cols * cell / 2, y0 = (t + b) / 2 - rows * cell / 2;
             for (int i = 0; i < n; i++) {
@@ -1026,7 +1033,7 @@ public class NumbersActivity extends Activity {
                 case PATTERN: {
                     Draw.card(c, l, t, r, b - 8 * dp, 28 * dp, 0xFFFFFFFF, 0xFFE6DCCB, 8 * dp);
                     int n = pattern.size();
-                    boolean two = (r - l) / n < 44 * dp;
+                    boolean two = (r - l) / n < 64 * dp;
                     int per = two ? 4 : n;
                     float cell = Math.min((r - l - 24 * dp) / per, (b - t - 30 * dp) / (two ? 2 : 1));
                     float rr = cell * 0.32f;
@@ -1050,9 +1057,9 @@ public class NumbersActivity extends Activity {
                         int v = i == 0 ? qa : qb;
                         float bl = i == 0 ? r - half : l, br = bl + half;
                         Draw.card(c, bl, t, br, b - 8 * dp, 28 * dp, 0xFFFFFFFF, 0xFFE6DCCB, 8 * dp);
-                        things(c, v, bl + 12 * dp, t + 12 * dp, br - 12 * dp, b - 20 * dp, COLOURS[i * 2], 0);
+                        things(c, v, bl + 12 * dp, t + 44 * dp, br - 12 * dp, b - 20 * dp, COLOURS[i * 2], 0, Math.max(qa, qb));
                     }
-                    label(c, qc == 0 ? "أَيُّهُمَا أَكْبَر؟" : "أَيُّهُمَا أَصْغَر؟", cx, b - 2 * dp, 20 * dp, r - l, Draw.PLUM);
+                    label(c, qc == 0 ? "أَيُّهُمَا أَكْبَر؟" : "أَيُّهُمَا أَصْغَر؟", cx, t + 24 * dp, 24 * dp, r - l - 24 * dp, Draw.PLUM);
                     break;
                 }
                 case NEIGHBOR: {
@@ -1077,7 +1084,7 @@ public class NumbersActivity extends Activity {
                 }
                 case ORDINAL: {
                     // Ten friends in a queue, the first on the right by the flag.
-                    float cell = Math.min((r - l - 40 * dp) / 10, (b - t) * 0.4f);
+                    float cell = Math.min((r - l - 40 * dp) / 10, (b - t) * 0.3f);
                     float y = (t + b) / 2;
                     float fx = r - 14 * dp;
                     c.drawLine(fx, y - cell * 1.2f, fx, y + cell * 0.8f, Draw.stroke(Draw.PLUM, 3 * dp));
@@ -1090,18 +1097,18 @@ public class NumbersActivity extends Activity {
                     float wob = wobble();
                     for (int i = 0; i < 10; i++) {
                         float x = fx - 26 * dp - (i + 0.5f) * cell;
-                        float rr = cell * 0.4f;
+                        float rr = cell * 0.46f;
                         c.save();
                         if (i == wrongPick) c.translate(wob, 0);
                         int body = i == rightPick ? Draw.MINT_D : i == wrongPick ? 0xFFE07A7A : COLOURS[i % COLOURS.length];
-                        c.drawRoundRect(new RectF(x - rr, y, x + rr, y + rr * 2.2f), rr * 0.6f, rr * 0.6f, Draw.fill(body));
+                        c.drawRoundRect(new RectF(x - rr, y, x + rr, y + rr * 3.2f), rr * 0.6f, rr * 0.6f, Draw.fill(body));
                         c.drawCircle(x, y - rr * 0.2f, rr * 0.85f, Draw.fill(0xFFFFD9B3));
                         c.drawCircle(x - rr * 0.3f, y - rr * 0.3f, rr * 0.1f, Draw.fill(Draw.PLUM));
                         c.drawCircle(x + rr * 0.3f, y - rr * 0.3f, rr * 0.1f, Draw.fill(Draw.PLUM));
                         c.drawArc(new RectF(x - rr * 0.35f, y - rr * 0.2f, x + rr * 0.35f, y + rr * 0.25f), 20, 140, false,
                                 Draw.stroke(Draw.PLUM, rr * 0.08f));
                         c.restore();
-                        box(x - cell / 2, y - cell, x + cell / 2, y + cell * 1.4f, i);
+                        box(x - cell / 2, y - cell, x + cell / 2, y + cell * 2.2f, i);
                     }
                     break;
                 }
@@ -1113,9 +1120,9 @@ public class NumbersActivity extends Activity {
                     float inT = t + 12 * dp, inB = b - eqH - 20 * dp;
                     if (add) {
                         float mid = (l + r) / 2;
-                        things(c, qa, mid + 10 * dp, inT, r - 12 * dp, inB, COLOURS[0], 0);
+                        things(c, qa, mid + 10 * dp, inT, r - 12 * dp, inB, COLOURS[0], 0, Math.max(qa, qb));
                         label(c, "+", mid, (inT + inB) / 2, 40 * dp, 40 * dp, Draw.PLUM);
-                        things(c, qb, l + 12 * dp, inT, mid - 10 * dp, inB, COLOURS[1], 0);
+                        things(c, qb, l + 12 * dp, inT, mid - 10 * dp, inB, COLOURS[1], 0, Math.max(qa, qb));
                     } else {
                         things(c, qa, l + 12 * dp, inT, r - 12 * dp, inB, COLOURS[2], qb);
                     }
