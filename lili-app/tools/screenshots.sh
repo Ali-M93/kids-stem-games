@@ -58,7 +58,7 @@ shot 02-home
 adb shell input keyevent KEYCODE_BACK
 shot 03-who-one-player
 
-for g in letters path hops pattern scale; do
+for g in letters numbers path hops pattern scale; do
     adb shell am start -W -n $pkg/$cls.MapActivity --ei player 1 --es game $g >/dev/null
     shot "1-map-$g"
     adb shell input keyevent KEYCODE_BACK
@@ -69,6 +69,22 @@ for pair in path:robotpath hops:kangaroohops pattern:patternmachine scale:balanc
     g=${pair%%:*}; p=${pair##*:}
     adb shell am start -W -n $pkg/io.github.foadsf.$p.GameActivity --es prefs p1_$g >/dev/null
     shot "2-game-$g"
+    adb shell input keyevent KEYCODE_BACK
+    sleep 1
+done
+
+# Lili's Numbers: each kind of step (stop 2 «٣ ٤» has the number steps; then one of each other kind).
+for st in 0 1 2 3; do
+    adb shell am start -W -n $pkg/$cls.NumbersActivity --es prefs p1_numbers --es gender b --ei stage 2 --ei step $st >/dev/null
+    sleep 4
+    shot "5-numbers-step$st"
+    adb shell input keyevent KEYCODE_BACK
+    sleep 1
+done
+for st in 0 5 8 9 10 11 12 16 17; do
+    adb shell am start -W -n $pkg/$cls.NumbersActivity --es prefs p1_numbers --es gender g --ei stage $st >/dev/null
+    sleep 4
+    shot "5-numbers-stop$st"
     adb shell input keyevent KEYCODE_BACK
     sleep 1
 done

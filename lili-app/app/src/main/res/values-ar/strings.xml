@@ -8,6 +8,7 @@
     <string name="remove">حذف</string>
     <string name="cancel">إلغاء</string>
     <string name="game_letters">حروف ليلي</string>
+    <string name="game_numbers">أرقام ليلي</string>
     <string name="game_path">طريق ليلي</string>
     <string name="game_hops">قفزات ليلي</string>
     <string name="game_pattern">آلة الأنماط</string>

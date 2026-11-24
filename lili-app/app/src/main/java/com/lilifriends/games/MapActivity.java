@@ -177,9 +177,10 @@ public class MapActivity extends Activity {
                     text.setColor(here ? Draw.PLUM : 0xFFFFFFFF);
                     text.setTextSize(r * 0.95f);
                     String label = String.format(Locale.getDefault(), "%d", n);
-                    if (game == Game.LETTERS && n <= LettersActivity.STOP_LABELS.length) {
-                        label = LettersActivity.STOP_LABELS[n - 1];
-                    }
+                    String[] labels = game.labels();
+                    if (labels != null && n <= labels.length) label = labels[n - 1];
+                    float lw = text.measureText(label);
+                    if (lw > r * 1.6f) text.setTextSize(text.getTextSize() * r * 1.6f / lw);
                     c.drawText(label, x, y - (text.ascent() + text.descent()) / 2f, text);
                     if (!here && n < furthest) Draw.star(c, x + r * 0.72f, y - r * 0.72f, r * 0.3f, Draw.YELLOW_D);
                 } else {

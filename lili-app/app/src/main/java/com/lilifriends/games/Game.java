@@ -37,7 +37,11 @@ final class Game {
     static final Game LETTERS = new Game("letters", "com.lilifriends.games.LettersActivity",
             R.string.game_letters, R.drawable.home_happy, Draw.PINK, Draw.PINK_D,
             LettersActivity.STOP_LABELS.length);
-    static final Game[] ALL = {LETTERS, PATH, HOPS, PATTERN, SCALE};
+    /** Lili's Numbers: the grade-1 maths book, stop by stop (see {@link NumbersActivity}). */
+    static final Game NUMBERS = new Game("numbers", "com.lilifriends.games.NumbersActivity",
+            R.string.game_numbers, R.drawable.home_cheer, Draw.YELLOW, Draw.YELLOW_D,
+            NumbersActivity.STOP_LABELS.length);
+    static final Game[] ALL = {LETTERS, NUMBERS, PATH, HOPS, PATTERN, SCALE};
 
     static Game byId(String id) {
         for (Game g : ALL) if (g.id.equals(id)) return g;
@@ -45,11 +49,18 @@ final class Game {
     }
 
     /**
-     * Every stop of Lili's Letters is open from the start, so a child can play the lesson their
+     * Every stop of the book games (Lili's Letters and Numbers) is open from the start, so a child can play the lesson their
      * class has reached; Lili still stands on the furthest one finished.
      */
     boolean allOpen() {
-        return this == LETTERS;
+        return this == LETTERS || this == NUMBERS;
+    }
+
+    /** Words or signs on the map's stops, for the book games; null shows stop numbers. */
+    String[] labels() {
+        if (this == LETTERS) return LettersActivity.STOP_LABELS;
+        if (this == NUMBERS) return NumbersActivity.STOP_LABELS;
+        return null;
     }
 
     boolean openEnded() {
