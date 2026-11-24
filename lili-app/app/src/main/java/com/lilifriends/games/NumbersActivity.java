@@ -1128,7 +1128,7 @@ public class NumbersActivity extends Activity {
                     }
                     String eq = digits(qa) + (add ? " + " : " − ") + digits(qb) + " = " + (rightPick >= 0 ? digits(add ? qa + qb : qa - qb) : "؟");
                     // Written as the book writes it: the first number on the right.
-                    label(c, "‫" + eq + "‬", cx, b - eqH / 2, eqH * 0.7f, r - l, Draw.PLUM);
+                    label(c, "\u200F" + eq, cx, b - eqH / 2, eqH * 0.7f, r - l, Draw.PLUM);
                     break;
                 }
             }
