@@ -1120,9 +1120,9 @@ public class NumbersActivity extends Activity {
                     float inT = t + 12 * dp, inB = b - eqH - 20 * dp;
                     if (add) {
                         float mid = (l + r) / 2;
-                        things(c, qa, mid + 10 * dp, inT, r - 12 * dp, inB, COLOURS[0], 0, Math.max(qa, qb));
+                        things(c, qa, mid + 24 * dp, inT, r - 12 * dp, inB, COLOURS[0], 0, Math.max(qa, qb));
                         label(c, "+", mid, (inT + inB) / 2, 40 * dp, 40 * dp, Draw.PLUM);
-                        things(c, qb, l + 12 * dp, inT, mid - 10 * dp, inB, COLOURS[1], 0, Math.max(qa, qb));
+                        things(c, qb, l + 12 * dp, inT, mid - 24 * dp, inB, COLOURS[1], 0, Math.max(qa, qb));
                     } else {
                         things(c, qa, l + 12 * dp, inT, r - 12 * dp, inB, COLOURS[2], qb);
                     }
