@@ -90,7 +90,7 @@ for st in 0 5 9 12 16 18 19 22 23 27 28 29 31 34 39 40 41 44 45 47 48 49 50 53 5
 done
 
 # Lili's Science: every stop.
-for st in 0 1 2 3 4 5 6 7 8 9; do
+for st in 0 1 2 3 4 5 6 7 8 9 10 13 14 16 19 21 22 24 26; do
     adb shell am start -W -n $pkg/$cls.ScienceActivity --es prefs p1_science --es gender g --ei stage $st >/dev/null
     sleep 4
     shot "6-science-stop$st"

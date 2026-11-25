@@ -39,7 +39,8 @@ import java.util.Random;
 public class ScienceActivity extends Activity {
     public static final String EXTRA_PREFS = "prefs", EXTRA_STAGE = "stage";
 
-    private static final int T_SORT = 0, T_NEEDS = 1, T_GROW = 2, T_PLANT = 3, T_ANIMAL = 4, T_BODY = 5, T_SENSES = 6;
+    private static final int T_SORT = 0, T_NEEDS = 1, T_GROW = 2, T_PLANT = 3, T_ANIMAL = 4, T_BODY = 5, T_SENSES = 6,
+            T_PICK = 7, T_MORE = 8, T_WORD = 9;
 
     /** One stop of the map: its title, the label on the map, what it teaches and how. */
     private static final class Stop {
@@ -54,7 +55,7 @@ public class ScienceActivity extends Activity {
         }
     }
 
-    /** The book's order: safety, then unit 1 (living things), unit 2 (their bodies), unit 3 (where they live). */
+    /** The book's order: safety, unit 1 living things, 2 their bodies, 3 where they live, 4 matter, 5 energy and motion, 6 our earth. */
     private static final Stop[] STOPS = {
             new Stop("احتياطات السلامة", "⚠️", T_SORT, 0),
             new Stop("الكائنات الحية وغير الحية", "🐞", T_SORT, 1),
@@ -66,6 +67,26 @@ public class ScienceActivity extends Activity {
             new Stop("أجزاء جسم الإنسان", "🧒", T_BODY, 0),
             new Stop("الحواس الخمس", "👂", T_SENSES, 0),
             new Stop("البيئة اليابسة والمائية", "🐟", T_SORT, 3),
+            // Unit 4: matter
+            new Stop("المادة: صلب ولين", "🧸", T_SORT, 4),
+            new Stop("المادة: ثقيل وخفيف", "🪶", T_SORT, 5),
+            new Stop("المادة: ناعم وخشن", "🌵", T_SORT, 6),
+            new Stop("أيهما أثقل؟", "⚖️", T_MORE, 0),
+            new Stop("الطفو والغطس", "⛵", T_SORT, 7),
+            // Unit 5: energy and motion
+            new Stop("الحرارة: ساخن وبارد", "🔥", T_SORT, 8),
+            new Stop("الكهرباء", "💡", T_PICK, 0),
+            new Stop("الضوء", "🔦", T_PICK, 1),
+            new Stop("الصوت", "🔔", T_PICK, 2),
+            new Stop("الموقع", "🐱", T_WORD, 4),
+            new Stop("الحركة: أسرع وأبطأ", "🐢", T_MORE, 1),
+            new Stop("القوة: دفع وسحب", "🛒", T_SORT, 9),
+            // Unit 6: our earth
+            new Stop("اليابسة والماء", "🏔️", T_WORD, 0),
+            new Stop("الفصول الأربعة", "🍂", T_WORD, 1),
+            new Stop("تتابع الفصول", "🌸", T_WORD, 3),
+            new Stop("ملابس الفصول", "🧥", T_PICK, 3),
+            new Stop("الطقس", "🌧️", T_WORD, 2),
     };
 
     /** What each stop shows on the journey map. */
@@ -77,15 +98,40 @@ public class ScienceActivity extends Activity {
 
     // Sorting: the question, the two answers, and pictures for each answer.
     private static final String[] SORT_Q = {"هَلْ هُوَ آمِنٌ أَمْ خَطِر؟", "هَلْ هُوَ حَيٌّ أَمْ غَيْرُ حَيّ؟",
-            "هَلْ هُوَ نَبَاتٌ أَمْ حَيَوَان؟", "أَيْنَ يَعِيش؟"};
+            "هَلْ هُوَ نَبَاتٌ أَمْ حَيَوَان؟", "أَيْنَ يَعِيش؟", "هَلْ هُوَ صُلْبٌ أَمْ لَيِّن؟", "هَلْ هُوَ ثَقِيلٌ أَمْ خَفِيف؟",
+            "هَلْ هُوَ نَاعِمٌ أَمْ خَشِن؟", "هَلْ يَطْفُو أَمْ يَغْطِس؟", "هَلْ هُوَ سَاخِنٌ أَمْ بَارِد؟", "هَلْ هُوَ دَفْعٌ أَمْ سَحْب؟"};
     private static final String[][] SORT_WORDS = {{"آمِن", "خَطِر"}, {"حَيّ", "غَيْرُ حَيّ"}, {"نَبَات", "حَيَوَان"},
-            {"عَلَى الْيَابِسَة", "فِي الْمَاء"}};
+            {"عَلَى الْيَابِسَة", "فِي الْمَاء"}, {"صُلْب", "لَيِّن"}, {"ثَقِيل", "خَفِيف"}, {"نَاعِم", "خَشِن"},
+            {"يَطْفُو", "يَغْطِس"}, {"سَاخِن", "بَارِد"}, {"دَفْع", "سَحْب"}};
     private static final String[][][] SORT_PICS = {
             {{"🍎", "📚", "🧸", "🥛", "🪥", "🎈", "🖍️"}, {"🔥", "🔪", "⚡", "💊", "🧪", "🔌", "✂️"}},
             {{"🐱", "🐶", "🌳", "🌻", "🐟", "🐦", "🐞", "🌵"}, {"🪨", "🚗", "📚", "⚽", "🪑", "✏️", "🏠", "⏰"}},
             {{"🌳", "🌻", "🌵", "🌷", "🌴", "🌿"}, {"🐱", "🐄", "🐟", "🐦", "🐰", "🐘"}},
             {{"🐄", "🐪", "🦁", "🐰", "🐘", "🐓"}, {"🐟", "🐙", "🐬", "🦈", "🐳", "🦀"}},
+            {{"🪨", "🔨", "🧱", "🥄", "🔑", "🪙"}, {"🧸", "🧽", "🧶", "🍞", "🪶", "🛏️"}},
+            {{"🐘", "🚗", "🏠", "🪨", "🚚", "🛳️"}, {"🪶", "🎈", "🍃", "🦋", "✏️", "🧻"}},
+            {{"🪞", "🥚", "🎈", "🧸", "🍎", "🐇"}, {"🌵", "🍍", "🪨", "🥥", "🦔", "🪵"}},
+            {{"🦆", "🪵", "⛵", "🍃", "🎈", "🛟"}, {"🪨", "🔑", "🪙", "⚓", "🔨", "🥄"}},
+            {{"🔥", "☕", "☀️", "🍲", "🌋", "♨️"}, {"🧊", "⛄", "🍦", "❄️", "🥶", "🐧"}},
+            {{"🛒", "⚽", "🛝", "🔘", "🚪", "🛼"}, {"🪁", "🧲", "🎣", "🐕‍🦺", "🎒", "🚜"}},
     };
+    // Choosing the one picture that fits: works with electricity, gives light, makes a sound, worn in winter.
+    private static final String[] PICK_Q = {"أَيُّهَا يَعْمَلُ بِالْكَهْرَبَاء؟", "أَيُّهَا يُعْطِي ضَوْءًا؟", "أَيُّهَا يُصْدِرُ صَوْتًا؟",
+            "مَاذَا نَلْبَسُ فِي هٰذَا الْفَصْل؟"};
+    private static final String[][] PICK_YES = {{"📺", "💡", "📱", "🔌", "🖥️", "🧺"}, {"💡", "☀️", "🔦", "🕯️", "🔥", "⭐"},
+            {"🔔", "🥁", "🎺", "📻", "🐓", "🎸"}, {"🧥", "🧣", "🧤", "🥾"}};
+    private static final String[][] PICK_NO = {{"🪑", "📚", "🧸", "🍎", "🪨", "🥄"}, {"📚", "🪨", "🧸", "🪑", "🍞", "🧦"},
+            {"🪨", "📚", "🍎", "🪑", "🧦", "🧽"}, {"🩳", "👙", "🕶️", "👒"}};
+    // Which is heavier (lighter) or faster (slower): pictures from light to heavy, slow to fast.
+    private static final String[][] MORE_PICS = {{"🪶", "🍎", "🐈", "🧒", "🐄", "🐘"}, {"🐌", "🐢", "🐈", "🐎", "🚗", "✈️"}};
+    private static final String[][] MORE_Q = {{"أَيُّهُمَا أَثْقَل؟", "أَيُّهُمَا أَخَفّ؟"}, {"أَيُّهُمَا أَسْرَع؟", "أَيُّهُمَا أَبْطَأ؟"}};
+    // Naming what is shown: land and water, seasons, weather, the season after, where the cat is.
+    private static final String[][] WORD_PICS = {{"🏔️", "🌾", "🏞️", "🌊"}, {"⛄", "🌸", "🏖️", "🍂"}, {"☀️", "🌧️", "☁️", "🌨️"},
+            {"⛄", "🌸", "🏖️", "🍂"}, {"", "", "", ""}};
+    private static final String[][] WORD_NAMES = {{"جَبَل", "سَهْل", "نَهْر", "بَحْر"}, {"الشِّتَاء", "الرَّبِيع", "الصَّيْف", "الْخَرِيف"},
+            {"مُشْمِس", "مُمْطِر", "غَائِم", "مُثْلِج"}, {"الشِّتَاء", "الرَّبِيع", "الصَّيْف", "الْخَرِيف"}, {"فَوْق", "تَحْت", "دَاخِل", "خَارِج"}};
+    private static final String[] WORD_Q = {"مَا هٰذَا؟", "فِي أَيِّ فَصْلٍ نَحْنُ؟", "كَيْفَ الطَّقْس؟", "مَا الْفَصْلُ الَّذِي بَعْدَهُ؟",
+            "أَيْنَ الْقِطَّة؟"};
     // What living things need, and things they do not.
     private static final String[] NEEDS = {"💧", "🍎", "🌬️", "☀️", "🏠"};
     private static final String[] NEED_NAMES = {"الْمَاء", "الْغِذَاء", "الْهَوَاء", "ضَوْءُ الشَّمْس", "الْمَأْوَى"};
@@ -108,7 +154,8 @@ public class ScienceActivity extends Activity {
     private static final String[] ORGAN_NAMES = {"الْعَيْن", "الْأُذُن", "الْأَنْف", "اللِّسَان", "الْجِلْد"};
     private static final String[] SENSED = {"🌈", "🔔", "🌸", "🍋", "🧸"};
 
-    private static final int ASK = 0, SORT = 1, NEEDS_Q = 2, GROW = 3, PLANT = 4, ANIMAL = 5, BODY = 6, SENSES = 7, DONE = 8;
+    private static final int ASK = 0, SORT = 1, NEEDS_Q = 2, GROW = 3, PLANT = 4, ANIMAL = 5, BODY = 6, SENSES = 7, DONE = 8,
+            PICK = 9, MORE = 10, WORD = 11;
     private static final int ROUNDS = 6;
 
     private SharedPreferences prefs;
@@ -131,7 +178,7 @@ public class ScienceActivity extends Activity {
     private long wobbleAt;
     /** The picture asked about, and which part of a drawing. */
     private String subject = "";
-    private int qa, qb;
+    private int qa, qb, qc;
     /** What Lili says after a right answer. */
     private final List<String> reply = new ArrayList<>();
     /** Growing up: the right order, the shuffled cards, which are placed. */
@@ -175,7 +222,7 @@ public class ScienceActivity extends Activity {
         girl = "g".equals(g);
 
         if (g.isEmpty()) steps.add(ASK);
-        int[] byType = {SORT, NEEDS_Q, GROW, PLANT, ANIMAL, BODY, SENSES};
+        int[] byType = {SORT, NEEDS_Q, GROW, PLANT, ANIMAL, BODY, SENSES, PICK, MORE, WORD};
         steps.add(byType[stop.type]);
         steps.add(DONE);
 
@@ -419,6 +466,57 @@ public class ScienceActivity extends Activity {
                 reply.add(m(words[answer]));
                 break;
             }
+            case PICK: {
+                int md = stop.mode;
+                // Clothes: a winter picture asks for the warm one; a summer picture for the light one.
+                boolean summer = md == 3 && rnd.nextBoolean();
+                String[] yes = summer ? PICK_NO[md] : PICK_YES[md], no = summer ? PICK_YES[md] : PICK_NO[md];
+                String right = yes[rnd.nextInt(yes.length)];
+                List<String> pics = new ArrayList<>();
+                pics.add(right);
+                for (int v : pickSome(no.length, 2, rnd.nextInt(no.length))) pics.add(no[v]);
+                Collections.shuffle(pics, rnd);
+                for (String p : pics) {
+                    options.add(p);
+                    optionPics.add(true);
+                }
+                answer = pics.indexOf(right);
+                subject = md == 3 ? (summer ? "🏖️" : "⛄") : "";
+                question.add(m(PICK_Q[md]));
+                if (md == 3) reply.add(m(summer ? "الصَّيْف" : "الشِّتَاء"));
+                break;
+            }
+            case MORE: {
+                int md = stop.mode;
+                String[] row = MORE_PICS[md];
+                qa = rnd.nextInt(row.length);
+                do qb = rnd.nextInt(row.length); while (qb == qa);
+                int most = rnd.nextInt(2); // 0 heavier/faster, 1 lighter/slower
+                qc = most;
+                options.add(row[qa]);
+                options.add(row[qb]);
+                optionPics.add(true);
+                optionPics.add(true);
+                answer = (qa > qb) == (most == 0) ? 0 : 1;
+                subject = "";
+                question.add(m(MORE_Q[md][most]));
+                break;
+            }
+            case WORD: {
+                int md = stop.mode;
+                qa = rnd.nextInt(4);
+                int right = md == 3 ? (qa + 1) % 4 : qa;
+                subject = WORD_PICS[md][qa];
+                List<Integer> pick = pickSome(4, 3, right);
+                for (int v : pick) {
+                    options.add(plain(WORD_NAMES[md][v]));
+                    optionPics.add(false);
+                }
+                answer = pick.indexOf(right);
+                question.add(m(WORD_Q[md]));
+                reply.add(m(WORD_NAMES[md][right]));
+                break;
+            }
             case SENSES: {
                 qa = rnd.nextInt(ORGANS.length);
                 qb = rnd.nextInt(2); // 0 «with what do we see?», 1 «which sense tells us this?»
@@ -633,6 +731,25 @@ public class ScienceActivity extends Activity {
             return normal;
         }
 
+        /** The cat and a box: 0 on top, 1 under (a table), 2 inside, 3 beside it. */
+        private void cat(Canvas c, int where, float l, float t, float r, float b) {
+            float cx = (l + r) / 2, cy = (t + b) / 2, s = Math.min(r - l, b - t) * 0.22f;
+            if (where <= 1) {
+                float top = cy - s * 0.1f;
+                c.drawRect(cx - s * 1.7f, top, cx + s * 1.7f, top + s * 0.22f, Draw.fill(0xFFB07A4A));
+                c.drawRect(cx - s * 1.55f, top, cx - s * 1.35f, top + s * 1.5f, Draw.fill(0xFF8A5A30));
+                c.drawRect(cx + s * 1.35f, top, cx + s * 1.55f, top + s * 1.5f, Draw.fill(0xFF8A5A30));
+                pic(c, "🐱", cx, where == 0 ? top - s * 0.55f : top + s * 0.95f, s * 1.0f);
+                return;
+            }
+            float bl = cx - s, bt = cy - s * 0.3f, bw = s * 2, bh = s * 1.3f;
+            if (where == 2) pic(c, "🐱", cx, bt + s * 0.05f, s * 1.0f);
+            c.drawRect(bl, bt, bl + bw, bt + bh, Draw.fill(0xFFE8B86B));
+            c.drawRect(bl, bt, bl + bw, bt + bh * 0.18f, Draw.fill(0xFFD49A45));
+            c.drawRect(bl, bt, bl + bw, bt + bh, pen(0xFF8A5A30, 2.5f * dp));
+            if (where == 3) pic(c, "🐱", bl + bw + s * 0.9f, bt + bh - s * 0.45f, s * 1.0f);
+        }
+
         /** A plant: roots, stem, leaves, a flower and a fruit; each part is tappable. */
         private void plant(Canvas c, float l, float t, float r, float b) {
             float cx = (l + r) / 2, h = b - t, ground = t + h * 0.72f, u = Math.min(r - l, h) / 10f;
@@ -799,7 +916,13 @@ public class ScienceActivity extends Activity {
             Draw.card(c, pad, top, w - pad, sceneB - 8 * dp, 28 * dp, 0xFFFFFFFF, 0xFFE6DCCB, 8 * dp);
             float cx = w / 2, cy = (top + sceneB) / 2;
             float s = Math.min(w - 2 * pad, sceneB - top) * 0.55f;
-            if (k == SENSES && qb == 0) {
+            if (k == WORD && stop.mode == 4) {
+                // A box, and a cat on it, under it (a table), in it or beside it.
+                cat(c, qa, pad, top, w - pad, sceneB - 8 * dp);
+            } else if (k == MORE || (k == PICK && stop.mode < 3)) {
+                String q = k == MORE ? MORE_Q[stop.mode][qc] : PICK_Q[stop.mode];
+                label(c, plain(q), cx, cy, Math.min(44 * dp, s * 0.25f), w - 4 * pad, Draw.PLUM);
+            } else if (k == SENSES && qb == 0) {
                 label(c, plain(SENSE_Q[qa]), cx, cy, Math.min(48 * dp, s * 0.3f), w - 4 * pad, Draw.PLUM);
             } else if (k == NEEDS_Q) {
                 pic(c, subject, cx, cy + s * 0.08f, s * 0.6f);
