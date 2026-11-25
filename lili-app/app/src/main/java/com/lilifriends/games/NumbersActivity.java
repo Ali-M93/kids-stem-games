@@ -43,7 +43,7 @@ public class NumbersActivity extends Activity {
 
     // What a stop teaches.
     private static final int T_PATTERN = 0, T_NUM = 1, T_COMPARE = 2, T_NEIGHBOR = 3, T_ORDER = 4,
-            T_ORDINAL = 5, T_ADD = 6, T_SUB = 7;
+            T_ORDINAL = 5, T_ADD = 6, T_SUB = 7, T_CLASSIFY = 8;
 
     /** One stop of the map: its title, the label on the map, what it teaches and its numbers. */
     private static final class Stop {
@@ -60,7 +60,7 @@ public class NumbersActivity extends Activity {
         }
     }
 
-    /** The book's order: chapter 1 (patterns, numbers to 20), chapter 2 (compare and order), chapter 3 (sums to 10). */
+    /** The book's order: 1 patterns and numbers to 20, 2 compare and order, 3 sums to 10, 4 sorting, 5-6 sums to 20. */
     private static final Stop[] STOPS = {
             new Stop("الأنماط", "▲●", T_PATTERN, 0),
             new Stop("العددان ١ و ٢", "١ ٢", T_NUM, 2, 1, 2),
@@ -80,6 +80,10 @@ public class NumbersActivity extends Activity {
             new Stop("ترتيب الأعداد حتى ٢٠", "٢٠", T_ORDER, 20),
             new Stop("الجمع حتى ١٠", "+", T_ADD, 10),
             new Stop("الطرح حتى ١٠", "−", T_SUB, 10),
+            new Stop("التصنيف بالشكل", "صنّف", T_CLASSIFY, 0),
+            new Stop("التصنيف باللون", "لون", T_CLASSIFY, 1),
+            new Stop("الجمع حتى ٢٠", "+٢٠", T_ADD, 20),
+            new Stop("الطرح حتى ٢٠", "−٢٠", T_SUB, 20),
     };
 
     /** What each stop shows on the journey map. */
@@ -96,7 +100,7 @@ public class NumbersActivity extends Activity {
             "السَّابِع", "الثَّامِن", "التَّاسِع", "الْعَاشِر"};
 
     private static final int ASK = 0, INTRO = 1, TRACE = 2, COUNT = 3, FIND = 4, PATTERN = 5, COMPARE = 6,
-            NEIGHBOR = 7, ORDER = 8, ORDINAL = 9, ADD = 10, SUB = 11, DONE = 12;
+            NEIGHBOR = 7, ORDER = 8, ORDINAL = 9, ADD = 10, SUB = 11, DONE = 12, CLASSIFY = 13;
     private static final int ROUNDS = 6;
 
     private SharedPreferences prefs;
@@ -186,6 +190,9 @@ public class NumbersActivity extends Activity {
                 break;
             case T_ADD:
                 steps.add(ADD);
+                break;
+            case T_CLASSIFY:
+                steps.add(CLASSIFY);
                 break;
             default:
                 steps.add(SUB);
@@ -313,6 +320,10 @@ public class NumbersActivity extends Activity {
     }
 
     private void ask() {
+        if (question.isEmpty() && kind() == CLASSIFY) {
+            play(g("صَنِّفِ الْأَشْيَاء", "صَنِّفِي الْأَشْيَاء"), null);
+            return;
+        }
         play(question, null);
     }
 
@@ -441,6 +452,24 @@ public class NumbersActivity extends Activity {
                 question.add(m(qb == 0 ? "مَا الْعَدَدُ الَّذِي قَبْلَهُ؟" : qb == 1 ? "مَا الْعَدَدُ الَّذِي بَيْنَهُمَا؟"
                         : "مَا الْعَدَدُ الَّذِي بَعْدَهُ؟"));
                 break;
+            case CLASSIFY: {
+                // One thing at a time into its basket: by its shape (stop.max 0) or its colour (1).
+                rounds = 8;
+                qc = stop.max;
+                List<Integer> pool = new ArrayList<>();
+                for (int v = 0; v < 4; v++) pool.add(v);
+                Collections.shuffle(pool, rnd);
+                shapeOptions.clear();
+                shapeOptions.addAll(pool.subList(0, 3));
+                answer = rnd.nextInt(3);
+                int right = shapeOptions.get(answer);
+                qa = qc == 0 ? right * 10 + rnd.nextInt(4) : rnd.nextInt(4) * 10 + right;
+                options.clear();
+                for (int i = 0; i < 3; i++) options.add("");
+                question.add(g("صَنِّفِ الْأَشْيَاء", "صَنِّفِي الْأَشْيَاء"));
+                if (!first) question.clear();
+                break;
+            }
             case ORDINAL:
                 qa = rnd.nextInt(10);
                 options.clear();
@@ -449,8 +478,15 @@ public class NumbersActivity extends Activity {
                 question.add(m(ORDINALS[qa]));
                 break;
             case ADD:
-                qa = 1 + rnd.nextInt(stop.max - 1);
-                qb = 1 + rnd.nextInt(stop.max - qa);
+                if (stop.max > 10) {
+                    // The book's chapter 5: two one-digit numbers that make a teen, like ٨ + ٥.
+                    qa = 2 + rnd.nextInt(8);
+                    int lo = Math.max(2, 11 - qa);
+                    qb = lo + rnd.nextInt(10 - lo);
+                } else {
+                    qa = 1 + rnd.nextInt(stop.max - 1);
+                    qb = 1 + rnd.nextInt(stop.max - qa);
+                }
                 numberOptions(qa + qb, 0, stop.max);
                 if (first) lead.add(m("هَيَّا نَجْمَعُ"));
                 question.add(name(qa));
@@ -459,8 +495,15 @@ public class NumbersActivity extends Activity {
                 question.add(m("كَمِ الْمَجْمُوعُ؟"));
                 break;
             case SUB:
-                qa = 2 + rnd.nextInt(stop.max - 1);
-                qb = 1 + rnd.nextInt(qa - 1);
+                if (stop.max > 10) {
+                    // Chapter 6: a teen take away one digit, leaving one digit, like ١٤ − ٦.
+                    qa = 11 + rnd.nextInt(8);
+                    int lo = Math.max(2, qa - 9);
+                    qb = lo + rnd.nextInt(10 - lo);
+                } else {
+                    qa = 2 + rnd.nextInt(stop.max - 1);
+                    qb = 1 + rnd.nextInt(qa - 1);
+                }
                 numberOptions(qa - qb, 0, stop.max);
                 if (first) lead.add(g("اِطْرَحْ", "اِطْرَحِي"));
                 question.add(name(qa));
@@ -606,7 +649,8 @@ public class NumbersActivity extends Activity {
 
     // ---- Screen ------------------------------------------------------------------------------
 
-    private static final int[] COLOURS = {0xFFFF6B6B, Draw.BLUE_D, Draw.MINT_D, Draw.LILAC_D};
+    /** Red, blue, green, purple, and grey for the baskets that sort by shape. */
+    private static final int[] COLOURS = {0xFFFF6B6B, Draw.BLUE_D, Draw.MINT_D, Draw.LILAC_D, 0xFFB8BCCB};
 
     private class NumView extends View {
         private final float dp;
@@ -892,7 +936,13 @@ public class NumbersActivity extends Activity {
                 c.save();
                 if (i == wrongPick) c.translate(wob, 0);
                 button(c, l, top, r, top + ch, fill, deep, i);
-                if (kind() == PATTERN) {
+                if (kind() == CLASSIFY) {
+                    float rr = Math.min(cw, ch) * 0.28f;
+                    float bx = (l + r) / 2, by = top + ch / 2 - 3 * dp;
+                    c.drawCircle(bx, by, rr * 1.45f, Draw.fill(0xFFFFFFFF));
+                    if (qc == 0) shape(c, shapeOptions.get(i) * 10 + 4, bx, by, rr);
+                    else c.drawCircle(bx, by, rr * 1.1f, Draw.fill(COLOURS[shapeOptions.get(i)]));
+                } else if (kind() == PATTERN) {
                     float rr = Math.min(cw, ch) * 0.28f;
                     c.drawCircle((l + r) / 2, top + ch / 2 - 3 * dp, rr * 1.45f, Draw.fill(0xFFFFFFFF));
                     shape(c, shapeOptions.get(i), (l + r) / 2, top + ch / 2 - 3 * dp, rr);
@@ -935,7 +985,7 @@ public class NumbersActivity extends Activity {
                     float cardB = pad + Math.min(cellW, (areaB - pad) * 0.5f);
                     Draw.card(c, l, pad, r, cardB - 8 * dp, 28 * dp, Draw.YELLOW, Draw.YELLOW_D, 8 * dp);
                     label(c, digits(v), (l + r) / 2, (pad + cardB) / 2 - 4 * dp, (cardB - pad) * 0.6f, cellW * 0.8f, 0xFFFFFFFF);
-                    things(c, v, l, cardB + pad, r, areaB, COLOURS[i % COLOURS.length], 0);
+                    things(c, v, l, cardB + pad, r, areaB, COLOURS[i % 4], 0);
                 }
                 speaker(c, w / 2 + btnH * 0.9f, row, btnH / 2);
                 next(c, w / 2 - btnH * 1.1f, row, btnH * 2.2f, btnH, "هَيَّا");
@@ -1022,8 +1072,15 @@ public class NumbersActivity extends Activity {
             switch (k) {
                 case COUNT:
                     Draw.card(c, l, t, r, b - 8 * dp, 28 * dp, 0xFFFFFFFF, 0xFFE6DCCB, 8 * dp);
-                    things(c, qa, l + 18 * dp, t + 18 * dp, r - 18 * dp, b - 26 * dp, COLOURS[qa % COLOURS.length], 0);
+                    things(c, qa, l + 18 * dp, t + 18 * dp, r - 18 * dp, b - 26 * dp, COLOURS[qa % 4], 0);
                     break;
+                case CLASSIFY: {
+                    Draw.card(c, l, t, r, b - 8 * dp, 28 * dp, 0xFFFFFFFF, 0xFFE6DCCB, 8 * dp);
+                    float rr = Math.min(r - l, b - t) * 0.2f;
+                    if (rightPick < 0) shape(c, qa, cx, (t + b) / 2 - 4 * dp, rr);
+                    label(c, qc == 0 ? "حَسَبَ الشَّكْل" : "حَسَبَ اللَّوْن", cx, t + 26 * dp, 22 * dp, r - l - 24 * dp, Draw.PLUM);
+                    break;
+                }
                 case FIND: {
                     float s = Math.min(r - l, b - t) * 0.8f;
                     Draw.card(c, cx - s / 2, t, cx + s / 2, t + s - 8 * dp, 36 * dp, Draw.YELLOW, Draw.YELLOW_D, 8 * dp);
@@ -1100,7 +1157,7 @@ public class NumbersActivity extends Activity {
                         float rr = cell * 0.46f;
                         c.save();
                         if (i == wrongPick) c.translate(wob, 0);
-                        int body = i == rightPick ? Draw.MINT_D : i == wrongPick ? 0xFFE07A7A : COLOURS[i % COLOURS.length];
+                        int body = i == rightPick ? Draw.MINT_D : i == wrongPick ? 0xFFE07A7A : COLOURS[i % 4];
                         c.drawRoundRect(new RectF(x - rr, y, x + rr, y + rr * 3.2f), rr * 0.6f, rr * 0.6f, Draw.fill(body));
                         c.drawCircle(x, y - rr * 0.2f, rr * 0.85f, Draw.fill(0xFFFFD9B3));
                         c.drawCircle(x - rr * 0.3f, y - rr * 0.3f, rr * 0.1f, Draw.fill(Draw.PLUM));

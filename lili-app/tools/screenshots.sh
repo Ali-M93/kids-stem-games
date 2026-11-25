@@ -81,7 +81,7 @@ for st in 0 1 2 3; do
     adb shell input keyevent KEYCODE_BACK
     sleep 1
 done
-for st in 0 5 8 9 10 11 12 16 17; do
+for st in 0 5 8 9 10 11 12 16 17 18 19 20 21; do
     adb shell am start -W -n $pkg/$cls.NumbersActivity --es prefs p1_numbers --es gender g --ei stage $st >/dev/null
     sleep 4
     shot "5-numbers-stop$st"
