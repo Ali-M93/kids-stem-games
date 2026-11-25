@@ -2029,7 +2029,7 @@ public class NumbersActivity extends Activity {
                     if (line) {
                         // A window of ten steps around the hops, so the numbers stay big enough to read.
                         int end = add ? qa + qb : qa - qb;
-                        int lo = Math.max(0, Math.min(Math.min(qa, end) - 2, 10));
+                        int lo = Math.max(0, Math.min(Math.min(qa, end) - 1, 10));
                         numberLine(c, lo, lo + 10, qa, qb, add, l + 8 * dp, r - 8 * dp, (inT + inB) / 2 + 10 * dp);
                     } else if (add) {
                         float mid = (l + r) / 2;
