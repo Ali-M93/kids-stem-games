@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -45,7 +46,7 @@ public class NumbersActivity extends Activity {
     private static final int T_PATTERN = 0, T_NUM = 1, T_COMPARE = 2, T_NEIGHBOR = 3, T_ORDER = 4,
             T_ORDINAL = 5, T_ADD = 6, T_SUB = 7, T_CLASSIFY = 8,
             T_GRAPH = 9, T_DAYS = 10, T_CLOCK = 11, T_FRACTION = 12, T_LENGTH = 13, T_SHAPES = 14, T_SOLIDS = 15, T_TENS = 16,
-            T_STORY = 17, T_BOND = 18, T_FACTS = 19, T_KIND = 20, T_SPATIAL = 21, T_HUNDRED = 22;
+            T_STORY = 17, T_BOND = 18, T_FACTS = 19, T_KIND = 20, T_SPATIAL = 21, T_HUNDRED = 22, T_PAGE = 23;
 
     /** One stop of the map: its title, the label on the map, what it teaches and its numbers. */
     private static final class Stop {
@@ -69,6 +70,7 @@ public class NumbersActivity extends Activity {
      */
     private static final Stop[] STOPS = {
             // 1: patterns and numbers to 20
+            new Stop("الفصل الأول", "📖", T_PAGE, 1),
             new Stop("الأنماط", "▲●", T_PATTERN, 0),
             new Stop("العددان ١ و ٢", "١ ٢", T_NUM, 2, 1, 2),
             new Stop("العددان ٣ و ٤", "٣ ٤", T_NUM, 4, 3, 4),
@@ -79,6 +81,7 @@ public class NumbersActivity extends Activity {
             new Stop("الأعداد من ١١ إلى ١٥", "١١-١٥", T_NUM, 15, 11, 12, 13, 14, 15),
             new Stop("الأعداد من ١٦ إلى ٢٠", "١٦-٢٠", T_NUM, 20, 16, 17, 18, 19, 20),
             // 2: comparing and ordering
+            new Stop("الفصل الثاني", "📖", T_PAGE, 2),
             new Stop("مقارنة الأعداد حتى ٩", "أكبر", T_COMPARE, 9),
             new Stop("السابق والتالي حتى ٩", "قبل", T_NEIGHBOR, 9),
             new Stop("ترتيب الأعداد حتى ٩", "رتّب", T_ORDER, 9),
@@ -87,6 +90,7 @@ public class NumbersActivity extends Activity {
             new Stop("السابق والتالي حتى ٢٠", "بعد", T_NEIGHBOR, 20),
             new Stop("ترتيب الأعداد حتى ٢٠", "٢٠", T_ORDER, 20),
             // 3: adding and taking away to 10
+            new Stop("الفصل الثالث", "📖", T_PAGE, 3),
             new Stop("قصص الجمع", "قصة", T_STORY, 10, 3),
             new Stop("الجمع حتى ١٠", "+", T_ADD, 10),
             new Stop("جمع الصفر وجمع العدد مع نفسه", "٠+", T_ADD, 10, 1),
@@ -97,23 +101,27 @@ public class NumbersActivity extends Activity {
             new Stop("طرح الصفر وطرح الكل", "−٠", T_SUB, 10, 1),
             new Stop("خطة حل المسألة", "مسألة", T_STORY, 10, 0),
             // 4: sorting and picture graphs
+            new Stop("الفصل الرابع", "📖", T_PAGE, 4),
             new Stop("التصنيف بالشكل", "صنّف", T_CLASSIFY, 0),
             new Stop("التصنيف باللون", "لون", T_CLASSIFY, 1),
             new Stop("التصنيف بالنوع", "نوع", T_KIND, 0),
             new Stop("التمثيل بالصور", "مخطط", T_GRAPH, 0),
             // 5: adding to 20
+            new Stop("الفصل الخامس", "📖", T_PAGE, 5),
             new Stop("الجمع بإضافة ١ و ٢ و ٣", "+١", T_ADD, 20, 3),
             new Stop("الجمع على خط الأعداد", "+خط", T_ADD, 20, 4),
             new Stop("جمع العدد مع نفسه", "٥+٥", T_ADD, 20, 2),
             new Stop("الجمع بتكوين العدد ١٠", "+٢٠", T_ADD, 20),
             new Stop("مسائل الجمع", "قصة+", T_STORY, 20, 1),
             // 6: taking away to 20
+            new Stop("الفصل السادس", "📖", T_PAGE, 6),
             new Stop("الطرح بالعد إلى الوراء", "−١", T_SUB, 20, 2),
             new Stop("الطرح على خط الأعداد", "−خط", T_SUB, 20, 3),
             new Stop("الطرح حتى ٢٠", "−٢٠", T_SUB, 20),
             new Stop("الحقائق المترابطة حتى ٢٠", "+−٢٠", T_FACTS, 20),
             new Stop("مسائل الطرح", "قصة−", T_STORY, 20, 2),
             // 7: geometry and measuring
+            new Stop("الفصل السابع", "📖", T_PAGE, 7),
             new Stop("أيام الأسبوع", "أيام", T_DAYS, 0),
             new Stop("الوقت بالساعات الكاملة", "ساعة", T_CLOCK, 0, 0),
             new Stop("النصف", "½", T_FRACTION, 0, 0),
@@ -124,6 +132,7 @@ public class NumbersActivity extends Activity {
             new Stop("الأشكال المستوية", "أشكال", T_SHAPES, 0),
             new Stop("البعد المكاني", "فوق", T_SPATIAL, 0),
             // 8: numbers to 99
+            new Stop("الفصل الثامن", "📖", T_PAGE, 8),
             new Stop("العشرات والآحاد", "٩٩", T_TENS, 99),
             new Stop("لوحة المئة: خمسات وعشرات", "١٠٠", T_HUNDRED, 100, 10),
             new Stop("لوحة المئة: اثنينات", "٢،٤", T_HUNDRED, 100, 2),
@@ -131,6 +140,7 @@ public class NumbersActivity extends Activity {
             new Stop("السابق والتالي حتى ٩٩", "قبل٩٩", T_NEIGHBOR, 99),
             new Stop("ترتيب الأعداد حتى ٩٩", "رتّب٩٩", T_ORDER, 99),
             // 9: adding and taking away to 99, no carrying
+            new Stop("الفصل التاسع", "📖", T_PAGE, 9),
             new Stop("جمع العشرات", "+١٠", T_ADD, 99, 5),
             new Stop("طرح العشرات", "−١٠", T_SUB, 99, 5),
             new Stop("الجمع حتى ٩٩", "+٩٩", T_ADD, 99),
@@ -176,10 +186,21 @@ public class NumbersActivity extends Activity {
     /** Where the ball is: above, under, right, left, in, out, in front, behind. */
     private static final String[] PLACES = {"فَوْق", "تَحْت", "يَمِين", "يَسَار", "دَاخِل", "خَارِج", "أَمَام", "خَلْف"};
 
+    /** Each chapter's title, read by Lili over the chapter's opening page of the book (math/c1.webp…). */
+    private static final String[] CHAPTERS = {"الْفَصْلُ الْأَوَّلُ: الْأَنْمَاطُ وَالْأَعْدَادُ حَتَّى عِشْرِين",
+            "الْفَصْلُ الثَّانِي: مُقَارَنَةُ الْأَعْدَادِ وَتَرْتِيبُهَا",
+            "الْفَصْلُ الثَّالِثُ: الْجَمْعُ وَالطَّرْحُ حَتَّى عَشَرَة",
+            "الْفَصْلُ الرَّابِعُ: التَّصْنِيفُ وَالتَّمْثِيلُ بِمُخَطَّطَاتِ الصُّوَر",
+            "الْفَصْلُ الْخَامِسُ: الْجَمْعُ حَتَّى عِشْرِين",
+            "الْفَصْلُ السَّادِسُ: الطَّرْحُ حَتَّى عِشْرِين",
+            "الْفَصْلُ السَّابِعُ: الْهَنْدَسَةُ وَالْقِيَاس",
+            "الْفَصْلُ الثَّامِنُ: الْأَعْدَادُ حَتَّى تِسْعَةٍ وَتِسْعِينَ وَالْقِيمَةُ الْمَكَانِيَّة",
+            "الْفَصْلُ التَّاسِعُ: الْجَمْعُ وَالطَّرْحُ حَتَّى تِسْعَةٍ وَتِسْعِين"};
+
     private static final int ASK = 0, INTRO = 1, TRACE = 2, COUNT = 3, FIND = 4, PATTERN = 5, COMPARE = 6,
             NEIGHBOR = 7, ORDER = 8, ORDINAL = 9, ADD = 10, SUB = 11, DONE = 12, CLASSIFY = 13,
             GRAPH = 14, DAYS = 15, CLOCK = 16, FRACTION = 17, LENGTH = 18, SHAPES = 19, SOLIDS = 20, TENS = 21,
-            STORY = 22, BOND = 23, FACTS = 24, KIND = 25, SPATIAL = 26, HUNDRED = 27;
+            STORY = 22, BOND = 23, FACTS = 24, KIND = 25, SPATIAL = 26, HUNDRED = 27, PAGE = 28;
     private static final int ROUNDS = 6;
 
     private SharedPreferences prefs;
@@ -214,6 +235,8 @@ public class NumbersActivity extends Activity {
 
     /** What Lili says when the speaker is pressed. */
     private final List<String> question = new ArrayList<>();
+    /** A chapter's opening page of the book. */
+    private Bitmap page;
 
     @Override
     protected void onCreate(Bundle saved) {
@@ -317,6 +340,14 @@ public class NumbersActivity extends Activity {
                 break;
             case T_HUNDRED:
                 steps.add(HUNDRED);
+                break;
+            case T_PAGE:
+                steps.add(PAGE);
+                try (InputStream in = getAssets().open("math/c" + stop.max + ".webp")) {
+                    page = BitmapFactory.decodeStream(in);
+                } catch (IOException e) {
+                    page = null;
+                }
                 break;
             default:
                 steps.add(SUB);
@@ -509,6 +540,15 @@ public class NumbersActivity extends Activity {
             case ORDER:
                 rounds = 4;
                 newOrder(true);
+                break;
+            case PAGE:
+                // A chapter begins: its page of the book, and Lili reads the title.
+                question.clear();
+                question.add(m(CHAPTERS[stop.max - 1]));
+                if (stage == 0) lead.add(m("هَيَّا نَتَعَلَّمُ الرِّيَاضِيَّات"));
+                lead.add(g("شَاهِدْ وَاسْتَمِعْ", "شَاهِدِي وَاسْتَمِعِي"));
+                lead.addAll(question);
+                play(lead, null);
                 break;
             case DONE:
                 int reached = prefs.getInt("stage", 0);
@@ -1675,6 +1715,13 @@ public class NumbersActivity extends Activity {
                 label(c, "وَلَد", at[0][0] + cw / 2, at[0][1] + ch / 2 - 3 * dp, ch * 0.32f, cw * 0.8f, 0xFFFFFFFF);
                 button(c, at[1][0], at[1][1], at[1][0] + cw, at[1][1] + ch, Draw.PINK, Draw.PINK_D, B_GIRL);
                 label(c, "بِنْت", at[1][0] + cw / 2, at[1][1] + ch / 2 - 3 * dp, ch * 0.32f, cw * 0.8f, 0xFFFFFFFF);
+            } else if (k == PAGE) {
+                float row = h - pad - btnH / 2;
+                float y = row - btnH / 2 - pad - 44 * dp;
+                Draw.picture(c, page, pad, pad, w - pad, y - pad);
+                label(c, plain(CHAPTERS[stop.max - 1]), w / 2, y + 22 * dp, 26 * dp, w - 2 * pad, Draw.PLUM);
+                speaker(c, w / 2 + btnH * 0.9f, row, btnH / 2);
+                next(c, w / 2 - btnH * 1.1f, row, btnH * 2.2f, btnH, "هَيَّا");
             } else if (k == INTRO) {
                 // The new numbers, each with as many things to count beside it.
                 int n = stop.nums.length;

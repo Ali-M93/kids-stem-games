@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -40,7 +41,7 @@ public class ScienceActivity extends Activity {
     public static final String EXTRA_PREFS = "prefs", EXTRA_STAGE = "stage";
 
     private static final int T_SORT = 0, T_NEEDS = 1, T_GROW = 2, T_PLANT = 3, T_ANIMAL = 4, T_BODY = 5, T_SENSES = 6,
-            T_PICK = 7, T_MORE = 8, T_WORD = 9;
+            T_PICK = 7, T_MORE = 8, T_WORD = 9, T_PAGE = 10;
 
     /** One stop of the map: its title, the label on the map, what it teaches and how. */
     private static final class Stop {
@@ -58,22 +59,28 @@ public class ScienceActivity extends Activity {
     /** The book's order: safety, unit 1 living things, 2 their bodies, 3 where they live, 4 matter, 5 energy and motion, 6 our earth. */
     private static final Stop[] STOPS = {
             new Stop("احتياطات السلامة", "⚠️", T_SORT, 0),
+            new Stop("الوحدة الأولى", "📖", T_PAGE, 1),
             new Stop("الكائنات الحية وغير الحية", "🐞", T_SORT, 1),
             new Stop("احتياجات الكائنات الحية", "💧", T_NEEDS, 0),
             new Stop("النمو والتكاثر", "🌱", T_GROW, 0),
             new Stop("النبات والحيوان", "🌳", T_SORT, 2),
+            new Stop("الوحدة الثانية", "📖", T_PAGE, 2),
             new Stop("أجزاء النبات", "🌻", T_PLANT, 0),
             new Stop("أجزاء جسم الحيوان", "🐦", T_ANIMAL, 0),
             new Stop("أجزاء جسم الإنسان", "🧒", T_BODY, 0),
             new Stop("الحواس الخمس", "👂", T_SENSES, 0),
+            new Stop("الوحدة الثالثة", "📖", T_PAGE, 3),
             new Stop("البيئة اليابسة والمائية", "🐟", T_SORT, 3),
             // Unit 4: matter
+            new Stop("الوحدة الرابعة", "📖", T_PAGE, 4),
             new Stop("المادة: صلب ولين", "🧸", T_SORT, 4),
             new Stop("المادة: ثقيل وخفيف", "🪶", T_SORT, 5),
             new Stop("المادة: ناعم وخشن", "🌵", T_SORT, 6),
             new Stop("أيهما أثقل؟", "⚖️", T_MORE, 0),
             new Stop("الطفو والغطس", "⛵", T_SORT, 7),
+            new Stop("المخاليط", "🥗", T_PICK, 4),
             // Unit 5: energy and motion
+            new Stop("الوحدة الخامسة", "📖", T_PAGE, 5),
             new Stop("الحرارة: ساخن وبارد", "🔥", T_SORT, 8),
             new Stop("الكهرباء", "💡", T_PICK, 0),
             new Stop("الضوء", "🔦", T_PICK, 1),
@@ -82,6 +89,7 @@ public class ScienceActivity extends Activity {
             new Stop("الحركة: أسرع وأبطأ", "🐢", T_MORE, 1),
             new Stop("القوة: دفع وسحب", "🛒", T_SORT, 9),
             // Unit 6: our earth
+            new Stop("الوحدة السادسة", "📖", T_PAGE, 6),
             new Stop("اليابسة والماء", "🏔️", T_WORD, 0),
             new Stop("الفصول الأربعة", "🍂", T_WORD, 1),
             new Stop("تتابع الفصول", "🌸", T_WORD, 3),
@@ -117,11 +125,11 @@ public class ScienceActivity extends Activity {
     };
     // Choosing the one picture that fits: works with electricity, gives light, makes a sound, worn in winter.
     private static final String[] PICK_Q = {"أَيُّهَا يَعْمَلُ بِالْكَهْرَبَاء؟", "أَيُّهَا يُعْطِي ضَوْءًا؟", "أَيُّهَا يُصْدِرُ صَوْتًا؟",
-            "مَاذَا نَلْبَسُ فِي هٰذَا الْفَصْل؟"};
+            "مَاذَا نَلْبَسُ فِي هٰذَا الْفَصْل؟", "أَيُّهَا مَخْلُوط؟"};
     private static final String[][] PICK_YES = {{"📺", "💡", "📱", "🔌", "🖥️", "🧺"}, {"💡", "☀️", "🔦", "🕯️", "🔥", "⭐"},
-            {"🔔", "🥁", "🎺", "📻", "🐓", "🎸"}, {"🧥", "🧣", "🧤", "🥾"}};
+            {"🔔", "🥁", "🎺", "📻", "🐓", "🎸"}, {"🧥", "🧣", "🧤", "🥾"}, {"🥗", "🍕", "🥣", "🍱", "🍧", "🧃"}};
     private static final String[][] PICK_NO = {{"🪑", "📚", "🧸", "🍎", "🪨", "🥄"}, {"📚", "🪨", "🧸", "🪑", "🍞", "🧦"},
-            {"🪨", "📚", "🍎", "🪑", "🧦", "🧽"}, {"🩳", "👙", "🕶️", "👒"}};
+            {"🪨", "📚", "🍎", "🪑", "🧦", "🧽"}, {"🩳", "👙", "🕶️", "👒"}, {"🍎", "🥛", "💧", "🧂", "🍌", "🥚"}};
     // Which is heavier (lighter) or faster (slower): pictures from light to heavy, slow to fast.
     private static final String[][] MORE_PICS = {{"🪶", "🍎", "🐈", "🧒", "🐄", "🐘"}, {"🐌", "🐢", "🐈", "🐎", "🚗", "✈️"}};
     private static final String[][] MORE_Q = {{"أَيُّهُمَا أَثْقَل؟", "أَيُّهُمَا أَخَفّ؟"}, {"أَيُّهُمَا أَسْرَع؟", "أَيُّهُمَا أَبْطَأ؟"}};
@@ -154,8 +162,16 @@ public class ScienceActivity extends Activity {
     private static final String[] ORGAN_NAMES = {"الْعَيْن", "الْأُذُن", "الْأَنْف", "اللِّسَان", "الْجِلْد"};
     private static final String[] SENSED = {"🌈", "🔔", "🌸", "🍋", "🧸"};
 
+    /** Each unit's title, read by Lili over the unit's opening page of the book (science/u1.webp…). */
+    private static final String[] UNITS = {"الْوَحْدَةُ الْأُولَى: الْكَائِنَاتُ الْحَيَّة",
+            "الْوَحْدَةُ الثَّانِيَةُ: تَرْكِيبُ أَجْسَامِ الْكَائِنَاتِ الْحَيَّة",
+            "الْوَحْدَةُ الثَّالِثَةُ: الْبِيئَةُ الطَّبِيعِيَّة",
+            "الْوَحْدَةُ الرَّابِعَةُ: الْمَادَّة",
+            "الْوَحْدَةُ الْخَامِسَةُ: الطَّاقَةُ وَالْحَرَكَة",
+            "الْوَحْدَةُ السَّادِسَةُ: أَرْضُنَا"};
+
     private static final int ASK = 0, SORT = 1, NEEDS_Q = 2, GROW = 3, PLANT = 4, ANIMAL = 5, BODY = 6, SENSES = 7, DONE = 8,
-            PICK = 9, MORE = 10, WORD = 11;
+            PICK = 9, MORE = 10, WORD = 11, PAGE = 12;
     private static final int ROUNDS = 6;
 
     private SharedPreferences prefs;
@@ -188,6 +204,8 @@ public class ScienceActivity extends Activity {
     private int placed;
     /** What Lili says when the speaker is pressed. */
     private final List<String> question = new ArrayList<>();
+    /** A unit's opening page of the book. */
+    private Bitmap page;
 
     @Override
     protected void onCreate(Bundle saved) {
@@ -222,8 +240,15 @@ public class ScienceActivity extends Activity {
         girl = "g".equals(g);
 
         if (g.isEmpty()) steps.add(ASK);
-        int[] byType = {SORT, NEEDS_Q, GROW, PLANT, ANIMAL, BODY, SENSES, PICK, MORE, WORD};
+        int[] byType = {SORT, NEEDS_Q, GROW, PLANT, ANIMAL, BODY, SENSES, PICK, MORE, WORD, PAGE};
         steps.add(byType[stop.type]);
+        if (stop.type == T_PAGE) {
+            try (InputStream in = getAssets().open("science/u" + stop.mode + ".webp")) {
+                page = BitmapFactory.decodeStream(in);
+            } catch (IOException e) {
+                page = null;
+            }
+        }
         steps.add(DONE);
 
         Typeface face = Typeface.createFromAsset(getAssets(), "fonts/fredoka_semibold.ttf");
@@ -363,6 +388,16 @@ public class ScienceActivity extends Activity {
                 rounds = 3;
                 newGrow(true);
                 break;
+            case PAGE: {
+                // A unit begins: its page of the book, and Lili reads the title.
+                question.clear();
+                question.add(m(UNITS[stop.mode - 1]));
+                List<String> lead = new ArrayList<>();
+                lead.add(g("شَاهِدْ وَاسْتَمِعْ", "شَاهِدِي وَاسْتَمِعِي"));
+                lead.addAll(question);
+                play(lead, null);
+                break;
+            }
             case DONE:
                 int reached = prefs.getInt("stage", 0);
                 if (stage + 1 > reached) prefs.edit().putInt("stage", stage + 1).apply();
@@ -484,6 +519,7 @@ public class ScienceActivity extends Activity {
                 subject = md == 3 ? (summer ? "🏖️" : "⛄") : "";
                 question.add(m(PICK_Q[md]));
                 if (md == 3) reply.add(m(summer ? "الصَّيْف" : "الشِّتَاء"));
+                if (md == 4) reply.add(m("مَخْلُوطٌ مِنْ أَشْيَاءَ كَثِيرَة"));
                 break;
             }
             case MORE: {
@@ -856,6 +892,15 @@ public class ScienceActivity extends Activity {
                 label(c, "بِنْت", at[1][0] + cw / 2, at[1][1] + ch / 2 - 3 * dp, ch * 0.32f, cw * 0.8f, 0xFFFFFFFF);
                 return;
             }
+            if (k == PAGE) {
+                float row = h - pad - btnH / 2;
+                float y = row - btnH / 2 - pad - 44 * dp;
+                Draw.picture(c, page, pad, pad, w - pad, y - pad);
+                label(c, plain(UNITS[stop.mode - 1]), w / 2, y + 22 * dp, 26 * dp, w - 2 * pad, Draw.PLUM);
+                speaker(c, w / 2 + btnH * 0.9f, row, btnH / 2);
+                next(c, w / 2 - btnH * 1.1f, row, btnH * 2.2f, btnH, "هَيَّا");
+                return;
+            }
             if (k == DONE) {
                 float ph = Math.min(h * 0.45f, w * 0.6f);
                 Draw.picture(c, lili, w / 2 - ph / 2, pad, w / 2 + ph / 2, pad + ph);
@@ -919,7 +964,7 @@ public class ScienceActivity extends Activity {
             if (k == WORD && stop.mode == 4) {
                 // A box, and a cat on it, under it (a table), in it or beside it.
                 cat(c, qa, pad, top, w - pad, sceneB - 8 * dp);
-            } else if (k == MORE || (k == PICK && stop.mode < 3)) {
+            } else if (k == MORE || (k == PICK && stop.mode != 3)) {
                 String q = k == MORE ? MORE_Q[stop.mode][qc] : PICK_Q[stop.mode];
                 label(c, plain(q), cx, cy, Math.min(44 * dp, s * 0.25f), w - 4 * pad, Draw.PLUM);
             } else if (k == SENSES && qb == 0) {
