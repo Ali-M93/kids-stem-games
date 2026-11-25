@@ -43,7 +43,8 @@ public class NumbersActivity extends Activity {
 
     // What a stop teaches.
     private static final int T_PATTERN = 0, T_NUM = 1, T_COMPARE = 2, T_NEIGHBOR = 3, T_ORDER = 4,
-            T_ORDINAL = 5, T_ADD = 6, T_SUB = 7, T_CLASSIFY = 8;
+            T_ORDINAL = 5, T_ADD = 6, T_SUB = 7, T_CLASSIFY = 8,
+            T_GRAPH = 9, T_DAYS = 10, T_CLOCK = 11, T_FRACTION = 12, T_LENGTH = 13, T_SHAPES = 14, T_SOLIDS = 15, T_TENS = 16;
 
     /** One stop of the map: its title, the label on the map, what it teaches and its numbers. */
     private static final class Stop {
@@ -60,7 +61,11 @@ public class NumbersActivity extends Activity {
         }
     }
 
-    /** The book's order: 1 patterns and numbers to 20, 2 compare and order, 3 sums to 10, 4 sorting, 5-6 sums to 20. */
+    /**
+     * The book's order: 1 patterns and numbers to 20, 2 compare and order, 3 sums to 10, 4 sorting and
+     * picture graphs, 5-6 sums to 20, 7 days, clock, halves, lengths, shapes, 8 tens and ones to 99,
+     * 9 sums to 99 without carrying.
+     */
     private static final Stop[] STOPS = {
             new Stop("الأنماط", "▲●", T_PATTERN, 0),
             new Stop("العددان ١ و ٢", "١ ٢", T_NUM, 2, 1, 2),
@@ -82,8 +87,20 @@ public class NumbersActivity extends Activity {
             new Stop("الطرح حتى ١٠", "−", T_SUB, 10),
             new Stop("التصنيف بالشكل", "صنّف", T_CLASSIFY, 0),
             new Stop("التصنيف باللون", "لون", T_CLASSIFY, 1),
+            new Stop("التمثيل بالصور", "مخطط", T_GRAPH, 0),
             new Stop("الجمع حتى ٢٠", "+٢٠", T_ADD, 20),
             new Stop("الطرح حتى ٢٠", "−٢٠", T_SUB, 20),
+            new Stop("أيام الأسبوع", "أيام", T_DAYS, 0),
+            new Stop("الساعة", "ساعة", T_CLOCK, 0),
+            new Stop("النصف والربع", "نصف", T_FRACTION, 0),
+            new Stop("الأطوال", "أطول", T_LENGTH, 0),
+            new Stop("الأشكال", "أشكال", T_SHAPES, 0),
+            new Stop("المجسمات", "مجسم", T_SOLIDS, 0),
+            new Stop("العشرات والآحاد", "٩٩", T_TENS, 99),
+            new Stop("مقارنة الأعداد حتى ٩٩", "٩٩<", T_COMPARE, 99),
+            new Stop("السابق والتالي حتى ٩٩", "قبل٩٩", T_NEIGHBOR, 99),
+            new Stop("الجمع حتى ٩٩", "+٩٩", T_ADD, 99),
+            new Stop("الطرح حتى ٩٩", "−٩٩", T_SUB, 99),
     };
 
     /** What each stop shows on the journey map. */
@@ -99,8 +116,16 @@ public class NumbersActivity extends Activity {
     private static final String[] ORDINALS = {"الْأَوَّل", "الثَّانِي", "الثَّالِث", "الرَّابِع", "الْخَامِس", "السَّادِس",
             "السَّابِع", "الثَّامِن", "التَّاسِع", "الْعَاشِر"};
 
+    private static final String[] DAY_NAMES = {"السَّبْت", "الْأَحَد", "الِاثْنَيْن", "الثُّلَاثَاء", "الْأَرْبِعَاء", "الْخَمِيس", "الْجُمُعَة"};
+    private static final String[] HOURS = {"", "الْوَاحِدَة", "الثَّانِيَة", "الثَّالِثَة", "الرَّابِعَة", "الْخَامِسَة", "السَّادِسَة",
+            "السَّابِعَة", "الثَّامِنَة", "التَّاسِعَة", "الْعَاشِرَة", "الْحَادِيَةَ عَشْرَة", "الثَّانِيَةَ عَشْرَة"};
+    /** Shapes by their drawing code: 0 circle, 1 square, 2 triangle, 4 rectangle (3, the star, has no name). */
+    private static final String[] SHAPE_NAMES = {"دَائِرَة", "مُرَبَّع", "مُثَلَّث", "", "مُسْتَطِيل"};
+    private static final String[] SOLID_NAMES = {"مُكَعَّب", "أُسْطُوَانَة", "كُرَة", "مَخْرُوط", "مُتَوَازِي مُسْتَطِيلَات"};
+
     private static final int ASK = 0, INTRO = 1, TRACE = 2, COUNT = 3, FIND = 4, PATTERN = 5, COMPARE = 6,
-            NEIGHBOR = 7, ORDER = 8, ORDINAL = 9, ADD = 10, SUB = 11, DONE = 12, CLASSIFY = 13;
+            NEIGHBOR = 7, ORDER = 8, ORDINAL = 9, ADD = 10, SUB = 11, DONE = 12, CLASSIFY = 13,
+            GRAPH = 14, DAYS = 15, CLOCK = 16, FRACTION = 17, LENGTH = 18, SHAPES = 19, SOLIDS = 20, TENS = 21;
     private static final int ROUNDS = 6;
 
     private SharedPreferences prefs;
@@ -194,6 +219,30 @@ public class NumbersActivity extends Activity {
             case T_CLASSIFY:
                 steps.add(CLASSIFY);
                 break;
+            case T_GRAPH:
+                steps.add(GRAPH);
+                break;
+            case T_DAYS:
+                steps.add(DAYS);
+                break;
+            case T_CLOCK:
+                steps.add(CLOCK);
+                break;
+            case T_FRACTION:
+                steps.add(FRACTION);
+                break;
+            case T_LENGTH:
+                steps.add(LENGTH);
+                break;
+            case T_SHAPES:
+                steps.add(SHAPES);
+                break;
+            case T_SOLIDS:
+                steps.add(SOLIDS);
+                break;
+            case T_TENS:
+                steps.add(TENS);
+                break;
             default:
                 steps.add(SUB);
         }
@@ -248,6 +297,11 @@ public class NumbersActivity extends Activity {
         return m(girl ? girlForm : boy);
     }
 
+    /** A word without its vowel marks, for a card. */
+    private static String plain(String s) {
+        return s.replaceAll("[\\u064B-\\u0652]", "");
+    }
+
     private static String digits(int n) {
         String s = Integer.toString(n);
         StringBuilder b = new StringBuilder();
@@ -255,8 +309,22 @@ public class NumbersActivity extends Activity {
         return b.toString();
     }
 
-    private String name(int n) {
-        return n >= 0 && n < NAMES.length ? m(NAMES[n]) : null;
+    private static final String[] TEN_NAMES = {"", "", "عِشْرُون", "ثَلَاثُون", "أَرْبَعُون", "خَمْسُون", "سِتُّون", "سَبْعُون",
+            "ثَمَانُون", "تِسْعُون"};
+    private static final String[] AND_TENS = {"", "", "وَعِشْرُون", "وَثَلَاثُون", "وَأَرْبَعُون", "وَخَمْسُون", "وَسِتُّون",
+            "وَسَبْعُون", "وَثَمَانُون", "وَتِسْعُون"};
+
+    /** Lili saying a number up to a hundred: «خَمْسَة» then «وَثَلَاثُون» for ٣٥. */
+    private List<String> names(int n) {
+        List<String> out = new ArrayList<>();
+        if (n >= 0 && n < NAMES.length) out.add(m(NAMES[n]));
+        else if (n == 100) out.add(m("مِئَة"));
+        else if (n > 20 && n < 100 && n % 10 == 0) out.add(m(TEN_NAMES[n / 10]));
+        else if (n > 20 && n < 100) {
+            out.add(m(NAMES[n % 10]));
+            out.add(m(AND_TENS[n / 10]));
+        }
+        return out;
     }
 
     private void stopSound() {
@@ -269,6 +337,10 @@ public class NumbersActivity extends Activity {
     /** Plays the recordings one after another, then runs {@code after}. */
     private void play(List<String> sounds, Runnable after) {
         playFrom(new ArrayList<>(sounds), 0, after);
+    }
+
+    private void play(List<String> sounds, Runnable after, boolean unused) {
+        play(sounds, after);
     }
 
     private void play(String sound, Runnable after) {
@@ -345,7 +417,7 @@ public class NumbersActivity extends Activity {
                 break;
             case INTRO:
                 question.clear();
-                for (int n : stop.nums) question.add(name(n));
+                for (int n : stop.nums) question.addAll(names(n));
                 lead.add(m("هَيَّا نَتَعَلَّمُ عَدَدًا جَدِيدًا"));
                 lead.addAll(question);
                 play(lead, null);
@@ -354,7 +426,7 @@ public class NumbersActivity extends Activity {
                 traceIdx = 0;
                 view.clearTrace();
                 question.clear();
-                question.add(name(stop.nums[0]));
+                question.addAll(names(stop.nums[0]));
                 lead.add(g("اُكْتُبِ الْعَدَد", "اُكْتُبِي الْعَدَد"));
                 lead.addAll(question);
                 play(lead, null);
@@ -398,9 +470,10 @@ public class NumbersActivity extends Activity {
     private void numberOptions(int right, int lo, int hi) {
         options.clear();
         List<Integer> pool = new ArrayList<>();
-        for (int d = -3; d <= 3; d++) {
+        int[] near = right > 20 ? new int[]{-10, -2, -1, 1, 2, 10} : new int[]{-3, -2, -1, 1, 2, 3};
+        for (int d : near) {
             int v = right + d;
-            if (d != 0 && v >= lo && v <= hi) pool.add(v);
+            if (v >= lo && v <= hi) pool.add(v);
         }
         Collections.shuffle(pool, rnd);
         List<Integer> pick = new ArrayList<>();
@@ -417,7 +490,8 @@ public class NumbersActivity extends Activity {
         rightPick = -1;
         question.clear();
         List<String> lead = new ArrayList<>();
-        switch (kind()) {
+        int k = kind();
+        switch (k) {
             case COUNT:
                 qa = pickNumber();
                 numberOptions(qa, 0, Math.max(stop.max, 3));
@@ -428,7 +502,7 @@ public class NumbersActivity extends Activity {
                 qa = pickNumber();
                 numberOptions(qa, 0, Math.max(stop.max, 3));
                 if (first) lead.add(m("أَيْنَ الْعَدَد؟"));
-                question.add(name(qa));
+                question.addAll(names(qa));
                 break;
             case PATTERN:
                 newPattern();
@@ -470,6 +544,127 @@ public class NumbersActivity extends Activity {
                 if (!first) question.clear();
                 break;
             }
+            case GRAPH: {
+                // A picture graph: three kinds of shape, each a row of as many as there are.
+                List<Integer> kinds = new ArrayList<>();
+                for (int v = 0; v < 4; v++) kinds.add(v);
+                Collections.shuffle(kinds, rnd);
+                List<Integer> counts = new ArrayList<>();
+                for (int v = 1; v <= 7; v++) counts.add(v);
+                Collections.shuffle(counts, rnd);
+                pattern.clear();
+                shapeOptions.clear();
+                for (int i = 0; i < 3; i++) {
+                    shapeOptions.add(kinds.get(i) * 10 + i);
+                    pattern.add(counts.get(i));
+                }
+                qc = rnd.nextInt(2); // 0 most, 1 fewest
+                int best = 0;
+                for (int i = 1; i < 3; i++) {
+                    if (qc == 0 ? pattern.get(i) > pattern.get(best) : pattern.get(i) < pattern.get(best)) best = i;
+                }
+                answer = best;
+                options.clear();
+                for (int i = 0; i < 3; i++) options.add("");
+                question.add(m(qc == 0 ? "أَيُّهَا أَكْثَر؟" : "أَيُّهَا أَقَلّ؟"));
+                break;
+            }
+            case DAYS: {
+                qa = rnd.nextInt(7);
+                qb = rnd.nextInt(2); // 0 the day after, 1 the day before
+                int right = (qa + (qb == 0 ? 1 : 6)) % 7;
+                List<Integer> pick = new ArrayList<>();
+                pick.add(right);
+                for (int d : new int[]{(right + 2) % 7, (right + 5) % 7, (right + 3) % 7}) {
+                    if (pick.size() < 3 && d != qa && !pick.contains(d)) pick.add(d);
+                }
+                Collections.shuffle(pick, rnd);
+                options.clear();
+                shapeOptions.clear();
+                for (int d : pick) {
+                    options.add(plain(DAY_NAMES[d]));
+                    shapeOptions.add(d);
+                }
+                answer = pick.indexOf(right);
+                question.add(m(DAY_NAMES[qa]));
+                question.add(m(qb == 0 ? "مَا الْيَوْمُ الَّذِي بَعْدَهُ؟" : "مَا الْيَوْمُ الَّذِي قَبْلَهُ؟"));
+                break;
+            }
+            case CLOCK: {
+                qa = 1 + rnd.nextInt(12);
+                qb = round < 3 ? 0 : rnd.nextInt(2); // half past only after a few o'clocks
+                List<int[]> pick = new ArrayList<>();
+                pick.add(new int[]{qa, qb});
+                pick.add(new int[]{qa % 12 + 1, qb});
+                pick.add(qb == 1 ? new int[]{qa, 0} : new int[]{(qa + 5) % 12 + 1, rnd.nextInt(2)});
+                List<Integer> idx = new ArrayList<>();
+                for (int i = 0; i < 3; i++) idx.add(i);
+                Collections.shuffle(idx, rnd);
+                options.clear();
+                for (int i : idx) options.add(digits(pick.get(i)[0]) + ":" + (pick.get(i)[1] == 1 ? "٣٠" : "٠٠"));
+                answer = idx.indexOf(0);
+                question.add(m("كَمِ السَّاعَةُ؟"));
+                break;
+            }
+            case FRACTION: {
+                qc = rnd.nextInt(2); // 0 half, 1 quarter
+                shapeOptions.clear();
+                for (int v = 0; v < 3; v++) shapeOptions.add(v); // 0 half, 1 quarter, 2 not equal parts
+                Collections.shuffle(shapeOptions, rnd);
+                qa = rnd.nextInt(2); // a square or a circle
+                options.clear();
+                for (int i = 0; i < 3; i++) options.add("");
+                answer = shapeOptions.indexOf(qc);
+                question.add(m(qc == 0 ? "أَيْنَ النِّصْف؟" : "أَيْنَ الرُّبْع؟"));
+                break;
+            }
+            case LENGTH: {
+                qa = 3 + rnd.nextInt(7);
+                do qb = 3 + rnd.nextInt(7); while (Math.abs(qb - qa) < 2);
+                qc = rnd.nextInt(2); // 0 longer, 1 shorter
+                options.clear();
+                options.add("");
+                options.add("");
+                answer = (qa > qb) == (qc == 0) ? 0 : 1;
+                question.add(m(qc == 0 ? "أَيُّهُمَا أَطْوَل؟" : "أَيُّهُمَا أَقْصَر؟"));
+                break;
+            }
+            case SHAPES:
+            case SOLIDS: {
+                List<Integer> pool = new ArrayList<>();
+                if (k == SHAPES) {
+                    pool.add(0);
+                    pool.add(1);
+                    pool.add(2);
+                    pool.add(4);
+                } else {
+                    for (int v = 0; v < 5; v++) pool.add(v);
+                }
+                Collections.shuffle(pool, rnd);
+                shapeOptions.clear();
+                shapeOptions.addAll(pool.subList(0, 3));
+                answer = rnd.nextInt(3);
+                qa = shapeOptions.get(answer);
+                options.clear();
+                for (int i = 0; i < 3; i++) options.add("");
+                if (first) lead.add(g("اِخْتَرِ الشَّكْل", "اِخْتَارِي الشَّكْل"));
+                question.add(m(k == SHAPES ? SHAPE_NAMES[qa] : SOLID_NAMES[qa]));
+                break;
+            }
+            case TENS: {
+                qa = 21 + rnd.nextInt(79);
+                qb = rnd.nextInt(3); // 0 how many tens, 1 how many ones, 2 find the number
+                if (qb == 2) {
+                    numberOptions(qa, 10, 99);
+                    if (first) lead.add(m("أَيْنَ الْعَدَد؟"));
+                    question.addAll(names(qa));
+                } else {
+                    int right = qb == 0 ? qa / 10 : qa % 10;
+                    numberOptions(right, 0, 9);
+                    question.add(m(qb == 0 ? "كَمْ عَدَدُ الْعَشَرَات؟" : "كَمْ عَدَدُ الْآحَاد؟"));
+                }
+                break;
+            }
             case ORDINAL:
                 qa = rnd.nextInt(10);
                 options.clear();
@@ -478,7 +673,14 @@ public class NumbersActivity extends Activity {
                 question.add(m(ORDINALS[qa]));
                 break;
             case ADD:
-                if (stop.max > 10) {
+                if (stop.max > 20) {
+                    // Chapter 9: no carrying — the ones add up to nine at most.
+                    qa = 10 + rnd.nextInt(80);
+                    int bt = rnd.nextInt(10 - qa / 10), bo = rnd.nextInt(10 - qa % 10);
+                    if (bt == 0 && bo == 0) bo = Math.min(1, 9 - qa % 10);
+                    if (bt == 0 && bo == 0) bt = Math.min(1, 9 - qa / 10);
+                    qb = bt * 10 + bo;
+                } else if (stop.max > 10) {
                     // The book's chapter 5: two one-digit numbers that make a teen, like ٨ + ٥.
                     qa = 2 + rnd.nextInt(8);
                     int lo = Math.max(2, 11 - qa);
@@ -489,13 +691,18 @@ public class NumbersActivity extends Activity {
                 }
                 numberOptions(qa + qb, 0, stop.max);
                 if (first) lead.add(m("هَيَّا نَجْمَعُ"));
-                question.add(name(qa));
+                question.addAll(names(qa));
                 question.add(m("زَائِد"));
-                question.add(name(qb));
+                question.addAll(names(qb));
                 question.add(m("كَمِ الْمَجْمُوعُ؟"));
                 break;
             case SUB:
-                if (stop.max > 10) {
+                if (stop.max > 20) {
+                    // Chapter 9: no borrowing — each digit taken from a bigger or equal one.
+                    qa = 21 + rnd.nextInt(79);
+                    qb = rnd.nextInt(qa / 10 + 1) * 10 + rnd.nextInt(qa % 10 + 1);
+                    if (qb == 0) qb = qa % 10 > 0 ? 1 : 10;
+                } else if (stop.max > 10) {
                     // Chapter 6: a teen take away one digit, leaving one digit, like ١٤ − ٦.
                     qa = 11 + rnd.nextInt(8);
                     int lo = Math.max(2, qa - 9);
@@ -506,9 +713,9 @@ public class NumbersActivity extends Activity {
                 }
                 numberOptions(qa - qb, 0, stop.max);
                 if (first) lead.add(g("اِطْرَحْ", "اِطْرَحِي"));
-                question.add(name(qa));
+                question.addAll(names(qa));
                 question.add(m("نَاقِص"));
-                question.add(name(qb));
+                question.addAll(names(qb));
                 question.add(m("كَمْ يَبْقَى؟"));
                 break;
         }
@@ -552,15 +759,23 @@ public class NumbersActivity extends Activity {
             rightPick = i;
             view.invalidate();
             List<String> after = new ArrayList<>();
-            if (k == COUNT || k == FIND) after.add(name(qa));
-            else if (k == NEIGHBOR) after.add(name(qa + qb));
+            if (k == COUNT || k == FIND) after.addAll(names(qa));
+            else if (k == NEIGHBOR) after.addAll(names(qa + qb));
             else if (k == ADD || k == SUB) {
-                after.add(name(qa));
+                after.addAll(names(qa));
                 after.add(m(k == ADD ? "زَائِد" : "نَاقِص"));
-                after.add(name(qb));
+                after.addAll(names(qb));
                 after.add(m("يُسَاوِي"));
-                after.add(name(k == ADD ? qa + qb : qa - qb));
-            } else if (k == COMPARE) after.add(name(i == 0 ? qa : qb));
+                after.addAll(names(k == ADD ? qa + qb : qa - qb));
+            } else if (k == COMPARE) after.addAll(names(i == 0 ? qa : qb));
+            else if (k == DAYS) after.add(m(DAY_NAMES[shapeOptions.get(i)]));
+            else if (k == CLOCK) {
+                after.add(m("السَّاعَةُ"));
+                after.add(m(HOURS[qa]));
+                if (qb == 1) after.add(m("وَالنِّصْف"));
+            } else if (k == SHAPES) after.add(m(SHAPE_NAMES[qa]));
+            else if (k == SOLIDS) after.add(m(SOLID_NAMES[qa]));
+            else if (k == TENS) after.addAll(names(qb == 2 ? qa : qb == 0 ? qa / 10 : qa % 10));
             else if (k == ORDINAL) after.add(m(ORDINALS[qa]));
             after.add(cheer(book.praise));
             play(after, () -> {
@@ -610,7 +825,7 @@ public class NumbersActivity extends Activity {
             if (placed == order.size()) {
                 busy = true;
                 List<String> after = new ArrayList<>();
-                for (int v : order) after.add(name(v));
+                for (int v : order) after.addAll(names(v));
                 after.add(cheer(book.praise));
                 play(after, () -> {
                     round++;
@@ -618,7 +833,7 @@ public class NumbersActivity extends Activity {
                     else nextStep();
                 });
             } else {
-                play(name(cards.get(i)), null);
+                play(names(cards.get(i)), null);
             }
         } else {
             wrongPick = i;
@@ -630,7 +845,7 @@ public class NumbersActivity extends Activity {
 
     private void traced() {
         List<String> after = new ArrayList<>();
-        after.add(name(stop.nums[traceIdx]));
+        after.addAll(names(stop.nums[traceIdx]));
         after.add(cheer(book.praise));
         busy = true;
         play(after, () -> {
@@ -639,7 +854,7 @@ public class NumbersActivity extends Activity {
                 traceIdx++;
                 view.clearTrace();
                 question.clear();
-                question.add(name(stop.nums[traceIdx]));
+                question.addAll(names(stop.nums[traceIdx]));
                 ask();
             } else {
                 nextStep();
@@ -803,7 +1018,7 @@ public class NumbersActivity extends Activity {
                     traceIdx++;
                     clearTrace();
                     question.clear();
-                    question.add(name(stop.nums[traceIdx]));
+                    question.addAll(names(stop.nums[traceIdx]));
                     ask();
                 } else if (!busy || k == DONE || k == INTRO) {
                     nextStep();
@@ -873,6 +1088,9 @@ public class NumbersActivity extends Activity {
                     p.close();
                     c.drawPath(p, Draw.fill(colour));
                     break;
+                case 4:
+                    c.drawRoundRect(new RectF(cx - r * 1.2f, cy - r * 0.65f, cx + r * 1.2f, cy + r * 0.65f), r * 0.15f, r * 0.15f, Draw.fill(colour));
+                    break;
                 default:
                     Draw.star(c, cx, cy, r * 1.1f, colour);
             }
@@ -885,6 +1103,10 @@ public class NumbersActivity extends Activity {
 
         /** As above, but sized as if there were {@code sizeFor} things, so two groups side by side look alike. */
         private void things(Canvas c, int n, float l, float t, float r, float b, int colour, int crossed, int sizeFor) {
+            if (n > 20) {
+                blocks(c, n, l, t, r, b);
+                return;
+            }
             if (n <= 0) {
                 // Zero: an empty plate.
                 float cx = (l + r) / 2, cy = (t + b) / 2, pr = Math.min(r - l, b - t) * 0.35f;
@@ -914,6 +1136,133 @@ public class NumbersActivity extends Activity {
             }
         }
 
+        /** Tens as rods of ten little cubes, then the ones, as the book shows numbers to 99. */
+        private void blocks(Canvas c, int n, float l, float t, float r, float b) {
+            int tens = n / 10, ones = n % 10;
+            int cols = tens + (ones > 0 ? 1 : 0);
+            float cell = Math.min((b - t) / 10.5f, (r - l) / (cols * 1.6f + 0.5f));
+            float total = cols * cell * 1.6f;
+            float x = (l + r) / 2 + total / 2 - cell * 1.3f, y0 = (t + b) / 2 - 5 * cell;
+            for (int i = 0; i < tens; i++) {
+                for (int j = 0; j < 10; j++) cube(c, x, y0 + j * cell, cell, Draw.BLUE_D);
+                x -= cell * 1.6f;
+            }
+            for (int j = 0; j < ones; j++) cube(c, x, y0 + (9 - j) * cell, cell, 0xFFFF6B6B);
+        }
+
+        private void cube(Canvas c, float x, float y, float s, int colour) {
+            c.drawRect(x, y, x + s, y + s, Draw.fill(colour));
+            c.drawRect(x, y, x + s, y + s, Draw.stroke(0x55FFFFFF, Math.max(1, s * 0.08f)));
+        }
+
+        /** The book's solids: cube, cylinder, ball, cone and box. */
+        private void solid(Canvas c, int kind, float cx, float cy, float r) {
+            int front = Draw.BLUE, top = 0xFFB6DDF7, side = Draw.BLUE_D;
+            Paint edge = Draw.stroke(0xFF2F5D86, r * 0.05f);
+            switch (kind) {
+                case 0:
+                case 4: {
+                    float w = kind == 0 ? r * 1.2f : r * 1.7f, h = kind == 0 ? r * 1.2f : r * 0.9f, d = r * 0.45f;
+                    float l = cx - w / 2 - d / 2, t = cy - h / 2 + d / 2;
+                    Path tp = new Path();
+                    tp.moveTo(l, t);
+                    tp.lineTo(l + d, t - d);
+                    tp.lineTo(l + w + d, t - d);
+                    tp.lineTo(l + w, t);
+                    tp.close();
+                    Path sp = new Path();
+                    sp.moveTo(l + w, t);
+                    sp.lineTo(l + w + d, t - d);
+                    sp.lineTo(l + w + d, t + h - d);
+                    sp.lineTo(l + w, t + h);
+                    sp.close();
+                    c.drawPath(tp, Draw.fill(top));
+                    c.drawPath(sp, Draw.fill(side));
+                    c.drawRect(l, t, l + w, t + h, Draw.fill(front));
+                    c.drawPath(tp, edge);
+                    c.drawPath(sp, edge);
+                    c.drawRect(l, t, l + w, t + h, edge);
+                    break;
+                }
+                case 1: {
+                    float w = r * 0.8f, h = r * 1.5f, e = r * 0.28f;
+                    c.drawRect(cx - w, cy - h / 2, cx + w, cy + h / 2, Draw.fill(front));
+                    c.drawOval(new RectF(cx - w, cy + h / 2 - e, cx + w, cy + h / 2 + e), Draw.fill(front));
+                    c.drawOval(new RectF(cx - w, cy - h / 2 - e, cx + w, cy - h / 2 + e), Draw.fill(top));
+                    c.drawOval(new RectF(cx - w, cy - h / 2 - e, cx + w, cy - h / 2 + e), edge);
+                    c.drawLine(cx - w, cy - h / 2, cx - w, cy + h / 2, edge);
+                    c.drawLine(cx + w, cy - h / 2, cx + w, cy + h / 2, edge);
+                    c.drawArc(new RectF(cx - w, cy + h / 2 - e, cx + w, cy + h / 2 + e), 0, 180, false, edge);
+                    break;
+                }
+                case 2:
+                    c.drawCircle(cx, cy, r, Draw.fill(front));
+                    c.drawCircle(cx - r * 0.35f, cy - r * 0.35f, r * 0.25f, Draw.fill(0x88FFFFFF));
+                    c.drawArc(new RectF(cx - r, cy - r * 0.25f, cx + r, cy + r * 0.25f), 0, 180, false, edge);
+                    c.drawCircle(cx, cy, r, edge);
+                    break;
+                default: {
+                    float w = r * 0.85f, e = r * 0.25f, base = cy + r * 0.75f;
+                    Path cp = new Path();
+                    cp.moveTo(cx, cy - r);
+                    cp.lineTo(cx + w, base);
+                    cp.lineTo(cx - w, base);
+                    cp.close();
+                    c.drawOval(new RectF(cx - w, base - e, cx + w, base + e), Draw.fill(side));
+                    c.drawPath(cp, Draw.fill(front));
+                    c.drawArc(new RectF(cx - w, base - e, cx + w, base + e), 0, 180, false, edge);
+                    c.drawLine(cx, cy - r, cx + w, base, edge);
+                    c.drawLine(cx, cy - r, cx - w, base, edge);
+                }
+            }
+        }
+
+        /** A square or circle cut in two halves, four quarters, or two parts that are not equal. */
+        private void fraction(Canvas c, int kind, boolean round, float cx, float cy, float r) {
+            Paint line = Draw.stroke(Draw.PLUM, Math.max(2, r * 0.06f));
+            RectF box = new RectF(cx - r, cy - r, cx + r, cy + r);
+            int fillC = 0xFFFFB347;
+            if (round) {
+                c.drawCircle(cx, cy, r, Draw.fill(0xFFFFFFFF));
+                if (kind == 0) c.drawArc(box, 90, 180, true, Draw.fill(fillC));
+                else if (kind == 1) c.drawArc(box, 180, 90, true, Draw.fill(fillC));
+                else c.drawArc(box, 120, 120, false, Draw.fill(fillC));
+                c.drawCircle(cx, cy, r, line);
+                if (kind == 0) c.drawLine(cx, cy - r, cx, cy + r, line);
+                else if (kind == 1) {
+                    c.drawLine(cx, cy - r, cx, cy + r, line);
+                    c.drawLine(cx - r, cy, cx + r, cy, line);
+                } else c.drawLine(cx - r * 0.5f, cy - r * 0.866f, cx - r * 0.5f, cy + r * 0.866f, line);
+            } else {
+                c.drawRect(box, Draw.fill(0xFFFFFFFF));
+                if (kind == 0) c.drawRect(cx - r, cy - r, cx, cy + r, Draw.fill(fillC));
+                else if (kind == 1) c.drawRect(cx - r, cy - r, cx, cy, Draw.fill(fillC));
+                else c.drawRect(cx - r, cy - r, cx - r * 0.45f, cy + r, Draw.fill(fillC));
+                c.drawRect(box, line);
+                if (kind == 0) c.drawLine(cx, cy - r, cx, cy + r, line);
+                else if (kind == 1) {
+                    c.drawLine(cx, cy - r, cx, cy + r, line);
+                    c.drawLine(cx - r, cy, cx + r, cy, line);
+                } else c.drawLine(cx - r * 0.45f, cy - r, cx - r * 0.45f, cy + r, line);
+            }
+        }
+
+        /** A pencil {@code len} long (out of nine), pointing left. */
+        private void pencil(Canvas c, float cx, float cy, float maxW, int len, int colour) {
+            float w = maxW * len / 9f, h = Math.max(10 * dp, maxW * 0.09f);
+            float l = cx - w / 2, r = cx + w / 2;
+            float tip = h * 1.2f;
+            c.drawRect(l + tip, cy - h / 2, r, cy + h / 2, Draw.fill(colour));
+            c.drawRect(r - h * 0.6f, cy - h / 2, r, cy + h / 2, Draw.fill(0xFFFFB3C6));
+            Path p = new Path();
+            p.moveTo(l + tip, cy - h / 2);
+            p.lineTo(l, cy);
+            p.lineTo(l + tip, cy + h / 2);
+            p.close();
+            c.drawPath(p, Draw.fill(0xFFF3D7A6));
+            c.drawCircle(l + tip * 0.15f, cy, h * 0.12f, Draw.fill(Draw.PLUM));
+        }
+
         private float wobble() {
             long since = SystemClock.uptimeMillis() - wobbleAt;
             if (wrongPick < 0 || since >= 450) return 0;
@@ -936,7 +1285,20 @@ public class NumbersActivity extends Activity {
                 c.save();
                 if (i == wrongPick) c.translate(wob, 0);
                 button(c, l, top, r, top + ch, fill, deep, i);
-                if (kind() == CLASSIFY) {
+                int kk = kind();
+                float ox = (l + r) / 2, oy = top + ch / 2 - 3 * dp, orr = Math.min(cw, ch) * 0.3f;
+                if (kk == GRAPH || kk == SHAPES) {
+                    c.drawCircle(ox, oy, orr * 1.45f, Draw.fill(0xFFFFFFFF));
+                    shape(c, kk == GRAPH ? shapeOptions.get(i) : shapeOptions.get(i) * 10 + 1, ox, oy, orr);
+                } else if (kk == SOLIDS) {
+                    c.drawCircle(ox, oy, orr * 1.5f, Draw.fill(0xFFFFFFFF));
+                    solid(c, shapeOptions.get(i), ox, oy, orr);
+                } else if (kk == FRACTION) {
+                    fraction(c, shapeOptions.get(i), qa == 1, ox, oy, orr);
+                } else if (kk == LENGTH) {
+                    c.drawRoundRect(new RectF(l + 8 * dp, oy - orr * 0.7f, r - 8 * dp, oy + orr * 0.7f), 14 * dp, 14 * dp, Draw.fill(0xFFFFFFFF));
+                    pencil(c, ox, oy, cw - 30 * dp, i == 0 ? qa : qb, i == 0 ? 0xFFFF6B6B : Draw.BLUE_D);
+                } else if (kind() == CLASSIFY) {
                     float rr = Math.min(cw, ch) * 0.28f;
                     float bx = (l + r) / 2, by = top + ch / 2 - 3 * dp;
                     c.drawCircle(bx, by, rr * 1.45f, Draw.fill(0xFFFFFFFF));
@@ -1060,7 +1422,9 @@ public class NumbersActivity extends Activity {
                 if (side) speaker(c, pad + sr, pad + sr, sr);
                 else speaker(c, w / 2, spT + sr, sr);
                 float sceneT = side ? pad + 30 * dp : spT + 2 * sr + pad;
-                float optH = k == ORDINAL ? 0 : Math.min(130 * dp, Math.max(90 * dp, h * 0.16f));
+                boolean pictures = k == FRACTION || k == LENGTH || k == SHAPES || k == SOLIDS;
+                float optH = k == ORDINAL ? 0 : pictures ? Math.min(220 * dp, h * 0.32f)
+                        : Math.min(130 * dp, Math.max(90 * dp, h * 0.16f));
                 float sceneB = h - pad - optH - (k == ORDINAL ? 0 : pad);
                 scene(c, k, pad, sceneT, w - pad, sceneB);
                 if (k != ORDINAL) optionRow(c, w, sceneB + pad, h - pad, pad);
@@ -1079,6 +1443,64 @@ public class NumbersActivity extends Activity {
                     float rr = Math.min(r - l, b - t) * 0.2f;
                     if (rightPick < 0) shape(c, qa, cx, (t + b) / 2 - 4 * dp, rr);
                     label(c, qc == 0 ? "حَسَبَ الشَّكْل" : "حَسَبَ اللَّوْن", cx, t + 26 * dp, 22 * dp, r - l - 24 * dp, Draw.PLUM);
+                    break;
+                }
+                case GRAPH: {
+                    Draw.card(c, l, t, r, b - 8 * dp, 28 * dp, 0xFFFFFFFF, 0xFFE6DCCB, 8 * dp);
+                    float rowH = (b - t - 30 * dp) / 3, cell = Math.min(rowH * 0.8f, (r - l - 40 * dp) / 8.5f);
+                    for (int i = 0; i < 3; i++) {
+                        float y = t + 15 * dp + rowH * (i + 0.5f);
+                        float x = r - 20 * dp - cell * 0.6f;
+                        shape(c, shapeOptions.get(i), x, y, cell * 0.36f);
+                        c.drawLine(x - cell * 0.7f, y - rowH * 0.4f, x - cell * 0.7f, y + rowH * 0.4f, Draw.stroke(0xFFC9CDE0, 2 * dp));
+                        for (int j = 0; j < pattern.get(i); j++) {
+                            shape(c, shapeOptions.get(i), x - cell * (1.4f + j), y, cell * 0.36f);
+                        }
+                    }
+                    break;
+                }
+                case DAYS: {
+                    float s = Math.min(r - l, (b - t) * 1.6f);
+                    float ct = (t + b) / 2 - s * 0.25f, cb = (t + b) / 2 + s * 0.25f;
+                    Draw.card(c, cx - s / 2, ct, cx + s / 2, cb - 8 * dp, 28 * dp, Draw.YELLOW, Draw.YELLOW_D, 8 * dp);
+                    label(c, plain(DAY_NAMES[qa]), cx, (ct + cb) / 2 - 4 * dp, (cb - ct) * 0.4f, s * 0.8f, 0xFFFFFFFF);
+                    label(c, qb == 0 ? "← بَعْدَهُ ؟" : "قَبْلَهُ ؟ →", cx, cb + 22 * dp, 22 * dp, r - l, Draw.PLUM);
+                    break;
+                }
+                case CLOCK: {
+                    float rr = Math.min(r - l, b - t) * 0.42f, cy = (t + b) / 2;
+                    c.drawCircle(cx, cy + 4 * dp, rr, Draw.fill(0x22000000));
+                    c.drawCircle(cx, cy, rr, Draw.fill(0xFFFFFFFF));
+                    c.drawCircle(cx, cy, rr, Draw.stroke(Draw.PINK_D, rr * 0.08f));
+                    for (int hh = 1; hh <= 12; hh++) {
+                        double a = Math.PI * 2 * hh / 12 - Math.PI / 2;
+                        label(c, digits(hh), cx + (float) Math.cos(a) * rr * 0.78f, cy + (float) Math.sin(a) * rr * 0.78f,
+                                rr * 0.17f, rr * 0.3f, Draw.PLUM);
+                    }
+                    double ha = Math.PI * 2 * ((qa % 12) + qb * 0.5) / 12 - Math.PI / 2;
+                    double ma = qb == 1 ? Math.PI / 2 : -Math.PI / 2;
+                    c.drawLine(cx, cy, cx + (float) Math.cos(ha) * rr * 0.45f, cy + (float) Math.sin(ha) * rr * 0.45f,
+                            Draw.stroke(Draw.PLUM, rr * 0.07f));
+                    c.drawLine(cx, cy, cx + (float) Math.cos(ma) * rr * 0.68f, cy + (float) Math.sin(ma) * rr * 0.68f,
+                            Draw.stroke(Draw.BLUE_D, rr * 0.045f));
+                    c.drawCircle(cx, cy, rr * 0.05f, Draw.fill(Draw.PLUM));
+                    break;
+                }
+                case FRACTION:
+                case LENGTH:
+                case SHAPES:
+                case SOLIDS: {
+                    float s = Math.min(r - l, b - t) * 0.8f;
+                    Draw.card(c, cx - s / 2, t, cx + s / 2, t + s - 8 * dp, 36 * dp, Draw.YELLOW, Draw.YELLOW_D, 8 * dp);
+                    String q = k == FRACTION ? (qc == 0 ? "النِّصْف" : "الرُّبْع") : k == LENGTH ? (qc == 0 ? "الْأَطْوَل" : "الْأَقْصَر") : "؟";
+                    label(c, q, cx, t + s / 2 - 4 * dp, s * (q.length() > 2 ? 0.3f : 0.6f), s * 0.8f, 0xFFFFFFFF);
+                    break;
+                }
+                case TENS: {
+                    Draw.card(c, l, t, r, b - 8 * dp, 28 * dp, 0xFFFFFFFF, 0xFFE6DCCB, 8 * dp);
+                    float lt = t + 34 * dp;
+                    if (qb != 2) label(c, qb == 0 ? "الْعَشَرَات" : "الْآحَاد", cx, t + 20 * dp, 20 * dp, r - l, Draw.PLUM);
+                    blocks(c, qa, l + 16 * dp, lt, r - 16 * dp, b - 24 * dp);
                     break;
                 }
                 case FIND: {
