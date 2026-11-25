@@ -1331,7 +1331,7 @@ public class NumbersActivity extends Activity {
 
         /** As above, but sized as if there were {@code sizeFor} things, so two groups side by side look alike. */
         private void things(Canvas c, int n, float l, float t, float r, float b, int colour, int crossed, int sizeFor) {
-            if (n > 20) {
+            if (n > 20 || (stop.max > 20 && n >= 10)) {
                 blocks(c, n, l, t, r, b);
                 return;
             }
@@ -1407,7 +1407,7 @@ public class NumbersActivity extends Activity {
                 float x = x0 - (v - lo) * stepW;
                 c.drawLine(x, y - 6 * dp, x, y + 6 * dp, pen(Draw.PLUM, 2 * dp));
                 boolean mark = v == from || (rightPick >= 0 && v == from + (add ? hops : -hops));
-                label(c, digits(v), x, y + 20 * dp, mark ? 18 * dp : 13 * dp, stepW * 1.9f, mark ? Draw.PINK_D : 0xFF7A7F9A);
+                label(c, digits(v), x, y + 24 * dp, mark ? 24 * dp : 18 * dp, stepW * 0.9f, mark ? Draw.PINK_D : 0xFF7A7F9A);
             }
             float fx = x0 - (from - lo) * stepW;
             c.drawCircle(fx, y, 7 * dp, Draw.fill(Draw.PINK_D));
@@ -2027,7 +2027,10 @@ public class NumbersActivity extends Activity {
                     float inT = t + 12 * dp, inB = b - eqH - 20 * dp;
                     boolean line = (add && (mode() == 3 || mode() == 4)) || (!add && (mode() == 2 || mode() == 3));
                     if (line) {
-                        numberLine(c, 0, 20, qa, qb, add, l + 8 * dp, r - 8 * dp, (inT + inB) / 2 + 10 * dp);
+                        // A window of ten steps around the hops, so the numbers stay big enough to read.
+                        int end = add ? qa + qb : qa - qb;
+                        int lo = Math.max(0, Math.min(Math.min(qa, end) - 2, 10));
+                        numberLine(c, lo, lo + 10, qa, qb, add, l + 8 * dp, r - 8 * dp, (inT + inB) / 2 + 10 * dp);
                     } else if (add) {
                         float mid = (l + r) / 2;
                         things(c, qa, mid + 24 * dp, inT, r - 12 * dp, inB, COLOURS[0], 0, Math.max(qa, qb));
