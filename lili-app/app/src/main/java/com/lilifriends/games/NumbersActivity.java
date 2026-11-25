@@ -1155,10 +1155,21 @@ public class NumbersActivity extends Activity {
             c.drawRect(x, y, x + s, y + s, Draw.stroke(0x55FFFFFF, Math.max(1, s * 0.08f)));
         }
 
+        /** A stroke of its own: Draw's paint is shared, so a fill drawn between would change it. */
+        private Paint pen(int colour, float width) {
+            Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+            p.setStyle(Paint.Style.STROKE);
+            p.setStrokeWidth(width);
+            p.setStrokeCap(Paint.Cap.ROUND);
+            p.setStrokeJoin(Paint.Join.ROUND);
+            p.setColor(colour);
+            return p;
+        }
+
         /** The book's solids: cube, cylinder, ball, cone and box. */
         private void solid(Canvas c, int kind, float cx, float cy, float r) {
             int front = Draw.BLUE, top = 0xFFB6DDF7, side = Draw.BLUE_D;
-            Paint edge = Draw.stroke(0xFF2F5D86, r * 0.05f);
+            Paint edge = pen(0xFF2F5D86, r * 0.05f);
             switch (kind) {
                 case 0:
                 case 4: {
@@ -1219,7 +1230,7 @@ public class NumbersActivity extends Activity {
 
         /** A square or circle cut in two halves, four quarters, or two parts that are not equal. */
         private void fraction(Canvas c, int kind, boolean round, float cx, float cy, float r) {
-            Paint line = Draw.stroke(Draw.PLUM, Math.max(2, r * 0.06f));
+            Paint line = pen(Draw.PLUM, Math.max(2, r * 0.06f));
             RectF box = new RectF(cx - r, cy - r, cx + r, cy + r);
             int fillC = 0xFFFFB347;
             if (round) {
@@ -1273,20 +1284,26 @@ public class NumbersActivity extends Activity {
         /** The answer cards in one row along the bottom. */
         private void optionRow(Canvas c, float w, float top, float bottom, float pad) {
             int n = options.size();
-            float cw = Math.min(170 * dp, (w - pad * (n + 1)) / n);
-            float ch = Math.min(bottom - top, Math.max(90 * dp, cw * 0.8f));
+            int kind = kind();
+            boolean pictures = kind == FRACTION || kind == SHAPES || kind == SOLIDS;
+            boolean stacked = kind == LENGTH;
+            float cw = stacked ? Math.min(w - 2 * pad, 420 * dp) : Math.min(pictures ? 220 * dp : 170 * dp, (w - pad * (n + 1)) / n);
+            float ch = stacked ? (bottom - top - pad) / n
+                    : Math.min(bottom - top, pictures ? cw * 1.15f : Math.max(90 * dp, cw * 0.8f));
             float x0 = (w - (n * cw + (n - 1) * pad)) / 2;
+            float top0 = top;
             float wob = wobble();
             for (int i = 0; i < n; i++) {
                 int col = n - 1 - i; // right to left
-                float l = x0 + col * (cw + pad), r = l + cw;
+                float l = stacked ? (w - cw) / 2 : x0 + col * (cw + pad), r = l + cw;
+                top = stacked ? top0 + i * (ch + pad) : top0;
                 int fill = i == rightPick ? Draw.MINT : i == wrongPick ? 0xFFFFB3B3 : Draw.LILAC;
                 int deep = i == rightPick ? Draw.MINT_D : i == wrongPick ? 0xFFE07A7A : Draw.LILAC_D;
                 c.save();
                 if (i == wrongPick) c.translate(wob, 0);
                 button(c, l, top, r, top + ch, fill, deep, i);
                 int kk = kind();
-                float ox = (l + r) / 2, oy = top + ch / 2 - 3 * dp, orr = Math.min(cw, ch) * 0.3f;
+                float ox = (l + r) / 2, oy = top + ch / 2 - 3 * dp, orr = Math.min(cw * 0.36f, ch * 0.32f);
                 if (kk == GRAPH || kk == SHAPES) {
                     c.drawCircle(ox, oy, orr * 1.45f, Draw.fill(0xFFFFFFFF));
                     shape(c, kk == GRAPH ? shapeOptions.get(i) : shapeOptions.get(i) * 10 + 1, ox, oy, orr);
@@ -1296,8 +1313,8 @@ public class NumbersActivity extends Activity {
                 } else if (kk == FRACTION) {
                     fraction(c, shapeOptions.get(i), qa == 1, ox, oy, orr);
                 } else if (kk == LENGTH) {
-                    c.drawRoundRect(new RectF(l + 8 * dp, oy - orr * 0.7f, r - 8 * dp, oy + orr * 0.7f), 14 * dp, 14 * dp, Draw.fill(0xFFFFFFFF));
-                    pencil(c, ox, oy, cw - 30 * dp, i == 0 ? qa : qb, i == 0 ? 0xFFFF6B6B : Draw.BLUE_D);
+                    c.drawRoundRect(new RectF(l + 10 * dp, top + 10 * dp, r - 10 * dp, top + ch - 18 * dp), 14 * dp, 14 * dp, Draw.fill(0xFFFFFFFF));
+                    pencil(c, ox, oy, cw - 40 * dp, i == 0 ? qa : qb, i == 0 ? 0xFFFF6B6B : Draw.BLUE_D);
                 } else if (kind() == CLASSIFY) {
                     float rr = Math.min(cw, ch) * 0.28f;
                     float bx = (l + r) / 2, by = top + ch / 2 - 3 * dp;
@@ -1423,7 +1440,7 @@ public class NumbersActivity extends Activity {
                 else speaker(c, w / 2, spT + sr, sr);
                 float sceneT = side ? pad + 30 * dp : spT + 2 * sr + pad;
                 boolean pictures = k == FRACTION || k == LENGTH || k == SHAPES || k == SOLIDS;
-                float optH = k == ORDINAL ? 0 : pictures ? Math.min(220 * dp, h * 0.32f)
+                float optH = k == ORDINAL ? 0 : pictures ? h * (side ? 0.55f : 0.45f)
                         : Math.min(130 * dp, Math.max(90 * dp, h * 0.16f));
                 float sceneB = h - pad - optH - (k == ORDINAL ? 0 : pad);
                 scene(c, k, pad, sceneT, w - pad, sceneB);
