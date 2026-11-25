@@ -46,7 +46,7 @@ public class NumbersActivity extends Activity {
     private static final int T_PATTERN = 0, T_NUM = 1, T_COMPARE = 2, T_NEIGHBOR = 3, T_ORDER = 4,
             T_ORDINAL = 5, T_ADD = 6, T_SUB = 7, T_CLASSIFY = 8,
             T_GRAPH = 9, T_DAYS = 10, T_CLOCK = 11, T_FRACTION = 12, T_LENGTH = 13, T_SHAPES = 14, T_SOLIDS = 15, T_TENS = 16,
-            T_STORY = 17, T_BOND = 18, T_FACTS = 19, T_KIND = 20, T_SPATIAL = 21, T_HUNDRED = 22, T_PAGE = 23;
+            T_STORY = 17, T_BOND = 18, T_FACTS = 19, T_KIND = 20, T_SPATIAL = 21, T_HUNDRED = 22, T_PAGE = 23, T_TEST = 24;
 
     /** One stop of the map: its title, the label on the map, what it teaches and its numbers. */
     private static final class Stop {
@@ -81,6 +81,7 @@ public class NumbersActivity extends Activity {
             new Stop("الأعداد من ١١ إلى ١٥", "١١-١٥", T_NUM, 15, 11, 12, 13, 14, 15),
             new Stop("الأعداد من ١٦ إلى ٢٠", "١٦-٢٠", T_NUM, 20, 16, 17, 18, 19, 20),
             // 2: comparing and ordering
+            new Stop("اختبار الفصل الأول", "⭐", T_TEST, 1),
             new Stop("الفصل الثاني", "📖", T_PAGE, 2),
             new Stop("مقارنة الأعداد حتى ٩", "أكبر", T_COMPARE, 9),
             new Stop("السابق والتالي حتى ٩", "قبل", T_NEIGHBOR, 9),
@@ -90,6 +91,7 @@ public class NumbersActivity extends Activity {
             new Stop("السابق والتالي حتى ٢٠", "بعد", T_NEIGHBOR, 20),
             new Stop("ترتيب الأعداد حتى ٢٠", "٢٠", T_ORDER, 20),
             // 3: adding and taking away to 10
+            new Stop("اختبار الفصل الثاني", "⭐", T_TEST, 2),
             new Stop("الفصل الثالث", "📖", T_PAGE, 3),
             new Stop("قصص الجمع", "قصة", T_STORY, 10, 3),
             new Stop("الجمع حتى ١٠", "+", T_ADD, 10),
@@ -101,12 +103,14 @@ public class NumbersActivity extends Activity {
             new Stop("طرح الصفر وطرح الكل", "−٠", T_SUB, 10, 1),
             new Stop("خطة حل المسألة", "مسألة", T_STORY, 10, 0),
             // 4: sorting and picture graphs
+            new Stop("اختبار الفصل الثالث", "⭐", T_TEST, 3),
             new Stop("الفصل الرابع", "📖", T_PAGE, 4),
             new Stop("التصنيف بالشكل", "صنّف", T_CLASSIFY, 0),
             new Stop("التصنيف باللون", "لون", T_CLASSIFY, 1),
             new Stop("التصنيف بالنوع", "نوع", T_KIND, 0),
             new Stop("التمثيل بالصور", "مخطط", T_GRAPH, 0),
             // 5: adding to 20
+            new Stop("اختبار الفصل الرابع", "⭐", T_TEST, 4),
             new Stop("الفصل الخامس", "📖", T_PAGE, 5),
             new Stop("الجمع بإضافة ١ و ٢ و ٣", "+١", T_ADD, 20, 3),
             new Stop("الجمع على خط الأعداد", "+خط", T_ADD, 20, 4),
@@ -114,6 +118,7 @@ public class NumbersActivity extends Activity {
             new Stop("الجمع بتكوين العدد ١٠", "+٢٠", T_ADD, 20),
             new Stop("مسائل الجمع", "قصة+", T_STORY, 20, 1),
             // 6: taking away to 20
+            new Stop("اختبار الفصل الخامس", "⭐", T_TEST, 5),
             new Stop("الفصل السادس", "📖", T_PAGE, 6),
             new Stop("الطرح بالعد إلى الوراء", "−١", T_SUB, 20, 2),
             new Stop("الطرح على خط الأعداد", "−خط", T_SUB, 20, 3),
@@ -121,6 +126,7 @@ public class NumbersActivity extends Activity {
             new Stop("الحقائق المترابطة حتى ٢٠", "+−٢٠", T_FACTS, 20),
             new Stop("مسائل الطرح", "قصة−", T_STORY, 20, 2),
             // 7: geometry and measuring
+            new Stop("اختبار الفصل السادس", "⭐", T_TEST, 6),
             new Stop("الفصل السابع", "📖", T_PAGE, 7),
             new Stop("أيام الأسبوع", "أيام", T_DAYS, 0),
             new Stop("الوقت بالساعات الكاملة", "ساعة", T_CLOCK, 0, 0),
@@ -132,6 +138,7 @@ public class NumbersActivity extends Activity {
             new Stop("الأشكال المستوية", "أشكال", T_SHAPES, 0),
             new Stop("البعد المكاني", "فوق", T_SPATIAL, 0),
             // 8: numbers to 99
+            new Stop("اختبار الفصل السابع", "⭐", T_TEST, 7),
             new Stop("الفصل الثامن", "📖", T_PAGE, 8),
             new Stop("العشرات والآحاد", "٩٩", T_TENS, 99),
             new Stop("لوحة المئة: خمسات وعشرات", "١٠٠", T_HUNDRED, 100, 10),
@@ -140,11 +147,13 @@ public class NumbersActivity extends Activity {
             new Stop("السابق والتالي حتى ٩٩", "قبل٩٩", T_NEIGHBOR, 99),
             new Stop("ترتيب الأعداد حتى ٩٩", "رتّب٩٩", T_ORDER, 99),
             // 9: adding and taking away to 99, no carrying
+            new Stop("اختبار الفصل الثامن", "⭐", T_TEST, 8),
             new Stop("الفصل التاسع", "📖", T_PAGE, 9),
             new Stop("جمع العشرات", "+١٠", T_ADD, 99, 5),
             new Stop("طرح العشرات", "−١٠", T_SUB, 99, 5),
             new Stop("الجمع حتى ٩٩", "+٩٩", T_ADD, 99),
             new Stop("الطرح حتى ٩٩", "−٩٩", T_SUB, 99),
+            new Stop("اختبار الفصل التاسع", "⭐", T_TEST, 9),
     };
 
     /** What each stop shows on the journey map. */
@@ -200,7 +209,11 @@ public class NumbersActivity extends Activity {
     private static final int ASK = 0, INTRO = 1, TRACE = 2, COUNT = 3, FIND = 4, PATTERN = 5, COMPARE = 6,
             NEIGHBOR = 7, ORDER = 8, ORDINAL = 9, ADD = 10, SUB = 11, DONE = 12, CLASSIFY = 13,
             GRAPH = 14, DAYS = 15, CLOCK = 16, FRACTION = 17, LENGTH = 18, SHAPES = 19, SOLIDS = 20, TENS = 21,
-            STORY = 22, BOND = 23, FACTS = 24, KIND = 25, SPATIAL = 26, HUNDRED = 27, PAGE = 28;
+            STORY = 22, BOND = 23, FACTS = 24, KIND = 25, SPATIAL = 26, HUNDRED = 27, PAGE = 28, TEST = 29;
+    /** The exercise each kind of stop gives, by its type (T_NUM's FIND is picked in a test too). */
+    private static final int[] TYPE_KIND = {PATTERN, COUNT, COMPARE, NEIGHBOR, ORDER, ORDINAL, ADD, SUB, CLASSIFY, GRAPH,
+            DAYS, CLOCK, FRACTION, LENGTH, SHAPES, SOLIDS, TENS, STORY, BOND, FACTS, KIND, SPATIAL, HUNDRED, PAGE, TEST};
+    private static final int TEST_ROUNDS = 8;
     private static final int ROUNDS = 6;
 
     private SharedPreferences prefs;
@@ -237,6 +250,14 @@ public class NumbersActivity extends Activity {
     private final List<String> question = new ArrayList<>();
     /** A chapter's opening page of the book. */
     private Bitmap page;
+
+    /** A chapter's test: the stops it asks from, the one asked now and its exercise, the first-try misses. */
+    private final List<Stop> testPool = new ArrayList<>();
+    private Stop testStop;
+    private int testKind = -1, misses;
+    private boolean missed;
+    /** Played before the next question (the test's opening). */
+    private final List<String> intro = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle saved) {
@@ -340,6 +361,13 @@ public class NumbersActivity extends Activity {
                 break;
             case T_HUNDRED:
                 steps.add(HUNDRED);
+                break;
+            case T_TEST:
+                // Every stop of the chapter that asks a question with answers to choose.
+                for (int i = stage - 1; i >= 0 && STOPS[i].type != T_PAGE; i--) {
+                    if (STOPS[i].type != T_ORDER && STOPS[i].type != T_TEST) testPool.add(STOPS[i]);
+                }
+                steps.add(TEST);
                 break;
             case T_PAGE:
                 steps.add(PAGE);
@@ -508,7 +536,23 @@ public class NumbersActivity extends Activity {
     // ---- Flow --------------------------------------------------------------------------------
 
     private int kind() {
-        return steps.get(step);
+        int k = steps.get(step);
+        return k == TEST && testKind >= 0 ? testKind : k;
+    }
+
+    private boolean testing() {
+        return steps.get(step) == TEST;
+    }
+
+    /** The test's next question: one from a stop of the chapter, not the same as the last one. */
+    private void testRound() {
+        Stop last = testStop;
+        do testStop = testPool.get(rnd.nextInt(testPool.size())); while (testPool.size() > 1 && testStop == last);
+        stop = testStop;
+        testKind = stop.type == T_NUM ? (rnd.nextBoolean() ? COUNT : FIND) : TYPE_KIND[stop.type];
+        missed = false;
+        newQuestion(true);
+        rounds = TEST_ROUNDS;
     }
 
     private void startStep(int s) {
@@ -550,7 +594,35 @@ public class NumbersActivity extends Activity {
                 lead.addAll(question);
                 play(lead, null);
                 break;
+            case TEST:
+                misses = 0;
+                testKind = -1;
+                testStop = null;
+                intro.clear();
+                intro.add(m("هَيَّا نَخْتَبِرُ مَا تَعَلَّمْنَاه"));
+                intro.add(m("اِخْتِبَارُ الْفَصْل"));
+                intro.add(m(ORDINALS[stop.max - 1]));
+                testRound();
+                break;
             case DONE:
+                if (testStop != null) {
+                    // The test's result: Lili says how it went, and a test well done opens the next chapter.
+                    stop = STOPS[stage];
+                    int score = TEST_ROUNDS - misses;
+                    // The next chapter opens either way: the test is a review, not a gate.
+                    int got = prefs.getInt("stage", 0);
+                    if (stage + 1 > got) prefs.edit().putInt("stage", stage + 1).apply();
+                    if (score < TEST_ROUNDS - 3) {
+                        play(m("نُرَاجِعُ الدَّرْسَ مَرَّةً أُخْرَى"), null);
+                        break;
+                    }
+                    List<String> res = new ArrayList<>();
+                    res.add(m(score >= TEST_ROUNDS - 1 ? "نَتِيجَةٌ رَائِعَة!" : "نَتِيجَةٌ جَيِّدَة"));
+                    if (score >= TEST_ROUNDS - 1) res.add(g("أَجَبْتَ إِجَابَاتٍ صَحِيحَةً كَثِيرَة", "أَجَبْتِ إِجَابَاتٍ صَحِيحَةً كَثِيرَة"));
+                    res.add(cheer(book.praise));
+                    play(res, null);
+                    break;
+                }
                 int reached = prefs.getInt("stage", 0);
                 if (stage + 1 > reached) prefs.edit().putInt("stage", stage + 1).apply();
                 play(cheer(book.praise), null);
@@ -968,6 +1040,8 @@ public class NumbersActivity extends Activity {
                 break;
         }
         lead.addAll(question);
+        lead.addAll(0, intro);
+        intro.clear();
         view.invalidate();
         play(lead, null);
     }
@@ -1038,10 +1112,15 @@ public class NumbersActivity extends Activity {
             after.add(cheer(book.praise));
             play(after, () -> {
                 round++;
-                if (round < rounds) newQuestion(false);
+                if (round < rounds && testing()) testRound();
+                else if (round < rounds) newQuestion(false);
                 else nextStep();
             });
         } else {
+            if (testing() && !missed) {
+                missed = true;
+                misses++;
+            }
             wrongPick = i;
             wobbleAt = SystemClock.uptimeMillis();
             view.invalidate();
@@ -1799,8 +1878,13 @@ public class NumbersActivity extends Activity {
                 float ph = Math.min(h * 0.45f, w * 0.6f);
                 Draw.picture(c, lili, w / 2 - ph / 2, pad, w / 2 + ph / 2, pad + ph);
                 float y = pad + ph + pad;
-                for (int i = 0; i < 3; i++) Draw.star(c, w / 2 + (i - 1) * 54 * dp, y + 26 * dp, 22 * dp, Draw.YELLOW_D);
-                label(c, girl ? "أَحْسَنْتِ!" : "أَحْسَنْتَ!", w / 2, y + 90 * dp, 40 * dp, w - 2 * pad, Draw.PLUM);
+                // After a test: a star for each good third, and how many were right the first time.
+                int score = TEST_ROUNDS - misses, stars = testStop == null ? 3 : score >= TEST_ROUNDS - 1 ? 3
+                        : score >= TEST_ROUNDS - 3 ? 2 : 1;
+                for (int i = 0; i < 3; i++) Draw.star(c, w / 2 + (1 - i) * 54 * dp, y + 26 * dp, 22 * dp,
+                        i < stars ? Draw.YELLOW_D : 0xFFD9DCE8);
+                label(c, testStop == null ? (girl ? "أَحْسَنْتِ!" : "أَحْسَنْتَ!") : digits(score) + " / " + digits(TEST_ROUNDS),
+                        w / 2, y + 90 * dp, 40 * dp, w - 2 * pad, Draw.PLUM);
                 next(c, w / 2, y + 150 * dp + btnH / 2, btnH * 2.4f, btnH, "تَمّ");
             } else {
                 // A question: the counter, the speaker, the picture, and the answers below.

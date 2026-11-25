@@ -41,7 +41,7 @@ public class ScienceActivity extends Activity {
     public static final String EXTRA_PREFS = "prefs", EXTRA_STAGE = "stage";
 
     private static final int T_SORT = 0, T_NEEDS = 1, T_GROW = 2, T_PLANT = 3, T_ANIMAL = 4, T_BODY = 5, T_SENSES = 6,
-            T_PICK = 7, T_MORE = 8, T_WORD = 9, T_PAGE = 10;
+            T_PICK = 7, T_MORE = 8, T_WORD = 9, T_PAGE = 10, T_TEST = 11;
 
     /** One stop of the map: its title, the label on the map, what it teaches and how. */
     private static final class Stop {
@@ -64,14 +64,17 @@ public class ScienceActivity extends Activity {
             new Stop("احتياجات الكائنات الحية", "💧", T_NEEDS, 0),
             new Stop("النمو والتكاثر", "🌱", T_GROW, 0),
             new Stop("النبات والحيوان", "🌳", T_SORT, 2),
+            new Stop("اختبار الوحدة الأولى", "⭐", T_TEST, 1),
             new Stop("الوحدة الثانية", "📖", T_PAGE, 2),
             new Stop("أجزاء النبات", "🌻", T_PLANT, 0),
             new Stop("أجزاء جسم الحيوان", "🐦", T_ANIMAL, 0),
             new Stop("أجزاء جسم الإنسان", "🧒", T_BODY, 0),
             new Stop("الحواس الخمس", "👂", T_SENSES, 0),
+            new Stop("اختبار الوحدة الثانية", "⭐", T_TEST, 2),
             new Stop("الوحدة الثالثة", "📖", T_PAGE, 3),
             new Stop("البيئة اليابسة والمائية", "🐟", T_SORT, 3),
             // Unit 4: matter
+            new Stop("اختبار الوحدة الثالثة", "⭐", T_TEST, 3),
             new Stop("الوحدة الرابعة", "📖", T_PAGE, 4),
             new Stop("المادة: صلب ولين", "🧸", T_SORT, 4),
             new Stop("المادة: ثقيل وخفيف", "🪶", T_SORT, 5),
@@ -80,6 +83,7 @@ public class ScienceActivity extends Activity {
             new Stop("الطفو والغطس", "⛵", T_SORT, 7),
             new Stop("المخاليط", "🥗", T_PICK, 4),
             // Unit 5: energy and motion
+            new Stop("اختبار الوحدة الرابعة", "⭐", T_TEST, 4),
             new Stop("الوحدة الخامسة", "📖", T_PAGE, 5),
             new Stop("الحرارة: ساخن وبارد", "🔥", T_SORT, 8),
             new Stop("الكهرباء", "💡", T_PICK, 0),
@@ -89,12 +93,14 @@ public class ScienceActivity extends Activity {
             new Stop("الحركة: أسرع وأبطأ", "🐢", T_MORE, 1),
             new Stop("القوة: دفع وسحب", "🛒", T_SORT, 9),
             // Unit 6: our earth
+            new Stop("اختبار الوحدة الخامسة", "⭐", T_TEST, 5),
             new Stop("الوحدة السادسة", "📖", T_PAGE, 6),
             new Stop("اليابسة والماء", "🏔️", T_WORD, 0),
             new Stop("الفصول الأربعة", "🍂", T_WORD, 1),
             new Stop("تتابع الفصول", "🌸", T_WORD, 3),
             new Stop("ملابس الفصول", "🧥", T_PICK, 3),
             new Stop("الطقس", "🌧️", T_WORD, 2),
+            new Stop("اختبار الوحدة السادسة", "⭐", T_TEST, 6),
     };
 
     /** What each stop shows on the journey map. */
@@ -171,7 +177,8 @@ public class ScienceActivity extends Activity {
             "الْوَحْدَةُ السَّادِسَةُ: أَرْضُنَا"};
 
     private static final int ASK = 0, SORT = 1, NEEDS_Q = 2, GROW = 3, PLANT = 4, ANIMAL = 5, BODY = 6, SENSES = 7, DONE = 8,
-            PICK = 9, MORE = 10, WORD = 11, PAGE = 12;
+            PICK = 9, MORE = 10, WORD = 11, PAGE = 12, TEST = 13;
+    private static final int TEST_ROUNDS = 8;
     private static final int ROUNDS = 6;
 
     private SharedPreferences prefs;
@@ -207,6 +214,14 @@ public class ScienceActivity extends Activity {
     /** A unit's opening page of the book. */
     private Bitmap page;
 
+    /** A unit's test: the stops it asks from, the one asked now and its exercise, the first-try misses. */
+    private final List<Stop> testPool = new ArrayList<>();
+    private Stop testStop;
+    private int testKind = -1, misses;
+    private boolean missed;
+    /** Played before the next question (the test's opening). */
+    private final List<String> intro = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle saved) {
         super.onCreate(saved);
@@ -240,8 +255,16 @@ public class ScienceActivity extends Activity {
         girl = "g".equals(g);
 
         if (g.isEmpty()) steps.add(ASK);
-        int[] byType = {SORT, NEEDS_Q, GROW, PLANT, ANIMAL, BODY, SENSES, PICK, MORE, WORD, PAGE};
+        int[] byType = {SORT, NEEDS_Q, GROW, PLANT, ANIMAL, BODY, SENSES, PICK, MORE, WORD, PAGE, TEST};
         steps.add(byType[stop.type]);
+        if (stop.type == T_TEST) {
+            // The unit's stops that ask a question; a short unit borrows the one before it too.
+            for (int i = stage - 1; i >= 0; i--) {
+                Stop o = STOPS[i];
+                if (o.type == T_PAGE && testPool.size() >= 3) break;
+                if (o.type != T_PAGE && o.type != T_GROW && o.type != T_TEST) testPool.add(o);
+            }
+        }
         if (stop.type == T_PAGE) {
             try (InputStream in = getAssets().open("science/u" + stop.mode + ".webp")) {
                 page = BitmapFactory.decodeStream(in);
@@ -303,6 +326,12 @@ public class ScienceActivity extends Activity {
     /** A word without its vowel marks, for a card. */
     private static String plain(String s) {
         return s.replaceAll("[\\u064B-\\u0652]", "");
+    }
+
+    private static String digits(int n) {
+        StringBuilder b = new StringBuilder();
+        for (char ch : Integer.toString(n).toCharArray()) b.append((char) ('٠' + (ch - '0')));
+        return b.toString();
     }
 
     private void stopSound() {
@@ -372,7 +401,24 @@ public class ScienceActivity extends Activity {
     // ---- Flow --------------------------------------------------------------------------------
 
     private int kind() {
-        return steps.get(step);
+        int k = steps.get(step);
+        return k == TEST && testKind >= 0 ? testKind : k;
+    }
+
+    private boolean testing() {
+        return steps.get(step) == TEST;
+    }
+
+    /** The test's next question: one from a stop of the unit, not the same as the last one. */
+    private void testRound() {
+        Stop last = testStop;
+        do testStop = testPool.get(rnd.nextInt(testPool.size())); while (testPool.size() > 1 && testStop == last);
+        stop = testStop;
+        int[] byType = {SORT, NEEDS_Q, GROW, PLANT, ANIMAL, BODY, SENSES, PICK, MORE, WORD, PAGE, TEST};
+        testKind = byType[stop.type];
+        missed = false;
+        newQuestion(true);
+        rounds = TEST_ROUNDS;
     }
 
     private void startStep(int s) {
@@ -398,9 +444,32 @@ public class ScienceActivity extends Activity {
                 play(lead, null);
                 break;
             }
+            case TEST:
+                misses = 0;
+                testKind = -1;
+                testStop = null;
+                intro.clear();
+                intro.add(m("هَيَّا نَخْتَبِرُ مَا تَعَلَّمْنَاه"));
+                intro.add(m(UNITS[stop.mode - 1]));
+                testRound();
+                break;
             case DONE:
                 int reached = prefs.getInt("stage", 0);
                 if (stage + 1 > reached) prefs.edit().putInt("stage", stage + 1).apply();
+                if (testStop != null) {
+                    // The test's result: Lili says how it went (the next unit opens either way).
+                    stop = STOPS[stage];
+                    int score = TEST_ROUNDS - misses;
+                    List<String> res = new ArrayList<>();
+                    if (score < TEST_ROUNDS - 3) res.add(m("نُرَاجِعُ الدَّرْسَ مَرَّةً أُخْرَى"));
+                    else {
+                        res.add(m(score >= TEST_ROUNDS - 1 ? "نَتِيجَةٌ رَائِعَة!" : "نَتِيجَةٌ جَيِّدَة"));
+                        if (score >= TEST_ROUNDS - 1) res.add(g("أَجَبْتَ إِجَابَاتٍ صَحِيحَةً كَثِيرَة", "أَجَبْتِ إِجَابَاتٍ صَحِيحَةً كَثِيرَة"));
+                        res.add(cheer(book.praise));
+                    }
+                    play(res, null);
+                    break;
+                }
                 play(cheer(book.praise), null);
                 break;
             default:
@@ -569,6 +638,8 @@ public class ScienceActivity extends Activity {
             }
         }
         lead.addAll(question);
+        lead.addAll(0, intro);
+        intro.clear();
         view.invalidate();
         play(lead, null);
     }
@@ -627,10 +698,15 @@ public class ScienceActivity extends Activity {
             after.add(cheer(book.praise));
             play(after, () -> {
                 round++;
-                if (round < rounds) newQuestion(false);
+                if (round < rounds && testing()) testRound();
+                else if (round < rounds) newQuestion(false);
                 else nextStep();
             });
         } else {
+            if (testing() && !missed) {
+                missed = true;
+                misses++;
+            }
             wrongPick = i;
             wobbleAt = SystemClock.uptimeMillis();
             view.invalidate();
@@ -905,8 +981,13 @@ public class ScienceActivity extends Activity {
                 float ph = Math.min(h * 0.45f, w * 0.6f);
                 Draw.picture(c, lili, w / 2 - ph / 2, pad, w / 2 + ph / 2, pad + ph);
                 float y = pad + ph + pad;
-                for (int i = 0; i < 3; i++) Draw.star(c, w / 2 + (i - 1) * 54 * dp, y + 26 * dp, 22 * dp, Draw.YELLOW_D);
-                label(c, girl ? "أَحْسَنْتِ!" : "أَحْسَنْتَ!", w / 2, y + 90 * dp, 40 * dp, w - 2 * pad, Draw.PLUM);
+                // After a test: stars for how it went, and how many were right the first time.
+                int score = TEST_ROUNDS - misses, stars = testStop == null ? 3 : score >= TEST_ROUNDS - 1 ? 3
+                        : score >= TEST_ROUNDS - 3 ? 2 : 1;
+                for (int i = 0; i < 3; i++) Draw.star(c, w / 2 + (1 - i) * 54 * dp, y + 26 * dp, 22 * dp,
+                        i < stars ? Draw.YELLOW_D : 0xFFD9DCE8);
+                label(c, testStop == null ? (girl ? "أَحْسَنْتِ!" : "أَحْسَنْتَ!") : digits(score) + " / " + digits(TEST_ROUNDS),
+                        w / 2, y + 90 * dp, 40 * dp, w - 2 * pad, Draw.PLUM);
                 next(c, w / 2, y + 150 * dp + btnH / 2, btnH * 2.4f, btnH, "تَمّ");
                 return;
             }

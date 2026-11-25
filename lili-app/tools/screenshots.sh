@@ -81,7 +81,7 @@ for st in 0 1 2 3; do
     adb shell input keyevent KEYCODE_BACK
     sleep 1
 done
-for st in 0 1 10 11 14 19 21 22 25 26 29 30 31 34 36 40 46 47 48 51 52 54 56 60 63 66; do
+for st in 0 1 10 11 12 15 19 21 23 24 27 28 32 33 34 38 40 45 52 53 54 57 58 60 63 67 71 74 75; do
     adb shell am start -W -n $pkg/$cls.NumbersActivity --es prefs p1_numbers --es gender g --ei stage $st >/dev/null
     sleep 4
     shot "5-numbers-stop$st"
@@ -90,7 +90,7 @@ for st in 0 1 10 11 14 19 21 22 25 26 29 30 31 34 36 40 46 47 48 51 52 54 56 60 
 done
 
 # Lili's Science: every stop.
-for st in 0 1 2 6 7 9 12 14 19 20 22 26 28 30 33; do
+for st in 0 1 2 6 7 8 10 14 15 17 22 24 26 30 33 35 38 39; do
     adb shell am start -W -n $pkg/$cls.ScienceActivity --es prefs p1_science --es gender g --ei stage $st >/dev/null
     sleep 4
     shot "6-science-stop$st"
