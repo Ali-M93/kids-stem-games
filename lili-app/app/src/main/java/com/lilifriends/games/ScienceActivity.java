@@ -769,7 +769,7 @@ public class ScienceActivity extends Activity {
                 float cw = Math.min(130 * dp, (w - pad * (n + 1)) / n);
                 float ch = Math.min(cw, (h - top - 3 * pad - 30 * dp) / 2);
                 float x0 = (w - (n * cw + (n - 1) * pad)) / 2;
-                label(c, "→", w / 2, top + 10 * dp, 22 * dp, 60 * dp, Draw.PLUM);
+                label(c, "←", w / 2, top + 10 * dp, 22 * dp, 60 * dp, Draw.PLUM);
                 float slotT = top + 30 * dp;
                 for (int s = 0; s < n; s++) {
                     float l = x0 + (n - 1 - s) * (cw + pad), r = l + cw;
