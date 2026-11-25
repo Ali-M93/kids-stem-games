@@ -41,7 +41,11 @@ final class Game {
     static final Game NUMBERS = new Game("numbers", "com.lilifriends.games.NumbersActivity",
             R.string.game_numbers, R.drawable.home_cheer, Draw.YELLOW, Draw.YELLOW_D,
             NumbersActivity.STOP_LABELS.length);
-    static final Game[] ALL = {LETTERS, NUMBERS, PATH, HOPS, PATTERN, SCALE};
+    /** Lili's Science: the grade-1 science book, stop by stop (see {@link ScienceActivity}). */
+    static final Game SCIENCE = new Game("science", "com.lilifriends.games.ScienceActivity",
+            R.string.game_science, R.drawable.home_calm, Draw.MINT, Draw.MINT_D,
+            ScienceActivity.STOP_LABELS.length);
+    static final Game[] ALL = {LETTERS, NUMBERS, SCIENCE, PATH, HOPS, PATTERN, SCALE};
 
     static Game byId(String id) {
         for (Game g : ALL) if (g.id.equals(id)) return g;
@@ -53,13 +57,14 @@ final class Game {
      * class has reached; Lili still stands on the furthest one finished.
      */
     boolean allOpen() {
-        return this == LETTERS || this == NUMBERS;
+        return this == LETTERS || this == NUMBERS || this == SCIENCE;
     }
 
     /** Words or signs on the map's stops, for the book games; null shows stop numbers. */
     String[] labels() {
         if (this == LETTERS) return LettersActivity.STOP_LABELS;
         if (this == NUMBERS) return NumbersActivity.STOP_LABELS;
+        if (this == SCIENCE) return ScienceActivity.STOP_LABELS;
         return null;
     }
 

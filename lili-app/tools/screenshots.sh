@@ -58,7 +58,7 @@ shot 02-home
 adb shell input keyevent KEYCODE_BACK
 shot 03-who-one-player
 
-for g in letters numbers path hops pattern scale; do
+for g in letters numbers science path hops pattern scale; do
     adb shell am start -W -n $pkg/$cls.MapActivity --ei player 1 --es game $g >/dev/null
     shot "1-map-$g"
     adb shell input keyevent KEYCODE_BACK
@@ -85,6 +85,15 @@ for st in 0 5 9 12 16 18 19 22 23 27 28 29 31 34 39 40 41 44 45 47 48 49 50 53 5
     adb shell am start -W -n $pkg/$cls.NumbersActivity --es prefs p1_numbers --es gender g --ei stage $st >/dev/null
     sleep 4
     shot "5-numbers-stop$st"
+    adb shell input keyevent KEYCODE_BACK
+    sleep 1
+done
+
+# Lili's Science: every stop.
+for st in 0 1 2 3 4 5 6 7 8 9; do
+    adb shell am start -W -n $pkg/$cls.ScienceActivity --es prefs p1_science --es gender g --ei stage $st >/dev/null
+    sleep 4
+    shot "6-science-stop$st"
     adb shell input keyevent KEYCODE_BACK
     sleep 1
 done
