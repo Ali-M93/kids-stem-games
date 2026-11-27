@@ -98,15 +98,15 @@ for st in 0 1 2 6 7 8 10 14 15 17 22 24 26 30 33 35 38 39; do
     sleep 1
 done
 
-# Lili's English: a letter (meet it, then the quiz), and one stop of each kind.
-for st in 0 1; do
+# Lili's English: a letter (meet it, write it, then the quiz), and one stop of each kind.
+for st in 0 1 2; do
     adb shell am start -W -n $pkg/$cls.EnglishActivity --es prefs p1_english --es gender b --ei stage 2 --ei step $st >/dev/null
     sleep 4
     shot "7-english-a-step$st"
     adb shell input keyevent KEYCODE_BACK
     sleep 1
 done
-for st in 0 1 8 9 10 18 31 32 44 48 50 51 56 61; do
+for st in 0 1 8 9 10 11 20 33 34 48 49 52 54 59 64; do
     adb shell am start -W -n $pkg/$cls.EnglishActivity --es prefs p1_english --es gender g --ei stage $st >/dev/null
     sleep 4
     shot "7-english-stop$st"

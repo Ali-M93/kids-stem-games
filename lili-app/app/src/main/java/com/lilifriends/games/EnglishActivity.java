@@ -7,6 +7,7 @@ import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
@@ -43,7 +44,7 @@ public class EnglishActivity extends Activity {
     public static final String EXTRA_PREFS = "prefs", EXTRA_STAGE = "stage";
 
     private static final int T_LETTER = 0, T_SOUNDS = 1, T_WORD = 2, T_COUNT = 3, T_SAY = 4, T_UPPER = 5, T_ADJ = 6,
-            T_ABC = 7, T_PAGE = 8, T_TEST = 9;
+            T_ABC = 7, T_PAGE = 8, T_TEST = 9, T_SPELL = 10;
 
     /** One stop of the map: its title, the label on the map, what it teaches and which part of it. */
     private static final class Stop {
@@ -70,6 +71,7 @@ public class EnglishActivity extends Activity {
             new Stop("الحرف f", "f", T_LETTER, 5),
             new Stop("الألوان", "🎨", T_WORD, 0),
             new Stop("أصوات الحروف a–f", "🔊", T_SOUNDS, 0),
+            new Stop("تهجي الكلمات", "cat", T_SPELL, 0),
             new Stop("اختبار الوحدة الأولى", "⭐", T_TEST, 1),
             new Stop("الوحدة الثانية: My school", "📖", T_PAGE, 2),
             new Stop("الحرف g", "g", T_LETTER, 6),
@@ -81,6 +83,7 @@ public class EnglishActivity extends Activity {
             new Stop("أدوات الصف", "📏", T_WORD, 1),
             new Stop("كلام الصف", "🙋", T_SAY, 1),
             new Stop("أصوات الحروف g–l", "🔊", T_SOUNDS, 1),
+            new Stop("تهجي الكلمات", "pen", T_SPELL, 1),
             new Stop("اختبار الوحدة الثانية", "⭐", T_TEST, 2),
             new Stop("الوحدة الثالثة: My toys", "📖", T_PAGE, 3),
             new Stop("الحرف m", "m", T_LETTER, 12),
@@ -95,6 +98,7 @@ public class EnglishActivity extends Activity {
             new Stop("الأعداد 1–10", "🔢", T_COUNT, 0),
             new Stop("كم عمرك؟", "🎂", T_SAY, 2),
             new Stop("أصوات الحروف m–t", "🔊", T_SOUNDS, 2),
+            new Stop("تهجي الكلمات", "sun", T_SPELL, 2),
             new Stop("اختبار الوحدة الثالثة", "⭐", T_TEST, 3),
             new Stop("الوحدة الرابعة: Revision", "📖", T_PAGE, 4),
             new Stop("الحرف u", "u", T_LETTER, 20),
@@ -105,6 +109,7 @@ public class EnglishActivity extends Activity {
             new Stop("الحرف z", "z", T_LETTER, 25),
             new Stop("أصوات الحروف u–z", "🔊", T_SOUNDS, 3),
             new Stop("الحروف كلها", "abc", T_ABC, 0),
+            new Stop("تهجي الكلمات", "van", T_SPELL, 3),
             new Stop("ماذا ترى؟", "👀", T_SAY, 3),
             new Stop("اختبار الوحدة الرابعة", "⭐", T_TEST, 4),
             new Stop("الوحدة الخامسة: At the zoo", "📖", T_PAGE, 5),
@@ -128,6 +133,7 @@ public class EnglishActivity extends Activity {
             new Stop("الوحدة الثامنة: Revision", "📖", T_PAGE, 8),
             new Stop("أصوات الحروف كلها", "🔊", T_SOUNDS, 7),
             new Stop("كلمات الحروف", "🍎", T_WORD, 8),
+            new Stop("تهجي الكلمات", "zoo", T_SPELL, 4),
             new Stop("نعد من جديد", "🔢", T_COUNT, 0),
             new Stop("الكبيرة والصغيرة", "Aa", T_UPPER, 7),
             new Stop("اختبار الوحدة الثامنة", "⭐", T_TEST, 8),
@@ -217,10 +223,25 @@ public class EnglishActivity extends Activity {
             {"👃", "👀", "🧼", "🧼"},
             {"🧑‍🤝‍🧑", "🔑", "👧", "👦"},
     };
+    // Words to spell letter by letter, unit by unit (the last: all of them), with their pictures.
+    private static final String[][] SPELL_WORDS = {
+            {"Cat", "Dog", "Bus", "Egg", "Ant", "Car", "Fish", "Duck"},
+            {"Pen", "Bag", "Book", "Goat", "Kite", "Lion", "Key", "Ink"},
+            {"Sun", "Net", "Nose", "Moon", "Toy", "Doll", "Bike", "Bear", "Cake", "Ten"},
+            {"Van", "Up", "Zoo", "Red", "Bed", "Taxi", "Zebra"},
+            {"Cat", "Dog", "Bus", "Egg", "Pen", "Bag", "Kite", "Sun", "Moon", "Doll", "Van", "Zoo", "Bed", "Fish"},
+    };
+    private static final String[][] SPELL_PICS = {
+            {"🐱", "🐶", "🚌", "🥚", "🐜", "🚗", "🐟", "🦆"},
+            {"🖊️", "🎒", "📕", "🐐", "🪁", "🦁", "🔑", "🖋️"},
+            {"☀️", "🥅", "👃", "🌙", "🧸", "🪆", "🚲", "🧸", "🎂", "🔟"},
+            {"🚐", "⬆️", "🦁", "🔴", "🛏️", "🚕", "🦓"},
+            {"🐱", "🐶", "🚌", "🥚", "🖊️", "🎒", "🪁", "☀️", "🌙", "🪆", "🚐", "🦁", "🛏️", "🐟"},
+    };
     private static final String[] PRAISE = {"Good job!", "Well done!", "Great!", "Super!"};
 
     private static final int ASK = 0, LETTER = 1, LETTER_Q = 2, SOUNDS_Q = 3, WORD = 4, COUNT = 5, SAY_IT = 6, UPPER_Q = 7,
-            ADJ = 8, ABC = 9, PAGE = 10, TEST = 11, DONE = 12;
+            ADJ = 8, ABC = 9, PAGE = 10, TEST = 11, DONE = 12, TRACE = 13, SPELL = 14;
     private static final int TEST_ROUNDS = 8;
     private static final int ROUNDS = 6;
 
@@ -255,6 +276,12 @@ public class EnglishActivity extends Activity {
     private final List<Integer> deck = new ArrayList<>();
     /** A unit's opening page of the book. */
     private Bitmap page;
+    /** Spelling: the word's letters in order, the shuffled cards, which are placed. */
+    private final List<String> order = new ArrayList<>();
+    private final List<String> cards = new ArrayList<>();
+    private final List<Boolean> used = new ArrayList<>();
+    private int placed;
+    private String word = "";
 
     /** A unit's test: the stops it asks from, the one asked now and its exercise, the first-try misses. */
     private final List<Stop> testPool = new ArrayList<>();
@@ -295,8 +322,11 @@ public class EnglishActivity extends Activity {
         girl = "g".equals(g);
 
         if (g.isEmpty()) steps.add(ASK);
-        if (stop.type == T_LETTER) steps.add(LETTER);
-        int[] byType = {LETTER_Q, SOUNDS_Q, WORD, COUNT, SAY_IT, UPPER_Q, ADJ, ABC, PAGE, TEST};
+        if (stop.type == T_LETTER) {
+            steps.add(LETTER);
+            steps.add(TRACE);
+        }
+        int[] byType = {LETTER_Q, SOUNDS_Q, WORD, COUNT, SAY_IT, UPPER_Q, ADJ, ABC, PAGE, TEST, SPELL};
         steps.add(byType[stop.type]);
         if (stop.type == T_TEST) {
             // The unit's stops that ask a question (not its sentences to say along).
@@ -436,7 +466,7 @@ public class EnglishActivity extends Activity {
 
     /** The exercise a stop gives in a test. */
     private int quizOf(Stop s) {
-        int[] byType = {LETTER_Q, SOUNDS_Q, WORD, COUNT, SAY_IT, UPPER_Q, ADJ, ABC, PAGE, TEST};
+        int[] byType = {LETTER_Q, SOUNDS_Q, WORD, COUNT, SAY_IT, UPPER_Q, ADJ, ABC, PAGE, TEST, SPELL};
         return byType[s.type];
     }
 
@@ -477,6 +507,18 @@ public class EnglishActivity extends Activity {
                 play(lead, null);
                 break;
             }
+            case TRACE:
+                // Write the letter with a finger.
+                view.clearTrace();
+                question.clear();
+                question.add(g("اُكْتُبِ الْحَرْفَ بِإِصْبَعِك", "اُكْتُبِي الْحَرْفَ بِإِصْبَعِك"));
+                question.add(m(NAMES[stop.mode]));
+                ask();
+                break;
+            case SPELL:
+                rounds = 5;
+                newQuestion(true);
+                break;
             case SAY_IT:
                 deck.clear();
                 for (int i = 0; i < SAY[stop.mode].length; i++) deck.add(i);
@@ -704,6 +746,26 @@ public class EnglishActivity extends Activity {
                 subject = "";
                 break;
             }
+            case SPELL: {
+                // Hear the word and see it; put its letters in order.
+                int md = Math.min(stop.mode, SPELL_WORDS.length - 1);
+                qa = rnd.nextInt(SPELL_WORDS[md].length);
+                word = SPELL_WORDS[md][qa];
+                subject = SPELL_PICS[md][qa];
+                order.clear();
+                String low = word.toLowerCase();
+                for (int i = 0; i < low.length(); i++) order.add(low.substring(i, i + 1));
+                cards.clear();
+                cards.addAll(order);
+                for (int t = 0; t < 8 && cards.equals(order); t++) Collections.shuffle(cards, rnd);
+                used.clear();
+                for (int i = 0; i < cards.size(); i++) used.add(false);
+                placed = 0;
+                question.add(m(word));
+                reply.add(m(word));
+                answer = -1;
+                break;
+            }
             case SAY_IT: {
                 // Lili says a sentence of the book; the child says it along, then goes on.
                 qa = deck.get(round % deck.size());
@@ -759,6 +821,42 @@ public class EnglishActivity extends Activity {
         }
     }
 
+    private int letterIndex(String s) {
+        for (int i = 0; i < LOWER.length; i++) if (LOWER[i].equals(s)) return i;
+        return 0;
+    }
+
+    /** Spelling: the next letter of the word, or a wobble and «try again». */
+    private void place(int i) {
+        if (busy || i < 0 || i >= cards.size() || used.get(i)) return;
+        if (cards.get(i).equals(order.get(placed))) {
+            used.set(i, true);
+            placed++;
+            wrongPick = -1;
+            view.invalidate();
+            if (placed == order.size()) {
+                busy = true;
+                List<String> after = new ArrayList<>(reply);
+                after.add(praise());
+                play(after, () -> {
+                    round++;
+                    if (round < rounds && testing()) testRound();
+                    else if (round < rounds) newQuestion(false);
+                    else nextStep();
+                });
+            } else play(m(SOUNDS[letterIndex(cards.get(i))]), null);
+        } else {
+            if (testing() && !missed) {
+                missed = true;
+                misses++;
+            }
+            wrongPick = i;
+            wobbleAt = SystemClock.uptimeMillis();
+            view.invalidate();
+            play(m("Try again."), null);
+        }
+    }
+
     /** Tapping a picture of the letter's words says the word. */
     private void hear(int i) {
         if (kind() != LETTER) return;
@@ -775,17 +873,116 @@ public class EnglishActivity extends Activity {
         private final Bitmap lili;
         private final List<float[]> boxes = new ArrayList<>();
         private int down = -1;
-        private static final int B_SPEAK = -10, B_NEXT = -11, B_BOY = -13, B_GIRL = -14, B_WORD = -20;
+        private static final int B_SPEAK = -10, B_NEXT = -11, B_CLEAR = -12, B_BOY = -13, B_GIRL = -14, B_WORD = -20;
+        // Tracing: the letter's ink as a mask, the child's finger path, and where it went.
+        private final Paint ink = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Path finger = new Path();
+        private final List<float[]> touches = new ArrayList<>();
+        private float[] traceBox;
+        private float[] samples = new float[0];
+        private int sampleCount;
+        private boolean traced, tracing;
+        private Typeface face;
 
         EngView(Context ctx, Typeface face) {
             super(ctx);
             dp = getResources().getDisplayMetrics().density;
             text.setTypeface(Typeface.DEFAULT_BOLD);
             text.setTextAlign(Paint.Align.CENTER);
+            this.face = face;
             latin.setTypeface(face);
             latin.setTextAlign(Paint.Align.CENTER);
             emoji.setTextAlign(Paint.Align.CENTER);
             lili = Draw.load(getResources(), R.drawable.home_jump_up);
+        }
+
+        void clearTrace() {
+            finger.reset();
+            touches.clear();
+            traced = false;
+            invalidate();
+        }
+
+        private void letterPaint(float bw, float bh) {
+            ink.setTypeface(face);
+            ink.setTextAlign(Paint.Align.CENTER);
+            ink.setStyle(Paint.Style.FILL);
+            ink.setTextSize(Math.min(bw, bh) * 0.8f);
+        }
+
+        /** Points inside the letter's ink, found once from an off-screen copy of the letter. */
+        private void buildSamples(float l, float t, float r, float b) {
+            int bw = Math.max(1, Math.round(r - l)), bh = Math.max(1, Math.round(b - t));
+            Bitmap mk = Bitmap.createBitmap(bw, bh, Bitmap.Config.ALPHA_8);
+            Canvas mc = new Canvas(mk);
+            letterPaint(bw, bh);
+            mc.drawText(LOWER[stop.mode], bw / 2f, bh / 2f - (ink.ascent() + ink.descent()) / 2f, ink);
+            int stepPx = Math.max(3, Math.round(Math.min(bw, bh) / 70f));
+            float[] pts = new float[(bw / stepPx + 1) * (bh / stepPx + 1) * 2];
+            int n = 0;
+            for (int y = 0; y < bh; y += stepPx) {
+                for (int x = 0; x < bw; x += stepPx) {
+                    if (Color.alpha(mk.getPixel(x, y)) > 128) {
+                        pts[n++] = l + x;
+                        pts[n++] = t + y;
+                    }
+                }
+            }
+            mk.recycle();
+            samples = pts;
+            sampleCount = n / 2;
+        }
+
+        /** Share of the letter's ink that the finger has passed over. */
+        private float coverage() {
+            if (sampleCount == 0) return 0;
+            float rad = 22 * dp, r2 = rad * rad;
+            int hitCount = 0;
+            for (int i = 0; i < sampleCount; i++) {
+                float sx = samples[2 * i], sy = samples[2 * i + 1];
+                for (float[] p : touches) {
+                    float dx = p[0] - sx, dy = p[1] - sy;
+                    if (dx * dx + dy * dy <= r2) {
+                        hitCount++;
+                        break;
+                    }
+                }
+            }
+            return hitCount / (float) sampleCount;
+        }
+
+        private boolean inTrace(float x, float y) {
+            return traceBox != null && x >= traceBox[0] && x <= traceBox[2] && y >= traceBox[1] && y <= traceBox[3];
+        }
+
+        private boolean traceTouch(MotionEvent e) {
+            float x = e.getX(), y = e.getY();
+            switch (e.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    if (!inTrace(x, y) || traced) return false;
+                    tracing = true;
+                    finger.moveTo(x, y);
+                    touches.add(new float[]{x, y});
+                    invalidate();
+                    return true;
+                case MotionEvent.ACTION_MOVE:
+                    if (!tracing) return false;
+                    finger.lineTo(x, y);
+                    touches.add(new float[]{x, y});
+                    invalidate();
+                    return true;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    if (!tracing) return false;
+                    tracing = false;
+                    if (coverage() >= 0.72f) {
+                        traced = true;
+                        play(praise(), null);
+                    }
+                    invalidate();
+                    return true;
+            }
+            return false;
         }
 
         private int hit(float x, float y) {
@@ -795,6 +992,7 @@ public class EnglishActivity extends Activity {
 
         @Override
         public boolean onTouchEvent(MotionEvent e) {
+            if (kind() == TRACE && (tracing || e.getActionMasked() == MotionEvent.ACTION_DOWN) && traceTouch(e)) return true;
             switch (e.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
                     down = hit(e.getX(), e.getY());
@@ -818,10 +1016,12 @@ public class EnglishActivity extends Activity {
             int k = kind();
             if (w == B_BOY || w == B_GIRL) chooseGender(w == B_GIRL);
             else if (w == B_SPEAK) ask();
+            else if (w == B_CLEAR) clearTrace();
             else if (w == B_NEXT) {
                 if (k == SAY_IT) said();
                 else if (!busy || k == DONE) nextStep();
             } else if (w <= B_WORD) hear(B_WORD - w);
+            else if (w >= 0 && k == SPELL) place(w);
             else if (w >= 0) pick(w);
         }
 
@@ -888,7 +1088,7 @@ public class EnglishActivity extends Activity {
         }
 
         /** The answer cards in a row: letters, numbers, pictures or colours. */
-        private void cards(Canvas c, float l, float t, float r, float b) {
+        private void answerCards(Canvas c, float l, float t, float r, float b) {
             int n = options.size();
             float gap = 12 * dp, cw = (r - l - gap * (n - 1)) / n, ch = b - t;
             for (int i = 0; i < n; i++) {
@@ -951,6 +1151,28 @@ public class EnglishActivity extends Activity {
                 next(c, w / 2, y + 170 * dp, Math.min(w - 2 * pad, 240 * dp), btnH, "تَمّ");
                 return;
             }
+            if (k == TRACE) {
+                float bottomRow = h - pad - btnH / 2;
+                float l = pad, t = pad, r = w - pad, b = h - 2 * pad - btnH;
+                if (traceBox == null || traceBox[2] != r || traceBox[3] != b) {
+                    traceBox = new float[]{l, t, r, b};
+                    buildSamples(l, t, r, b);
+                }
+                Draw.card(c, l, t, r, b - 8 * dp, 32 * dp, 0xFFFFFFFF, 0xFFE6DCCB, 8 * dp);
+                letterPaint(r - l, b - t);
+                ink.setColor(traced ? Draw.MINT : 0xFFDCE9F7);
+                c.drawText(LOWER[stop.mode], (l + r) / 2f, (t + b) / 2f - (ink.ascent() + ink.descent()) / 2f, ink);
+                c.drawPath(finger, Draw.stroke(traced ? Draw.MINT_D : Draw.BLUE_D, 18 * dp));
+                if (!traced) {
+                    float cx = w / 2 - 1.9f * btnH;
+                    button(c, cx - 0.65f * btnH, bottomRow - btnH / 2, cx + 0.65f * btnH, bottomRow + btnH / 2,
+                            Draw.PINK, Draw.PINK_D, B_CLEAR);
+                    label(c, "اِمْسَحْ", cx, bottomRow - 3 * dp, btnH * 0.32f, btnH * 1.1f, 0xFFFFFFFF);
+                }
+                speaker(c, w / 2 + 1.7f * btnH, bottomRow, btnH / 2);
+                next(c, w / 2, bottomRow, btnH * 1.9f, btnH, traced ? "هَيَّا" : "التَّالِي");
+                return;
+            }
             if (testing() || round > 0 || rounds > 1) {
                 String count = (round + 1) + " / " + (testing() ? TEST_ROUNDS : rounds);
                 if (k != LETTER) english(c, count, w / 2, pad, 14 * dp, w, 0x995B3E8C);
@@ -988,6 +1210,28 @@ public class EnglishActivity extends Activity {
                 return;
             }
             float midT = areaT, midB = cardsT - pad, mh = midB - midT;
+            if (k == SPELL) {
+                // The picture, the word's slots (filled as letters are placed), and the letter cards.
+                int n = order.size();
+                float gap = 10 * dp, cell = Math.min(110 * dp, (w - 2 * pad - gap * (n - 1)) / n);
+                float slotT = midB - cell, x0 = (w - n * cell - (n - 1) * gap) / 2;
+                pic(c, subject, w / 2, midT + (slotT - pad - midT) / 2, Math.min(slotT - pad - midT, w * 0.5f) * 0.8f);
+                for (int i = 0; i < n; i++) {
+                    float x = x0 + i * (cell + gap);
+                    Draw.card(c, x, slotT, x + cell, slotT + cell - 4 * dp, 16 * dp, i < placed ? Draw.MINT : 0xFFFFFFFF,
+                            i < placed ? Draw.MINT_D : 0xFFD9DCE8, 4 * dp);
+                    if (i < placed) english(c, order.get(i), x + cell / 2, slotT + cell / 2 - 4 * dp, cell * 0.6f, cell * 0.8f, 0xFFFFFFFF);
+                }
+                float cw = Math.min(cardsH, (w - 2 * pad - gap * (n - 1)) / n);
+                float cx0 = (w - n * cw - (n - 1) * gap) / 2;
+                for (int i = 0; i < n; i++) {
+                    if (used.get(i)) continue;
+                    float x = cx0 + i * (cw + gap) + (i == wrongPick ? wobble() : 0);
+                    button(c, x, cardsT, x + cw, cardsT + cw, Draw.LILAC, Draw.LILAC_D, i);
+                    english(c, cards.get(i), x + cw / 2, cardsT + (cw - 6 * dp) / 2 - 2 * dp, cw * 0.55f, cw * 0.8f, 0xFFFFFFFF);
+                }
+                return;
+            }
             if (k == COUNT) {
                 // The things to count, in rows of up to five.
                 int cols = Math.min(5, many), rows = (many + 4) / 5;
@@ -1006,7 +1250,7 @@ public class EnglishActivity extends Activity {
                 float ph = Math.min(mh * 0.85f, w * 0.6f);
                 Draw.picture(c, lili, w / 2 - ph / 2, midT + (mh - ph) / 2, w / 2 + ph / 2, midT + (mh + ph) / 2);
             }
-            cards(c, pad, cardsT, w - pad, h - pad);
+            answerCards(c, pad, cardsT, w - pad, h - pad);
         }
     }
 }
