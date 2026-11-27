@@ -8,6 +8,7 @@
         <activity android:name="com.lilifriends.games.LettersActivity" android:exported="true" tools:replace="android:exported" />
         <activity android:name="com.lilifriends.games.NumbersActivity" android:exported="true" tools:replace="android:exported" />
         <activity android:name="com.lilifriends.games.ScienceActivity" android:exported="true" tools:replace="android:exported" />
+        <activity android:name="com.lilifriends.games.EnglishActivity" android:exported="true" tools:replace="android:exported" />
         <activity android:name="com.lilifriends.games.MapActivity" android:exported="true" tools:replace="android:exported" />
         <activity android:name="io.github.foadsf.robotpath.GameActivity" android:exported="true" tools:replace="android:exported" />
         <activity android:name="io.github.foadsf.kangaroohops.GameActivity" android:exported="true" tools:replace="android:exported" />

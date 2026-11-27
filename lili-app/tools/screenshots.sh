@@ -58,7 +58,7 @@ shot 02-home
 adb shell input keyevent KEYCODE_BACK
 shot 03-who-one-player
 
-for g in letters numbers science path hops pattern scale; do
+for g in letters numbers science english path hops pattern scale; do
     adb shell am start -W -n $pkg/$cls.MapActivity --ei player 1 --es game $g >/dev/null
     shot "1-map-$g"
     adb shell input keyevent KEYCODE_BACK
@@ -97,6 +97,23 @@ for st in 0 1 2 6 7 8 10 14 15 17 22 24 26 30 33 35 38 39; do
     adb shell input keyevent KEYCODE_BACK
     sleep 1
 done
+
+# Lili's English: a letter (meet it, then the quiz), and one stop of each kind.
+for st in 0 1; do
+    adb shell am start -W -n $pkg/$cls.EnglishActivity --es prefs p1_english --es gender b --ei stage 2 --ei step $st >/dev/null
+    sleep 4
+    shot "7-english-a-step$st"
+    adb shell input keyevent KEYCODE_BACK
+    sleep 1
+done
+for st in 0 1 8 9 10 18 31 32 44 48 50 51 56 61; do
+    adb shell am start -W -n $pkg/$cls.EnglishActivity --es prefs p1_english --es gender g --ei stage $st >/dev/null
+    sleep 4
+    shot "7-english-stop$st"
+    adb shell input keyevent KEYCODE_BACK
+    sleep 1
+done
+
 
 # Lili's Letters: the boy-or-girl question a new child sees first, then each kind of step of a
 # lesson (stop 8, «ر», has most kinds), and the red-letter swap of «غ» (stop 33).

@@ -45,7 +45,11 @@ final class Game {
     static final Game SCIENCE = new Game("science", "com.lilifriends.games.ScienceActivity",
             R.string.game_science, R.drawable.home_calm, Draw.MINT, Draw.MINT_D,
             ScienceActivity.STOP_LABELS.length);
-    static final Game[] ALL = {LETTERS, NUMBERS, SCIENCE, PATH, HOPS, PATTERN, SCALE};
+    /** Lili's English: the grade-1 English book, unit by unit (see {@link EnglishActivity}). */
+    static final Game ENGLISH = new Game("english", "com.lilifriends.games.EnglishActivity",
+            R.string.game_english, R.drawable.home_jump_up, Draw.BLUE, Draw.BLUE_D,
+            EnglishActivity.STOP_LABELS.length);
+    static final Game[] ALL = {LETTERS, NUMBERS, SCIENCE, ENGLISH, PATH, HOPS, PATTERN, SCALE};
 
     static Game byId(String id) {
         for (Game g : ALL) if (g.id.equals(id)) return g;
@@ -57,7 +61,7 @@ final class Game {
      * class has reached; Lili still stands on the furthest one finished.
      */
     boolean allOpen() {
-        return this == LETTERS || this == NUMBERS || this == SCIENCE;
+        return this == LETTERS || this == NUMBERS || this == SCIENCE || this == ENGLISH;
     }
 
     /** Words or signs on the map's stops, for the book games; null shows stop numbers. */
@@ -65,6 +69,7 @@ final class Game {
         if (this == LETTERS) return LettersActivity.STOP_LABELS;
         if (this == NUMBERS) return NumbersActivity.STOP_LABELS;
         if (this == SCIENCE) return ScienceActivity.STOP_LABELS;
+        if (this == ENGLISH) return EnglishActivity.STOP_LABELS;
         return null;
     }
 

@@ -35,6 +35,10 @@
             android:configChanges="orientation|screenSize|keyboardHidden|screenLayout"
             android:exported="false" />
         <activity
+            android:name=".EnglishActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout"
+            android:exported="false" />
+        <activity
             android:name=".MapActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|screenLayout"
             android:exported="false" />
